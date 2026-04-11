@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>æ·¨æ·¨ç¾å­¸å·¥ä½å®¤ â ç¾å­¸è¨­è¨é¨</title>
+<title>淨淨美學工作室 — 美學設計部</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -20,7 +20,7 @@ body{
   min-height:100vh;overflow-x:hidden;
 }
 
-/* âââ Hero Section âââ */
+/* ─── Hero Section ─── */
 .hero{
   background:linear-gradient(135deg,var(--teal-xl) 0%,var(--white) 40%,var(--white) 60%,var(--teal-l) 100%);
   padding:60px 40px 48px;
@@ -53,7 +53,7 @@ body{
 .hero h1 span{color:var(--teal-d);}
 .hero p{font-size:17px;color:var(--gray);line-height:1.7;max-width:520px;}
 
-/* âââ Grid âââ */
+/* ─── Grid ─── */
 .grid-section{max-width:1100px;margin:0 auto;padding:0 40px 60px;}
 .section-label{
   font-size:13px;font-weight:700;color:var(--teal-d);
@@ -66,7 +66,7 @@ body{
   gap:20px;
 }
 
-/* âââ Card âââ */
+/* ─── Card ─── */
 .card{
   background:var(--white);border:1.5px solid #EEF0F2;
   border-radius:var(--radius);padding:32px 28px;
@@ -109,14 +109,14 @@ body{
 }
 .card:hover .card-arrow{background:var(--teal);color:white;}
 
-/* âââ Footer âââ */
+/* ─── Footer ─── */
 .footer{
   text-align:center;padding:32px 20px;
   border-top:1px solid #F0F0F0;color:var(--gray);font-size:13px;
 }
 .footer span{color:var(--teal-d);font-weight:600;}
 
-/* âââ Anim âââ */
+/* ─── Anim ─── */
 .card{opacity:0;transform:translateY(20px);animation:fadeUp .5s ease forwards;}
 @keyframes fadeUp{to{opacity:1;transform:translateY(0);}}
 .card:nth-child(1){animation-delay:.05s;}
@@ -128,11 +128,22 @@ body{
 .card:nth-child(7){animation-delay:.35s;}
 .card:nth-child(8){animation-delay:.4s;}
 .card:nth-child(9){animation-delay:.45s;}
+.card:nth-child(10){animation-delay:.5s;}
+
+/* ─── Hero Stats ─── */
+.hero-stats{
+  display:flex;gap:32px;margin-top:28px;flex-wrap:wrap;
+}
+.stat{display:flex;flex-direction:column;gap:2px;}
+.stat strong{font-size:28px;font-weight:900;color:var(--teal-d);}
+.stat span{font-size:12px;color:var(--gray);font-weight:500;}
 
 @media(max-width:680px){
   .hero{padding:40px 20px 32px;}
   .grid-section{padding:0 20px 40px;}
   .grid{grid-template-columns:1fr;}
+  .hero-stats{gap:20px;}
+  .stat strong{font-size:22px;}
 }
 </style>
 </head>
@@ -141,105 +152,128 @@ body{
 <section class="hero">
   <div class="hero-inner">
     <div class="hero-top">
-      <div class="logo">æ·¨</div>
-      <div class="brand-text">CLEANCLEAN Â· ç¾å­¸è¨­è¨é¨</div>
+      <div class="logo">淨</div>
+      <div class="brand-text">CLEANCLEAN · 美學設計部</div>
     </div>
-    <h1>æ·¨æ·¨<span>ç¾å­¸å·¥ä½å®¤</span></h1>
-    <p>ç¾å­¸è¨­è¨é¨çå°å±¬å·¥ä½ç©ºéãç´ æãæçãè²å½©ãéæââæéå°±é²å¥å·¥ä½çæã</p>
+    <h1>淨淨<span>美學工作室</span></h1>
+    <p>美學設計部的專屬工作空間。素材查詢、尺寸速查、色彩規範、周邊模擬——打開就進入工作狀態。</p>
+    <div class="hero-stats">
+      <div class="stat"><strong>5</strong><span>已上線工具</span></div>
+      <div class="stat"><strong>5</strong><span>開發中</span></div>
+      <div class="stat"><strong>33</strong><span>版位尺寸</span></div>
+      <div class="stat"><strong>97</strong><span>產品素材</span></div>
+    </div>
   </div>
 </section>
 
 <section class="grid-section">
-  <div class="section-label">è¨­è¨å·¥å·</div>
+  <div class="section-label">已上線工具</div>
   <div class="grid">
 
-    <a href="resize.html" class="card">
-      <div class="card-icon teal">ð</div>
-      <h3>Resize å°å¹«æ</h3>
-      <p>ä¸å³ç´ æåå±¤ï¼èªåçº 16 åæ¨æºçä½éæ°æçãä¸æ¯æä¼¸ââæ¯æ ¹ææ¯ä¾æºè½éææ¯ååç´ çä½ç½®ã</p>
-      <div class="card-footer">
-        <span class="badge live">å·²ä¸ç·</span>
-        <span class="card-arrow">â</span>
-      </div>
-    </a>
-
-    <a href="assets.html" class="card">
-      <div class="card-icon mint">ð¼</div>
-      <h3>æ·¨æ·¨ç´ æå</h3>
-      <p>97 å¼µå¨ç¢åå»èç§ + Logoï¼æåé¡ååçè¦½ãæå°ãé è¦½ãä¸éµè¤è£½æªæ¡è·¯å¾ã</p>
-      <div class="card-footer">
-        <span class="badge live">å·²ä¸ç·</span>
-        <span class="card-arrow">â</span>
-      </div>
-    </a>
-
-    <a href="scenegen.html" class="card">
-      <div class="card-icon warm">ð¸</div>
-      <h3>æå¢ç§çæå¨</h3>
-      <p>AI çæç¢åä½¿ç¨å ´æ¯ãé¸å ´æ¯é¡åãé¸é¢¨æ ¼ï¼æå½±æ£æ / èªç¶åï¼ï¼èªååæå»èç¢åç§ã</p>
-      <div class="card-footer">
-        <span class="badge dev">éç¼ä¸­</span>
-        <span class="card-arrow">â</span>
-      </div>
-    </a>
-
-    <a href="telescope.html" class="card">
-      <div class="card-icon purple">ð</div>
-      <h3>ç¾å­¸æé é¡</h3>
-      <p>ç²¾é¸é«è³ªæåççåè£è¨­è¨ãè¦è¦ºç´ æãç¤¾ç¾¤ç¾å­¸ãé»é¸åçç´éè¨­è¨æ¡ä¾ï¼é¨ææ±²åéæã</p>
-      <div class="card-footer">
-        <span class="badge dev">éç¼ä¸­</span>
-        <span class="card-arrow">â</span>
-      </div>
-    </a>
-
-    <a href="layout.html" class="card">
-      <div class="card-icon teal">â¨</div>
-      <h3>æçå»ºè­°å°å¹«æ</h3>
-      <p>è¼¸å¥æ´»åä¸»é¡ãç¢åãä¿é·å§å®¹ï¼AI èªåå»ºè­°æçéç½®ãè²å½©æ­éãåç´ ä½ç½®ã</p>
-      <div class="card-footer">
-        <span class="badge dev">éç¼ä¸­</span>
-        <span class="card-arrow">â</span>
-      </div>
-    </a>
-
     <a href="sizes.html" class="card">
-      <div class="card-icon teal">ð</div>
-      <h3>å°ºå¯¸éæ¥è¡¨</h3>
-      <p>å¨å¹³å°çä½å°ºå¯¸ââå®ç¶²ãè¦ç®ãFBãIGãLINEãç¾è²¨ãå°å·ãæ¯ä¾è¦è¦ºåï¼ä¸éµè¤è£½ã</p>
+      <div class="card-icon teal">📏</div>
+      <h3>尺寸速查表</h3>
+      <p>33 個版位尺寸——官網、蝦皮、FB、IG、LINE、百貨、MO店、印刷。分類篩選、搜尋、比例預覽、一鍵複製。</p>
       <div class="card-footer">
-        <span class="badge live">å·²ä¸ç·</span>
-        <span class="card-arrow">â</span>
+        <span class="badge live">已上線</span>
+        <span class="card-arrow">→</span>
       </div>
     </a>
 
     <a href="colors.html" class="card">
-      <div class="card-icon mint">ð¨</div>
-      <h3>åçè²å½©ç³»çµ±</h3>
-      <p>å±å®¶æ¸æ½éç¶ ãåè­·èè·æ¤èââéç¢åç·è²ç¥¨ãå°å·è²ãæ´»åè²ãå°æ¯åº¦æª¢æ¥ãä¸éµè¤è£½è²ç¢¼ã</p>
+      <div class="card-icon mint">🎨</div>
+      <h3>品牌色彩系統</h3>
+      <p>居家清潔青綠 #61D0DF、個護薄荷植萃——雙產品線色票、印刷色、活動色、WCAG 對比度檢查。</p>
       <div class="card-footer">
-        <span class="badge live">å·²ä¸ç·</span>
-        <span class="card-arrow">â</span>
+        <span class="badge live">已上線</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="assets.html" class="card">
+      <div class="card-icon mint">🖼</div>
+      <h3>淨淨素材區</h3>
+      <p>97 張全產品去背照 + Logo + 認證標章，按居家清潔、個人護理分區瀏覽。搜尋、預覽、一鍵複製路徑。</p>
+      <div class="card-footer">
+        <span class="badge live">已上線</span>
+        <span class="card-arrow">→</span>
       </div>
     </a>
 
     <a href="mockup.html" class="card">
-      <div class="card-icon warm">ð</div>
-      <h3>åçå¨éæ¨¡æ¬å¨</h3>
-      <p>ä¸å³è³·ç©è¢ãæ´è¡£è¢ãTæ¤ç§çï¼çä¸æ·¨æ·¨ Logo é è¦½ææãMultiply æ··åæ¨¡å¼è® Logo è²¼åæè³ªã</p>
+      <div class="card-icon warm">🎁</div>
+      <h3>品牌周邊模擬器</h3>
+      <p>上傳�쬧��袋、洗衣袋、T恤照片，疊上淨淨 Logo 預覽效果。Multiply 混合讓 Logo 自然貼合材質。</p>
       <div class="card-footer">
-        <span class="badge live">å·²ä¸ç·</span>
-        <span class="card-arrow">â</span>
+        <span class="badge live">已上線</span>
+        <span class="card-arrow">→</span>
       </div>
     </a>
 
     <a href="guidelines.html" class="card">
-      <div class="card-icon purple">ð</div>
-      <h3>è¨­è¨è¦ç¯æå</h3>
-      <p>åççå¿µãLOGO è¦ç¯ãå°å·è²ãå­åç³»çµ±ãDo/Don't é¢¨æ ¼æå¼ã8 é»æª¢æ¥æ¸å®ãå·¥ä½æµç¨ââä¾èªè¨­è¨é¨æ°ææå­¸ã</p>
+      <div class="card-icon purple">📖</div>
+      <h3>設計規範手冊</h3>
+      <p>品牌理念、LOGO 規範、印刷色、字型系統、Do/Don't 風格指引、8 點自我檢查清單、設計部工作流程。</p>
       <div class="card-footer">
-        <span class="badge live">å·²ä¸ç·</span>
-        <span class="card-arrow">â</span>
+        <span class="badge live">已上線</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<section class="grid-section">
+  <div class="section-label">開發中工具</div>
+  <div class="grid">
+
+    <a href="resize.html" class="card">
+      <div class="card-icon teal">📐</div>
+      <h3>Resize 小幫手</h3>
+      <p>上傳一張主視覺，自動為 16 個標準版位重新排版。不是拉伸——是智能重排文字、產品、裝飾元素的位置。</p>
+      <div class="card-footer">
+        <span class="badge dev">開發中</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="banner_preview.html" class="card">
+      <div class="card-icon teal">🖥</div>
+      <h3>Banner 即時預覽</h3>
+      <p>上傳 Banner 設計稿，即時看到它在手機 LINE 推播、官網首頁、蝦皮商城上的實際呈現效果。</p>
+      <div class="card-footer">
+        <span class="badge dev">開發中</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="scenegen.html" class="card">
+      <div class="card-icon warm">📸</div>
+      <h3>情境照生成器</h3>
+      <p>選產品、選場景風格（攝影棚 / 自然光居家 / 浴室），AI 自動合成產品使用情境照。</p>
+      <div class="card-footer">
+        <span class="badge dev">開發中</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="layout.html" class="card">
+      <div class="card-icon teal">✨</div>
+      <h3>排版建議小幫手</h3>
+      <p>輸入活動主題和尺寸，AI 建議標題、產品、CTA 的最佳位置與配色方案。</p>
+      <div class="card-footer">
+        <span class="badge dev">開發中</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="telescope.html" class="card">
+      <div class="card-icon purple">🔍</div>
+      <h3>美學望遠鏡</h3>
+      <p>Aesop、Method、THE LAUNDRESS⋯⋯精選國內外高質感品牌的包裝、社群、廣告設計案例庫。</p>
+      <div class="card-footer">
+        <span class="badge dev">開發中</span>
+        <span class="card-arrow">→</span>
       </div>
     </a>
 
@@ -247,7 +281,7 @@ body{
 </section>
 
 <footer class="footer">
-  <span>æ·¨æ·¨ç¾å­¸å·¥ä½å®¤</span>ï½ç¾å­¸è¨­è¨é¨ Â· Â© 2026 CleanClean
+  <span>淨淨美學工作室</span>｜美學設計部 · design.reyway.com · © 2026 CleanClean
 </footer>
 
 </body>
