@@ -1,9 +1,398 @@
 <!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>美學望遠鏡 | 淨淨美學工作室</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --teal: #61D0DF;
+            --teal-d: #329BAF;
+            --teal-l: #EBF9FC;
+            --dark: #1E2230;
+            --text: #2D3142;
+            --gray: #8C8C8C;
+            --warm: #F5EDE3;
+            --warm-d: #E8D5C0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', 'Inter', sans-serif;
+            background: #FFFFFF;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: var(--teal);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header a {
+            color: #FFFFFF;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: opacity 0.3s;
+        }
+
+        .header a:hover {
+            opacity: 0.8;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            animation: fadeIn 0.8s ease-out 0.2s both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            background: #FFF3CD;
+            color: #856404;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Title */
+        h1 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--dark);
+        }
+
+        .subtitle {
+            color: var(--gray);
+            font-size: 14px;
+            margin-bottom: 40px;
+        }
+
+        /* Preview Section */
+        .preview-section {
+            background: var(--teal-l);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 40px;
+            animation: fadeIn 0.8s ease-out 0.4s both;
+        }
+
+        .preview-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        /* Brand Cards Grid */
+        .brand-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .brand-card {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #E0E0E0 0%, #D0D0D0 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .brand-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .brand-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2), transparent);
+            z-index: 1;
+        }
+
+        .brand-icon {
+            font-size: 48px;
+            opacity: 0.6;
+            position: relative;
+            z-index: 0;
+        }
+
+        .brand-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.4);
+            color: white;
+            padding: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .brand-card:hover .brand-label {
+            opacity: 1;
+        }
+
+        .gallery-note {
+            text-align: center;
+            color: var(--gray);
+            font-size: 13px;
+            padding: 12px;
+            background: rgba(97, 208, 223, 0.05);
+            border-radius: 8px;
+        }
+
+        /* Description */
+        .description {
+            background: white;
+            border: 1px solid #E0E0E0;
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 40px;
+            animation: fadeIn 0.8s ease-out 0.5s both;
+        }
+
+        .description h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--dark);
+        }
+
+        .description p {
+            color: var(--text);
+            line-height: 1.8;
+            font-size: 15px;
+        }
+
+        /* Features Grid */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+            animation: fadeIn 0.8s ease-out 0.6s both;
+        }
+
+        .feature-card {
+            background: white;
+            border: 1px solid #E0E0E0;
+            border-radius: 14px;
+            padding: 20px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .feature-card:hover {
+            border-color: var(--teal);
+            box-shadow: 0 8px 24px rgba(99, 208, 223, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .feature-icon {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .feature-card h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            font-size: 13px;
+            color: var(--gray);
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 32px 24px;
+            border-top: 1px solid #E0E0E0;
+            color: var(--gray);
+            font-size: 13px;
+            animation: fadeIn 0.8s ease-out 0.7s both;
+        }
+
+        .footer a {
+            color: var(--teal);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer a:hover {
+            color: var(--teal-d);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 24px 16px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .preview-section {
+                padding: 24px;
+            }
+
+            .brand-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                padding: 12px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="index.html">← 淨淨美學工作室</a>
+    </div>
+
+    <div class="container">
+        <div class="badge">開發中</div>
+        <h1>美學望遠鏡</h1>
+        <p class="subtitle">高質感清潔品牌設計案例庫</p>
+
+        <div class="preview-section">
+            <div class="preview-title">精選品牌案例庫</div>
+            <div class="brand-grid">
+                <div class="brand-card">
+                    <div class="brand-icon">🧴</div>
+                    <div class="brand-label">Aesop</div>
+                </div>
+                <div class="brand-card" style="background: linear-gradient(135deg, #C8E6E8 0%, #A8D8DC 100%);">
+                    <div class="brand-icon">✨</div>
+                    <div class="brand-label">Method</div>
+                </div>
+                <div class="brand-card" style="background: linear-gradient(135deg, #E8D5C0 0%, #D8C5A0 100%);">
+                    <div class="brand-icon">🧼</div>
+                    <div class="brand-label">Laundress</div>
+                </div>
+                <div class="brand-card" style="background: linear-gradient(135deg, #E0D8E8 0%, #D0C8D8 100%);">
+                    <div class="brand-icon">🌿</div>
+                    <div class="brand-label">Byredo</div>
+                </div>
+                <div class="brand-card" style="background: linear-gradient(135deg, #F5D8C8 0%, #E5C8A8 100%);">
+                    <div class="brand-icon">🧴</div>
+                    <div class="brand-label">Dr.Bronner's</div>
+                </div>
+                <div class="brand-card" style="background: linear-gradient(135deg, #D8E8E0 0%, #C8D8D0 100%);">
+                    <div class="brand-icon">🎋</div>
+                    <div class="brand-label">茶籽堂</div>
+                </div>
+            </div>
+            <div class="gallery-note">持續新增更多品牌案例...點擊卡片查看詳細設計作品</div>
+        </div>
+
+        <div class="description">
+            <h2>隨時打開，隨時找靈感</h2>
+            <p>精選國內外高質感清潔品牌的設計案例——包裝設計、社群貼文、廣告視覺、空間展示。按風格、平台、季節快速篩選，定期更新最新案例。幫助設計師、品牌方快速汲取業界最佳實踐。</p>
+        </div>
+
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3>精選品牌案例庫</h3>
+                <p>全球知名清潔品牌的包裝、廣告、社群設計案例。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🏷️</div>
+                <h3>按風格/平台分類</h3>
+                <p>極簡、溫暖、科技、高級感等風格分類，快速查找靈感。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📅</div>
+                <h3>定期更新案例</h3>
+                <p>每月更新新品牌案例、季節主題、新興趨勢。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">❤️</div>
+                <h3>可收藏與標註</h3>
+                <p>收藏喜愛的案例，添加個人標籤和設計筆記。</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>淨淨美學工作室 · 美學設計部</p>
+        <p><a href="index.html">回首頁</a></p>
+    </div>
+</body>
+</html>
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ç¾å­¸æé é¡ | æ·¨æ·¨ç¾å­¸å·¥ä½å®¤</title>
+    <title>美學望遠鏡 | 淨淨美學工作室</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -138,11 +527,11 @@
 <body>
     <div class="container">
         <div class="card">
-            <span class="icon">ð</span>
-            <span class="badge">éç¼ä¸­</span>
-            <h1>ç¾å­¸æé é¡</h1>
-            <p class="description">ç²¾é¸é«è³ªæåççåè£è¨­è¨ãè¦è¦ºç´ æèç¤¾ç¾¤ç¾å­¸åèï¼éç¼ä¸­</p>
-            <a href="index.html" class="button">è¿åå·¥ä½å®¤</a>
+            <span class="icon">🔍</span>
+            <span class="badge">開發中</span>
+            <h1>美學望遠鏡</h1>
+            <p class="description">精選高質感品牌的包裝設計、視覺素材與社群美學參考，開發中</p>
+            <a href="index.html" class="button">返回工作室</a>
         </div>
     </div>
 </body>

@@ -1,33 +1,538 @@
 <!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>排版建議小幫手 | 淨淨美學工作室</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --teal: #61D0DF;
+            --teal-d: #329BAF;
+            --teal-l: #EBF9FC;
+            --dark: #1E2230;
+            --text: #2D3142;
+            --gray: #8C8C8C;
+            --warm: #F5EDE3;
+            --warm-d: #E8D5C0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', 'Inter', sans-serif;
+            background: #FFFFFF;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: var(--teal);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header a {
+            color: #FFFFFF;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: opacity 0.3s;
+        }
+
+        .header a:hover {
+            opacity: 0.8;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            animation: fadeIn 0.8s ease-out 0.2s both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            background: #FFF3CD;
+            color: #856404;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Title */
+        h1 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--dark);
+        }
+
+        .subtitle {
+            color: var(--gray);
+            font-size: 14px;
+            margin-bottom: 40px;
+        }
+
+        /* Preview Section */
+        .preview-section {
+            background: var(--teal-l);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 40px;
+            animation: fadeIn 0.8s ease-out 0.4s both;
+        }
+
+        .preview-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        /* Chat Interface Mockup */
+        .chat-mockup {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        .chat-message {
+            display: flex;
+            margin-bottom: 16px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-bubble {
+            padding: 12px 16px;
+            border-radius: 12px;
+            max-width: 70%;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .message-user {
+            align-self: flex-end;
+        }
+
+        .message-user .message-bubble {
+            background: var(--teal);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-ai {
+            align-self: flex-start;
+        }
+
+        .message-ai .message-bubble {
+            background: #F5F5F5;
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+        }
+
+        .layout-grid {
+            background: linear-gradient(135deg, #F0F8FB 0%, #E8F4F8 100%);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 8px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 11px;
+        }
+
+        .layout-zone {
+            background: white;
+            border: 1px dashed var(--teal);
+            border-radius: 6px;
+            padding: 8px;
+            text-align: center;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        /* Description */
+        .description {
+            background: white;
+            border: 1px solid #E0E0E0;
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 40px;
+            animation: fadeIn 0.8s ease-out 0.5s both;
+        }
+
+        .description h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--dark);
+        }
+
+        .description p {
+            color: var(--text);
+            line-height: 1.8;
+            font-size: 15px;
+        }
+
+        /* Features Grid */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+            animation: fadeIn 0.8s ease-out 0.6s both;
+        }
+
+        .feature-card {
+            background: white;
+            border: 1px solid #E0E0E0;
+            border-radius: 14px;
+            padding: 20px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .feature-card:hover {
+            border-color: var(--teal);
+            box-shadow: 0 8px 24px rgba(99, 208, 223, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .feature-icon {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .feature-card h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            font-size: 13px;
+            color: var(--gray);
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 32px 24px;
+            border-top: 1px solid #E0E0E0;
+            color: var(--gray);
+            font-size: 13px;
+            animation: fadeIn 0.8s ease-out 0.7s both;
+        }
+
+        .footer a {
+            color: var(--teal);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer a:hover {
+            color: var(--teal-d);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 24px 16px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .preview-section {
+                padding: 24px;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                padding: 12px 16px;
+            }
+
+            .message-bubble {
+                max-width: 85%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="index.html">← 淨淨美學工作室</a>
+    </div>
+
+    <div class="container">
+        <div class="badge">開發中</div>
+        <h1>排版建議小幫手</h1>
+        <p class="subtitle">AI 智能排版方案生成器</p>
+
+        <div class="preview-section">
+            <div class="preview-title">排版建議演示</div>
+            <div class="chat-mockup">
+                <div class="chat-message message-user">
+                    <div class="message-bubble">母親節活動 Banner 1080x1080</div>
+                </div>
+                <div class="chat-message message-ai">
+                    <div class="message-bubble">
+                        我建議這樣配置：
+                        <div class="layout-grid">
+                            <div class="layout-zone">標題區</div>
+                            <div class="layout-zone">視覺重點</div>
+                            <div class="layout-zone">產品展示</div>
+                            <div class="layout-zone">CTA按鈕</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-message message-user">
+                    <div class="message-bubble">搭配什麼色系？</div>
+                </div>
+                <div class="chat-message message-ai">
+                    <div class="message-bubble">推薦淡粉配淨淨青綠，溫暖卻高級感</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="description">
+            <h2>不用再從零開始想版面</h2>
+            <p>輸入活動主題和尺寸，AI 立即分析最佳排版方案。標題放哪裡、產品放哪裡、CTA按鈕放哪裡——系統給出經過驗證的黃金比例和配置建議，並參考歷史活動表現數據。</p>
+        </div>
+
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3>AI 排版建議</h3>
+                <p>輸入主題，系統秒速生成 3 個排版方案供選擇。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📍</div>
+                <h3>元素位置推薦</h3>
+                <p>精準標示標題、產品、CTA、背景元素的最佳位置。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3>配色方案生成</h3>
+                <p>根據主題自動生成 2-3 種配色搭配建議。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>歷史活動參考</h3>
+                <p>查看過去類似活動的排版案例和數據效果。</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>淨淨美學工作室 · 美學設計部</p>
+        <p><a href="index.html">回首頁</a></p>
+    </div>
+</body>
+</html>
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>æçå»ºè®®å°å¹«æ | æ·¨æ·¨ç¾å­¸å·¥ä½å®¤</title>
+    <title>排版建議小幫手 | 淨淨美學工作室</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        :root { --teal: #61D0DF; --teal-d: #329BAF; --dark: #1E2230; --text: #2D3142; --gray: #8C8C8C; }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #FFF; color: var(--text); font-family: 'Noto Sans TC', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; animation: fadeIn 0.6s ease-in; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .container { text-align: center; max-width: 500px; width: 100%; }
-        .card { background: #FFF; border-radius: 12px; padding: 48px 32px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #F0F0F0; }
-        .icon { font-size: 56px; margin-bottom: 24px; display: block; }
-        .badge { display: inline-block; background: #FFF8E6; color: #B8860B; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; margin-bottom: 16px; }
-        h1 { font-size: 28px; font-weight: 700; margin-bottom: 12px; color: var(--dark); }
-        .description { font-size: 14px; color: var(--gray); line-height: 1.6; margin-bottom: 32px; }
-        .button { display: inline-block; background: var(--teal); color: #FFF; padding: 12px 32px; border-radius: 6px; text-decoration: none; font-weight: 500; font-size: 14px; transition: all 0.3s; border: none; cursor: pointer; font-family: 'Noto Sans TC', sans-serif; }
-        .button:hover { background: var(--teal-d); transform: translateY(-2px); }
+        :root {
+            --teal: #61D0DF;
+            --teal-d: #329BAF;
+            --dark: #1E2230;
+            --text: #2D3142;
+            --gray: #8C8C8C;
+            --amber: #B8860B;
+            --amber-bg: #FFF8E6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #FFFFFF;
+            color: var(--text);
+            font-family: 'Noto Sans TC', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .card {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 48px 32px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #F0F0F0;
+        }
+
+        .icon {
+            font-size: 56px;
+            margin-bottom: 24px;
+            display: block;
+        }
+
+        .badge {
+            display: inline-block;
+            background-color: var(--amber-bg);
+            color: var(--amber);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            letter-spacing: 0.5px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--dark);
+        }
+
+        .description {
+            font-size: 14px;
+            color: var(--gray);
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+
+        .button {
+            display: inline-block;
+            background-color: var(--teal);
+            color: #FFFFFF;
+            padding: 12px 32px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            border: none;
+            cursor: pointer;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        .button:hover {
+            background-color: var(--teal-d);
+            transform: translateY(-2px);
+        }
+
+        .button:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 36px 24px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .icon {
+                font-size: 48px;
+            }
+
+            .button {
+                padding: 10px 28px;
+                font-size: 13px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="card">
-            <span class="icon">â¨</span>
-            <span class="badge">éç¼ä¸­</span>
-            <h1>æçå»ºè­°å°å¹«æ</h1>
-            <p class="description">è¼¸å¥æ´»åä¸»é¡ï¼AI èªåå»ºè­°æçéç½®èè²å½©æ­éï¼éç¼ä¸­</p>
-            <a href="index.html" class="button">è¿åå·¥ä½å®¤</a>
+            <span class="icon">✨</span>
+            <span class="badge">開發中</span>
+            <h1>排版建議小幫手</h1>
+            <p class="description">輸入活動主題，AI 自動建議排版配置與色彩搭配，開發中</p>
+            <a href="index.html" class="button">返回工作室</a>
         </div>
     </div>
 </body>
