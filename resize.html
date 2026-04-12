@@ -1,436 +1,1653 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resize 小幫手 | 淨淨美學工作室</title>
+    <title>尺寸調整工具 - 淨淨美學工作室</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
-        :root {
-            --teal: #61D0DF;
-            --teal-d: #329BAF;
-            --teal-l: #EBF9FC;
-            --dark: #1E2230;
-            --text: #2D3142;
-            --gray: #8C8C8C;
-            --warm: #F5EDE3;
-            --warm-d: #E8D5C0;
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        :root {
+            --teal: #61D0DF;
+            --teal-d: #329BAF;
+            --teal-l: #EBF9FC;
+            --teal-xl: #F4FBFC;
+            --warm: #F5EDE3;
+            --warm-d: #E8D5C0;
+            --blush: #F0D9D9;
+            --dark: #1E2230;
+            --text: #2D3142;
+            --gray: #8C8C8C;
+            --light-gray: #F7F8FA;
+            --white: #FFFFFF;
+            --radius: 20px;
+            --radius-s: 12px;
+        }
+
         body {
             font-family: 'Noto Sans TC', 'Inter', sans-serif;
-            background: #FFFFFF;
+            background-color: var(--white);
             color: var(--text);
             line-height: 1.6;
         }
 
         /* Header */
         .header {
-            background: var(--teal);
-            padding: 16px 24px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            animation: slideDown 0.5s ease-out;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            background-color: var(--teal);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .header a {
-            color: #FFFFFF;
+            color: var(--white);
             text-decoration: none;
-            font-size: 16px;
-            font-weight: 500;
+            font-size: 1rem;
+            font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 6px;
-            transition: opacity 0.3s;
+            gap: 0.5rem;
+            width: fit-content;
+            transition: opacity 0.2s;
         }
 
         .header a:hover {
-            opacity: 0.8;
+            opacity: 0.9;
         }
 
-        /* Main Container */
+        /* Container */
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 40px 24px;
-            animation: fadeIn 0.8s ease-out 0.2s both;
+            padding: 2rem;
+        }
+
+        /* Tab Navigation */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .tab-button {
+            padding: 1rem 1.5rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gray);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        .tab-button.active {
+            color: var(--teal-d);
+            border-bottom-color: var(--teal);
+        }
+
+        .tab-button:hover:not(.active) {
+            color: var(--text);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
-        /* Badge */
-        .badge {
-            display: inline-block;
-            background: #FFF3CD;
-            color: #856404;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 16px;
-            letter-spacing: 0.5px;
+        /* Upload Area */
+        .upload-section {
+            margin-bottom: 2rem;
         }
 
-        /* Title */
-        h1 {
-            font-size: 36px;
-            font-weight: 700;
-            margin-bottom: 8px;
+        .upload-section h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
             color: var(--dark);
         }
 
-        .subtitle {
-            color: var(--gray);
-            font-size: 14px;
-            margin-bottom: 40px;
-        }
-
-        /* Preview Section */
-        .preview-section {
-            background: var(--teal-l);
-            border-radius: 16px;
-            padding: 40px;
-            margin-bottom: 40px;
-            animation: fadeIn 0.8s ease-out 0.4s both;
-        }
-
-        .preview-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text);
-            margin-bottom: 24px;
-            text-align: center;
-        }
-
-        /* Visual Demo */
-        .demo-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
-            margin-bottom: 30px;
-            min-height: 300px;
-        }
-
-        .source-image {
-            width: 140px;
-            height: 140px;
-            background: linear-gradient(135deg, var(--teal) 0%, var(--teal-d) 100%);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 12px;
-            font-weight: 600;
-            text-align: center;
-            padding: 16px;
-            box-shadow: 0 4px 12px rgba(99, 208, 223, 0.2);
-            position: relative;
-        }
-
-        .source-image::after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.3), transparent);
-            border-radius: 12px;
-        }
-
-        .arrow {
-            font-size: 24px;
-            color: var(--teal-d);
-            font-weight: 700;
-        }
-
-        .format-grid {
+        .upload-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 16px;
-            width: 100%;
-            max-width: 500px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
         }
 
-        .format-box {
-            background: white;
-            border: 2px solid var(--teal);
-            border-radius: 12px;
-            padding: 12px;
+        .upload-card {
+            border: 2px dashed var(--light-gray);
+            border-radius: var(--radius-s);
+            padding: 2rem;
             text-align: center;
+            cursor: pointer;
             transition: all 0.3s;
+            background-color: var(--white);
         }
 
-        .format-box:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 20px rgba(99, 208, 223, 0.2);
+        .upload-card.bg { border-color: var(--warm-d); background-color: rgba(245, 237, 227, 0.3); }
+        .upload-card.product { border-color: var(--teal); background-color: rgba(97, 208, 223, 0.1); }
+        .upload-card.decoration { border-color: var(--blush); background-color: rgba(240, 217, 217, 0.2); }
+
+        .upload-card:hover {
+            border-color: var(--teal-d);
+            background-color: var(--teal-xl);
         }
 
-        .format-visual {
-            width: 100%;
-            aspect-ratio: var(--aspect);
-            background: linear-gradient(135deg, #F0F8FB 0%, #E0F4F8 100%);
+        .upload-card.drag-over {
+            border-color: var(--teal);
+            background-color: var(--teal-l);
+        }
+
+        .upload-card input[type="file"] {
+            display: none;
+        }
+
+        .upload-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: block;
+            color: var(--dark);
+        }
+
+        .upload-hint {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        .upload-preview {
+            margin-top: 1rem;
+            text-align: left;
+        }
+
+        .preview-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background-color: var(--light-gray);
+            border-radius: var(--radius-s);
+            margin-top: 0.5rem;
+        }
+
+        .preview-thumbnail {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
             border-radius: 6px;
-            margin-bottom: 8px;
-            position: relative;
-            overflow: hidden;
+            background-color: var(--white);
         }
 
-        .format-visual::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 2px,
-                rgba(99, 208, 223, 0.1) 2px,
-                rgba(99, 208, 223, 0.1) 4px
-            );
+        .preview-info {
+            flex: 1;
         }
 
-        .format-label {
-            font-size: 11px;
-            font-weight: 600;
+        .preview-name {
+            font-weight: 500;
+            font-size: 0.9rem;
             color: var(--text);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            margin-bottom: 0.2rem;
         }
 
-        .format-size {
-            font-size: 10px;
+        .preview-size {
+            font-size: 0.8rem;
             color: var(--gray);
-            margin-top: 4px;
         }
 
-        /* Description */
-        .description {
-            background: white;
-            border: 1px solid #E0E0E0;
-            border-radius: 16px;
-            padding: 32px;
-            margin-bottom: 40px;
-            animation: fadeIn 0.8s ease-out 0.5s both;
+        .remove-btn {
+            padding: 0.5rem 1rem;
+            background-color: var(--white);
+            border: 1px solid var(--gray);
+            border-radius: var(--radius-s);
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: var(--text);
+            transition: all 0.2s;
+            font-family: 'Noto Sans TC', sans-serif;
         }
 
-        .description h2 {
-            font-size: 18px;
+        .remove-btn:hover {
+            background-color: #FFE5E5;
+            border-color: var(--blush);
+        }
+
+        /* Text Inputs */
+        .text-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .text-input-grou` {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .text-input-group label {
             font-weight: 600;
-            margin-bottom: 12px;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+
+        .text-input-group input {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--light-gray);
+            border-radius: var(--radius-s);
+            font-family: 'Noto Sans TC', 'Inter', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .text-input-group input:focus {
+            outline: none;
+            border-color: var(--teal);
+            box-shadow: 0 0 0 3px rgba(97, 208, 223, 0.1);
+        }
+
+        /* Size Selector */
+        .size-section {
+            margin-bottom: 2rem;
+        }
+
+        .size-section h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
             color: var(--dark);
         }
 
-        .description p {
-            color: var(--text);
-            line-height: 1.8;
-            font-size: 15px;
+        .select-all-row {
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
 
-        /* Features Grid */
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
-            animation: fadeIn 0.8s ease-out 0.6s both;
-        }
-
-        .feature-card {
-            background: white;
-            border: 1px solid #E0E0E0;
-            border-radius: 14px;
-            padding: 20px;
-            transition: all 0.3s;
+        .select-all-row input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
             cursor: pointer;
         }
 
-        .feature-card:hover {
-            border-color: var(--teal);
-            box-shadow: 0 8px 24px rgba(99, 208, 223, 0.15);
-            transform: translateY(-2px);
-        }
-
-        .feature-icon {
-            font-size: 24px;
-            margin-bottom: 12px;
-        }
-
-        .feature-card h3 {
-            font-size: 15px;
+        .select-all-row label {
             font-weight: 600;
+            cursor: pointer;
             color: var(--dark);
-            margin-bottom: 8px;
         }
 
-        .feature-card p {
-            font-size: 13px;
-            color: var(--gray);
-            line-height: 1.6;
+        .size-group {
+            margin-bottom: 1.5rem;
         }
 
-        /* Footer */
-        .footer {
-            text-align: center;
-            padding: 32px 24px;
-            border-top: 1px solid #E0E0E0;
-            color: var(--gray);
-            font-size: 13px;
-            animation: fadeIn 0.8s ease-out 0.7s both;
-        }
-
-        .footer a {
-            color: var(--teal);
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        .footer a:hover {
+        .size-group-header {
+            font-weight: 600;
             color: var(--teal-d);
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .size-group-header::before {
+            content: '▼';
+            font-size: 0.7rem;
+            transition: transform 0.3s;
+        }
+
+        .size-group.collapsed .size-group-header::before {
+            transform: rotate(-90deg);
+        }
+
+        .size-group.collapsed .size-items {
+            display: none;
+        }
+
+        .size-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .size-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            background-color: var(--light-gray);
+            border-radius: var(--radius-s);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .size-item:hover {
+            background-color: var(--teal-l);
+        }
+
+        .size-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .size-label {
+            flex: 1;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .size-name {
+            font-weight: 500;
+            color: var(--text);
+            font-size: 0.95rem;
+        }
+
+        .size-dimensions {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        /* Action Button */
+        .action-button {
+            padding: 1rem 2rem;
+            background-color: var(--teal);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-s);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Noto Sans TC', 'Inter', sans-serif;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .action-button:hover:not(:disabled) {
+            background-color: var(--teal-d);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(97, 208, 223, 0.3);
+        }
+
+        .action-button:disabled {
+            background-color: var(--gray);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            display: none;
+            margin: 2rem 0;
+        }
+
+        .progress-container.active {
+            display: block;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background-color: var(--light-gray);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--teal);
+            animation: progress 2s ease-in-out forwards;
+        }
+
+        @keyframes progress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        .progress-text {
+            font-size: 0.85rem;
+            color: var(--gray);
+            text-align: center;
+        }
+
+        /* Preview Grid */
+        .preview-section {
+            display: none;
+            margin-top: 3rem;
+        }
+
+        .preview-section.active {
+            display: block;
+        }
+
+        .preview-section h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+        }
+
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .preview-card {
+            background-color: var(--light-gray);
+            border-radius: var(--radius-s);
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .preview-card:hover {
+            border-color: var(--teal);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .preview-image {
+            width: 100%;
+            aspect-ratio: auto;
+            background-color: var(--white);
+            display: block;
+        }
+
+        .preview-info-bar {
+            padding: 1rem;
+        }
+
+        .preview-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .preview-dimensions {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-bottom: 0.75rem;
+        }
+
+        .download-btn {
+            width: 100%;
+            padding: 0.5rem;
+            background-color: var(--teal);
+            color: var(--white);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            font-family: 'Noto Sans TC', 'Inter', sans-serif;
+        }
+
+        .download-btn:hover {
+            background-color: var(--teal-d);
+        }
+
+        .download-all-btn {
+            padding: 1rem 2rem;
+            background-color: var(--teal);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-s);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Noto Sans TC', 'Inter', sans-serif;
+        }
+
+        .download-all-btn:hover {
+            background-color: var(--teal-d);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            border-radius: var(--radius);
+            padding: 2rem;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: var(--text);
+        }
+
+        .modal-image {
+            max-width: 100%;
+            max-height: 100%;
+            display: block;
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            background-color: var(--dark);
+            color: var(--white);
+            border-radius: var(--radius-s);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.3s ease-out;
+            z-index: 2000;
+            max-width: 400px;
+        }
+
+        .toast.success {
+            background-color: #4CAF50;
+        }
+
+        .toast.error {
+            background-color: #F44336;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
 
         /* Responsive */
         @media (max-width: 768px) {
             .container {
-                padding: 24px 16px;
+                padding: 1rem;
             }
 
-            h1 {
-                font-size: 28px;
+            .tabs {
+                gap: 0.5rem;
             }
 
-            .preview-section {
-                padding: 24px;
+            .tab-button {
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
             }
 
-            .demo-container {
-                gap: 12px;
-            }
-
-            .format-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .features {
+            .upload-grid {
                 grid-template-columns: 1fr;
             }
 
-            .header {
-                padding: 12px 16px;
+            .text-inputs {
+                grid-template-columns: 1fr;
+            }
+
+            .size-items {
+                grid-template-columns: 1fr;
+            }
+
+            .preview-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+
+            .action-button {
+                max-width: 100%;
+            }
+
+            .modal-content {
+                padding: 1rem;
+            }
+
+            .toast {
+                bottom: 1rem;
+                right: 1rem;
+                left: 1rem;
+                max-width: none;
             }
         }
-
     </style>
 </head>
+<body>
+    <!-- Header -->
     <div class="header">
         <a href="index.html">← 淨淨美學工作室</a>
     </div>
 
+    <!-- Main Container -->
     <div class="container">
-        <div class="badge">開發中</div>
-        <h1>Resize 小幫手</h1>
-        <p class="subtitle">智能多平台尺寸轉換工具</p>
+        <!-- Tab Navigation -->
+        <div class="tabs">
+            <button class="tab-button active" data-tab="smart-crop">
+                智能裁切模式
+            </button>
+            <button class="tab-button" data-tab="layered-compose">
+                分層重組模式
+            </button>
+        </div>
 
-        <div class="preview-section">
-            <div class="preview-title">轉換效果預覽</div>
-            <div class="demo-container">
-                <div class="source-image">主視覺<br>1080×1080</div>
-                <div class="arrow">→</div>
-                <div class="format-grid">
-                    <div class="format-box">
-                        <div class="format-visual" style="--aspect: 1;"></div>
-                        <div class="format-label">FB貼文</div>
-                        <div class="format-size">1080×1080</div>
+        <!-- Mode A: Smart Crop -->
+        <div id="smart-crop" class="tab-content active">
+            <div class="upload-section">
+                <h3>上傳設計圖</h3>
+                <div class="upload-card" id="cropUploadCard">
+                    <div class="upload-icon">📤</div>
+                    <label class="upload-label">拖放或點擊上傳</label>
+                    <div class="upload-hint">支援 JPG、PNG (最大 10MB)</div>
+                    <input type="file" id="cropImageInput" accept="image/jpeg,image/png">
+                    <div class="upload-preview" id="cropPreview"></div>
+                </div>
+            </div>
+
+            <div class="size-section">
+                <h3>選擇目標尺寸</h3>
+                <div class="select-all-row">
+                    <input type="checkbox" id="cropSelectAll">
+                    <label for="cropSelectAll">全選</label>
+                </div>
+                <div id="cropSizeSelector"></div>
+            </div>
+
+            <button class="action-button" id="cropStartBtn">開始智能裁切</button>
+
+            <div class="progress-container" id="cropProgress">
+                <div class="progress-bar"><div class="progress-fill"></div></div>
+                <div class="progress-text">AI 正在分析您的設計...</div>
+            </div>
+
+            <div class="preview-section" id="cropPreviewSection">
+                <h3>預覽結果</h3>
+                <div class="preview-grid" id="cropPreviewGrid"></div>
+                <button class="download-all-btn" id="cropDownloadAll">全部下載 (ZIP)</button>
+            </div>
+        </div>
+
+        <!-- Mode B: Layered Recomposition -->
+        <div id="layered-compose" class="tab-content">
+            <div class="upload-section">
+                <h3>上傳圖層</h3>
+                <div class="upload-grid">
+                    <div class="upload-card bg" id="bgUploadCard">
+                        <div class="upload-icon">🖼️</div>
+                        <label class="upload-label">背景圖 *</label>
+                        <div class="upload-hint">JPG、PNG (必需)</div>
+                        <input type="file" id="bgImageInput" accept="image/jpeg,image/png">
+                        <div class="upload-preview" id="bgPreview"></div>
                     </div>
-                    <div class="format-box">
-                        <div class="format-visual" style="--aspect: 1060/848;"></div>
-                        <div class="format-label">IG限時動態</div>
-                        <div class="format-size">1060×848</div>
+
+                    <div class="upload-card product" id="productUploadCard">
+                        <div class="upload-icon">📦</div>
+                        <label class="upload-label">產品圖 *</label>
+                        <div class="upload-hint">PNG (透明背景，必需)</div>
+                        <input type="file" id="productImageInput" accept="image/png">
+                        <div class="upload-preview" id="productPreview"></div>
                     </div>
-                    <div class="format-box">
-                        <div class="format-visual" style="--aspect: 1;"></div>
-                        <div class="format-label">LINE推播</div>
-                        <div class="format-size">1040×1040</div>
-                    </div>
-                    <div class="format-box">
-                        <div class="format-visual" style="--aspect: 1200/518;"></div>
-                        <div class="format-label">蝦皮Banner</div>
-                        <div class="format-size">1200×518</div>
-                    </div>
-                    <div class="format-box">
-                        <div class="format-visual" style="--aspect: 1200/628;"></div>
-                        <div class="format-label">Shopline橫幅</div>
-                        <div class="format-size">1200×628</div>
-                    </div>
-                    <div class="format-box">
-                        <div class="format-visual" style="--aspect: 800/800;"></div>
-                        <div class="format-label">Pinterest</div>
-                        <div class="format-size">800×800</div>
+
+                    <div class="upload-card decoration" id="decorationUploadCard">
+                        <div class="upload-icon">✨</div>
+                        <label class="upload-label">裝飾元素</label>
+                        <div class="upload-hint">PNG (透明背景，選填)</div>
+                        <input type="file" id="decorationImageInput" accept="image/png">
+                        <div class="upload-preview" id="decorationPreview"></div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="description">
-            <h2>這不只是「縮放」</h2>
-            <p>上傳一張主視覺，自動產出全平台尺寸版本。但這不是簡單的拉伸縮放——系統會根據各版位的比例，智能重新排列文字、產品、裝飾元素的位置，確保每個尺寸都是最佳呈現。</p>
-        </div>
+            <div class="upload-section">
+                <h3>文案內容</h3>
+                <div class="text-inputs">
+                    <div class="text-input-group">
+                        <label for="composeHeadline">主標題 *</label>
+                        <input type="text" id="composeHeadline" placeholder="輸入主標題">
+                    </div>
+                    <div class="text-input-group">
+                        <label for="composeSubtitle">副標題</label>
+                        <input type="text" id="composeSubtitle" placeholder="輸入副標題 (選填)">
+                    </div>
+                    <div class="text-input-group">
+                        <label for="composeCta">CTA 文案</label>
+                        <input type="text" id="composeCta" placeholder="輸入按鈕文案 (選填)">
+                    </div>
+                </div>
+            </div>
 
-        <div class="features">
-            <div class="feature-card">
-                <div class="feature-icon">✨</div>
-                <h3>智能排版重組</h3>
-                <p>自動分析版面元素，根據尺寸比例重新佈局，不是單純拉伸。</p>
+            <div class="size-section">
+                <h3>選擇目標尺寸</h3>
+                <div class="select-all-row">
+                    <input type="checkbox" id="composeSelectAll">
+                    <label for="composeSelectAll">全選</label>
+                </div>
+                <div id="composeSizeSelector"></div>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">📱</div>
-                <h3>16個標準版位</h3>
-                <p>涵蓋Facebook、Instagram、LINE、Shopee、Shopline等主流平台。</p>
+
+            <button class="action-button" id="composeStartBtn">開始 AI 排版</button>
+
+            <div class="progress-container" id="composeProgress">
+                <div class="progress-bar"><div class="progress-fill"></div></div>
+                <div class="progress-text">AI 正在生成排版...</div>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">🎨</div>
-                <h3>保留設計層級</h3>
-                <p>支援分層上傳，保留文字、圖片、背景的獨立編輯能力。</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🖼️</div>
-                <h3>Canva 無縫匯入</h3>
-                <p>直接匯入Canva設計，自動生成所有尺寸的Canva編輯檔。</p>
+
+            <div class="preview-section" id="composePreviewSection">
+                <h3>預覽結果</h3>
+                <div class="preview-grid" id="composePreviewGrid"></div>
+                <button class="download-all-btn" id="composeDownloadAll">全部下載 (ZIP)</button>
             </div>
         </div>
     </div>
 
-    <div class="footer">
-        <p>淨淨美學工作室 · 美學設計部</p>
-        <p><a href="index.html">回首頁</a></p>
+    <!-- Modal -->
+    <div class="modal" id="previewModal">
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <img class="modal-image" id="modalImage" src="" alt="">
+        </div>
     </div>
+
+    <script>
+        // ==================== Configuration ====================
+        const SIZES = {
+            '官網': [
+                { name: '官網首頁 Banner', width: 1920, height: 600 },
+                { name: '官網分類頁 Banner', width: 1920, height: 400 },
+                { name: '登入頁廣告 PC', width: 1920, height: 1080 },
+                { name: '登入頁廣告 Mobile', width: 540, height: 960 }
+            ],
+            '社群': [
+                { name: 'FB 貼文', width: 1200, height: 628 },
+                { name: 'FB 分享圖', width: 1200, height: 630 },
+                { name: 'IG 方形貼文', width: 1080, height: 1080 },
+                { name: 'IG 限時動態', width: 1080, height: 1920 }
+            ],
+            '電商': [
+                { name: '蝦皮店鋪 Banner', width: 1200, height: 400 },
+                { name: '蝦皮活動頁 Banner', width: 1200, height: 600 }
+            ],
+            '通訊': [
+                { name: 'LINE 推播圖', width: 1200, height: 500 },
+                { name: 'LINE 選單圖', width: 800, height: 810 }
+            ],
+            '廣告': [
+                { name: '彈跳廣告 Desktop', width: 728, height: 90 },
+                { name: '彈跳廣告 Mobile', width: 320, height: 50 }
+            ],
+            '實體': [
+                { name: 'A4 DM 直式', width: 2100, height: 2970 },
+                { name: 'A4 DM 橫式', width: 2970, height: 2100 }
+            ]
+        };
+
+        const API_ENDPOINT = '/api/resize';
+        const IS_DESIGN_PORTAL = window.location.hostname === 'design.reyway.com';
+
+        // ==================== State ====================
+        const state = {
+            crop: {
+                image: null,
+                mimeType: null,
+                selectedSizes: []
+            },
+            compose: {
+                background: null,
+                product: null,
+                decoration: null,
+                headline: '',
+                subtitle: '',
+                cta: '',
+                selectedSizes: []
+            },
+            results: {
+                crop: [],
+                compose: []
+            }
+        };
+
+        // ==================== UI Initialization ====================
+        function initializeTabs() {
+            const buttons = document.querySelectorAll('.tab-button');
+            const contents = document.querySelectorAll('.tab-content');
+
+            buttons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabName = button.dataset.tab;
+                    buttons.forEach(b => b.classList.remove('active'));
+                    contents.forEach(c => c.classList.remove('active'));
+                    button.classList.add('active');
+                    document.getElementById(tabName).classList.add('active');
+                });
+            });
+        }
+
+        function initializeSizeSelectors() {
+            initializeSizeSelector('crop');
+            initializeSizeSelector('compose');
+        }
+
+        function initializeSizeSelector(mode) {
+            const container = document.getElementById(`${mode}SizeSelector`);
+            const selectAllCheckbox = document.getElementById(`${mode}SelectAll`);
+
+            container.innerHTML = '';
+
+            Object.entries(SIZES).forEach(([group, sizes]) => {
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'size-group';
+                groupDiv.dataset.group = group;
+
+                const header = document.createElement('div');
+                header.className = 'size-group-header';
+                header.textContent = group;
+                header.addEventListener('click', () => {
+                    groupDiv.classList.toggle('collapsed');
+                });
+
+                const itemsDiv = document.createElement('div');
+                itemsDiv.className = 'size-items';
+
+                sizes.forEach(size => {
+                    const item = document.createElement('div');
+                    item.className = 'size-item';
+
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.value = JSON.stringify(size);
+                    checkbox.dataset.mode = mode;
+                    checkbox.addEventListener('change', (e) => {
+                        updateSelectedSizes(mode, e.target);
+                    });
+
+                    const label = document.createElement('div');
+                    label.className = 'size-label';
+                    label.addEventListener('click', () => {
+                        checkbox.checked = !checkbox.checked;
+                        updateSelectedSizes(mode, checkbox);
+                    });
+
+                    const name = document.createElement('div');
+                    name.className = 'size-name';
+                    name.textContent = size.name;
+
+                    const dimensions = document.createElement('div');
+                    dimensions.className = 'size-dimensions';
+                    dimensions.textContent = `${size.width} × ${size.height}px`;
+
+                    label.appendChild(name);
+                    label.appendChild(dimensions);
+
+                    item.appendChild(checkbox);
+                    item.appendChild(label);
+                    itemsDiv.appendChild(item);
+                });
+
+                groupDiv.appendChild(header);
+                groupDiv.appendChild(itemsDiv);
+                container.appendChild(groupDiv);
+            });
+
+            selectAllCheckbox.addEventListener('change', (e) => {
+                const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(cb => {
+                    cb.checked = e.target.checked;
+                    updateSelectedSizes(mode, cb);
+                });
+            });
+        }
+
+        function updateSelectedSizes(mode, checkbox) {
+            if (checkbox.checked) {
+                const size = JSON.parse(checkbox.value);
+                state[mode].selectedSizes.push(size);
+            } else {
+                state[mode].selectedSizes = state[mode].selectedSizes.filter(
+                    s => !(s.width === JSON.parse(checkbox.value).width &&
+                           s.height === JSON.parse(checkbox.value).height)
+                );
+            }
+        }
+
+        // ==================== Drag & Drop Handling ====================
+        function initializeFileUploads() {
+            setupCropUpload();
+            setupComposeUploads();
+        }
+
+        function setupCropUpload() {
+            const card = document.getElementById('cropUploadCard');
+            const input = document.getElementById('cropImageInput');
+
+            card.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                card.classList.add('drag-over');
+            });
+
+            card.addEventListener('dragleave', () => {
+                card.classList.remove('drag-over');
+            });
+
+            card.addEventListener('drop', (e) => {
+                e.preventDefault();
+                card.classList.remove('drag-over');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleCropImageSelected(files[0]);
+                }
+            });
+
+            card.addEventListener('click', () => input.click());
+            input.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleCropImageSelected(e.target.files[0]);
+                }
+            });
+        }
+
+        function setupComposeUploads() {
+            ['background', 'product', 'decoration'].forEach(type => {
+                const card = document.getElementById(`${type === 'background' ? 'bg' : type}UploadCard`);
+                const input = document.getElementById(`${type}ImageInput`);
+
+                card.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    card.classList.add('drag-over');
+                });
+
+                card.addEventListener('dragleave', () => {
+                    card.classList.remove('drag-over');
+                });
+
+                card.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    card.classList.remove('drag-over');
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        handleComposeImageSelected(type, files[0]);
+                    }
+                });
+
+                card.addEventListener('click', () => input.click());
+                input.addEventListener('change', (e) => {
+                    if (e.target.files.length > 0) {
+                        handleComposeImageSelected(type, e.target.files[0]);
+                    }
+                });
+            });
+        }
+
+        function handleCropImageSelected(file) {
+            if (!validateImageFile(file)) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                state.crop.image = e.target.result;
+                state.crop.mimeType = file.type;
+                displayCropPreview(file.name, file.size);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleComposeImageSelected(type, file) {
+            if (!validateImageFile(file)) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                state.compose[type === 'background' ? 'background' : type] = e.target.result;
+                displayComposePreview(type, file.name, file.size);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function validateImageFile(file) {
+            if (!['image/jpeg', 'image/png'].includes(file.type)) {
+                showToast('只支援 JPG 或 PNG 格式', 'error');
+                return false;
+            }
+            if (file.size > 10 * 1024 * 1024) {
+                showToast('檔案大小不能超過 10MB', 'error');
+                return false;
+            }
+            return true;
+        }
+
+        function displayCropPreview(fileName, fileSize) {
+            const preview = document.getElementById('cropPreview');
+            preview.innerHTML = `
+                <div class="preview-item">
+                    <img src="${state.crop.image}" class="preview-thumbnail" alt="">
+                    <div class="preview-info">
+                        <div class="preview-name">${fileName}</div>
+                        <div class="preview-size">${formatFileSize(fileSize)}</div>
+                    </div>
+                    <button class="remove-btn" onclick="removeCropImage()">移除</button>
+                </div>
+            `;
+        }
+
+        function displayComposePreview(type, fileName, fileSize) {
+            const previewId = type === 'background' ? 'bgPreview' : type === 'product' ? 'productPreview' : 'decorationPreview';
+            const preview = document.getElementById(previewId);
+            const imageData = state.compose[type === 'background' ? 'background' : type];
+            preview.innerHTML = `
+                <div class="preview-item">
+                    <img src="${imageData}" class="preview-thumbnail" alt="">
+                    <div class="preview-info">
+                        <div class="preview-name">${fileName}</div>
+                        <div class="preview-size">${formatFileSize(fileSize)}</div>
+                    </div>
+                    <button class="remove-btn" onclick="removeComposeImage('${type}')">移除</button>
+                </div>
+            `;
+        }
+
+        function removeCropImage() {
+            state.crop.image = null;
+            state.crop.mimeType = null;
+            document.getElementById('cropPreview').innerHTML = '';
+            document.getElementById('cropImageInput').value = '';
+        }
+
+        function removeComposeImage(type) {
+            state.compose[type === 'background' ? 'background' : type] = null;
+            const previewId = type === 'background' ? 'bgPreview' : type === 'product' ? 'productPreview' : 'decorationPreview';
+            document.getElementById(previewId).innerHTML = '';
+            document.getElementById(`${type}ImageInput`).value = '';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        // ==================== Text Input Handling ====================
+        function initializeTextInputs() {
+            document.getElementById('composeHeadline').addEventListener('change', (e) => {
+                state.compose.headline = e.target.value;
+            });
+            document.getElementById('composeSubtitle').addEventListener('change', (e) => {
+                state.compose.subtitle = e.target.value;
+            });
+            document.getElementById('composeCta').addEventListener('change', (e) => {
+                state.compose.cta = e.target.value;
+            });
+        }
+
+        // ==================== Action Handlers ====================
+        function initializeActions() {
+            document.getElementById('cropStartBtn').addEventListener('click', handleCropStart);
+            document.getElementById('composeStartBtn').addEventListener('click', handleComposeStart);
+            document.getElementById('cropDownloadAll').addEventListener('click', () => downloadAllAsZip('crop'));
+            document.getElementById('composeDownloadAll').addEventListener('click', () => downloadAllAsZip('compose'));
+        }
+
+        async function handleCropStart() {
+            if (!state.crop.image) {
+                showToast('請上傳設計圖', 'error');
+                return;
+            }
+            if (state.crop.selectedSizes.length === 0) {
+                showToast('請選擇至少一個尺寸', 'error');
+                return;
+            }
+
+            await processCrop();
+        }
+
+        async function handleComposeStart() {
+            if (!state.compose.background || !state.compose.product) {
+                showToast('請上傳背景圖和產品圖', 'error');
+                return;
+            }
+            if (!state.compose.headline) {
+                showToast('請輸入主標題', 'error');
+                return;
+            }
+            if (state.compose.selectedSizes.length === 0) {
+                showToast('請選擇至少一個尺寸', 'error');
+                return;
+            }
+
+            await processCompose();
+        }
+
+        async function processCrop() {
+            const progressContainer = document.getElementById('cropProgress');
+            const previewSection = document.getElementById('cropPreviewSection');
+            const previewGrid = document.getElementById('cropPreviewGrid');
+
+            progressContainer.classList.add('active');
+            previewSection.classList.remove('active');
+
+            try {
+                const payload = {
+                    mode: 'crop',
+                    image: state.crop.image,
+                    mimeType: state.crop.mimeType,
+                    sizes: state.crop.selectedSizes
+                };
+
+                const layouts = await callAPI(payload);
+
+                state.results.crop = layouts;
+                renderCropPreviews(layouts);
+                previewSection.classList.add('active');
+                showToast('智能裁切完成！', 'success');
+            } catch (error) {
+                showToast('處理失敗: ' + error.message, 'error');
+            } finally {
+                progressContainer.classList.remove('active');
+            }
+        }
+
+        async function processCompose() {
+            const progressContainer = document.getElementById('composeProgress');
+            const previewSection = document.getElementById('composePreviewSection');
+            const previewGrid = document.getElementById('composePreviewGrid');
+
+            progressContainer.classList.add('active');
+            previewSection.classList.remove('active');
+
+            try {
+                const payload = {
+                    mode: 'compose',
+                    background: state.compose.background,
+                    product: state.compose.product,
+                    decoration: state.compose.decoration || null,
+                    headline: state.compose.headline,
+                    subtitle: state.compose.subtitle,
+                    cta: state.compose.cta,
+                    sizes: state.compose.selectedSizes
+                };
+
+                const layouts = await callAPI(payload);
+
+                state.results.compose = layouts;
+                await renderComposePreviews(layouts);
+                previewSection.classList.add('active');
+                showToast('AI 排版完成！', 'success');
+            } catch (error) {
+                showToast('處理失敗: ' + error.message, 'error');
+            } finally {
+                progressContainer.classList.remove('active');
+            }
+        }
+
+        // ==================== API Communication ====================
+        function stripDataURL(dataUrl) {
+            if (!dataUrl) return null;
+            const idx = dataUrl.indexOf(',');
+            return idx >= 0 ? dataUrl.substring(idx + 1) : dataUrl;
+        }
+        function getMimeFromDataURL(dataUrl) {
+            if (!dataUrl) return 'image/png';
+            const m = dataUrl.match(/^data:([^;]+);/);
+            return m ? m[1] : 'image/png';
+        }
+
+        async function callAPI(payload) {
+            if (!IS_DESIGN_PORTAL) {
+                return generateFallbackLayouts(payload);
+            }
+
+            // Strip data URL prefixes for API
+            const cleanPayload = { ...payload };
+            if (cleanPayload.mode === 'crop') {
+                cleanPayload.mimeType = getMimeFromDataURL(cleanPayload.image);
+                cleanPayload.image = stripDataURL(cleanPayload.image);
+            } else {
+                cleanPayload.backgroundMime = getMimeFromDataURL(cleanPayload.background);
+                cleanPayload.productMime = getMimeFromDataURL(cleanPayload.product);
+                cleanPayload.background = stripDataURL(cleanPayload.background);
+                cleanPayload.product = stripDataURL(cleanPayload.product);
+                if (cleanPayload.decoration) {
+                    cleanPayload.decorationMime = getMimeFromDataURL(cleanPayload.decoration);
+                    cleanPayload.decoration = stripDataURL(cleanPayload.decoration);
+                }
+            }
+
+            try {
+                const response = await fetch(API_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(cleanPayload)
+                });
+
+                if (!response.ok) throw new Error('API request failed');
+                const data = await response.json();
+                return data.layouts || [];
+            } catch (error) {
+                console.warn('API failed, using fallback:', error);
+                return generateFallbackLayouts(payload);
+            }
+        }
+
+        function generateFallbackLayouts(payload) {
+            if (payload.mode === 'crop') {
+                // Smart center-crop based on target aspect ratio
+                return payload.sizes.map(size => {
+                    const targetRatio = size.width / size.height;
+                    // Assume source is roughly 1:1 if we don't know
+                    const sourceRatio = 1;
+                    let cropW, cropH, cropX, cropY;
+                    if (targetRatio > sourceRatio) {
+                        // Target is wider: use full width, crop height
+                        cropW = 1;
+                        cropH = Math.min(1, (1 / targetRatio) * sourceRatio);
+                        cropX = 0;
+                        cropY = (1 - cropH) / 2;
+                    } else {
+                        // Target is taller: use full height, crop width
+                        cropH = 1;
+                        cropW = Math.min(1, targetRatio / sourceRatio);
+                        cropX = (1 - cropW) / 2;
+                        cropY = 0;
+                    }
+                    return {
+                        name: size.name, width: size.width, height: size.height,
+                        cropX, cropY, cropW, cropH, focusX: 0.5, focusY: 0.45
+                    };
+                });
+            } else {
+                return payload.sizes.map(size => {
+                    const ratio = size.width / size.height;
+                    const isWide = ratio > 1.5;
+                    const isTall = ratio < 0.7;
+                    const isSquare = !isWide && !isTall;
+                    // Adaptive layout based on aspect ratio
+                    const prodX = isWide ? 0.75 : isTall ? 0.5 : 0.65;
+                    const prodY = isWide ? 0.5 : isTall ? 0.65 : 0.55;
+                    const prodScale = isWide ? 0.5 : isTall ? 0.4 : 0.45;
+                    const textX = isWide ? 0.05 : isTall ? 0.5 : 0.05;
+                    const textAlign = isTall ? 'center' : 'left';
+                    const headY = isWide ? 0.25 : isTall ? 0.08 : 0.15;
+                    const subY = headY + 0.12;
+                    const ctaY = isWide ? 0.65 : isTall ? 0.85 : 0.78;
+                    return {
+                        name: size.name, width: size.width, height: size.height,
+                        background: { cropX: 0, cropY: 0, cropW: 1, cropH: 1 },
+                        product: { x: prodX, y: prodY, scale: prodScale },
+                        headline: { x: textX, y: headY, fontSize: Math.max(24, Math.min(72, size.width / 20)), color: '#FFFFFF', align: textAlign, maxWidth: isWide ? 0.45 : isTall ? 0.9 : 0.5 },
+                        subtitle: { x: textX, y: subY, fontSize: Math.max(16, Math.min(36, size.width / 35)), color: '#FFFFFFCC', align: textAlign, maxWidth: isWide ? 0.45 : isTall ? 0.9 : 0.5 },
+                        cta: { x: textX, y: ctaY, fontSize: Math.max(14, Math.min(24, size.width / 50)), color: '#61D0DF', align: textAlign, bgColor: '#FFFFFF', padding: Math.max(6, size.width / 120), borderRadius: 8 }
+                    };
+                });
+            }
+        }
+
+        // ==================== Canvas Rendering ====================
+        function renderCropPreviews(layouts) {
+            const grid = document.getElementById('cropPreviewGrid');
+            grid.innerHTML = '';
+
+            layouts.forEach(layout => {
+                const container = document.createElement('div');
+                container.className = 'preview-card';
+
+                const canvas = document.createElement('canvas');
+                canvas.width = Math.min(layout.width, 400);
+                canvas.height = (canvas.width / layout.width) * layout.height;
+
+                renderCropCanvas(canvas, layout);
+
+                const infoBar = document.createElement('div');
+                infoBar.className = 'preview-info-bar';
+                infoBar.innerHTML = `
+                    <div class="preview-title">${layout.name}</div>
+                    <div class="preview-dimensions">${layout.width} × ${layout.height}px</div>
+                    <button class="download-btn" onclick="downloadCropPreview('${layout.name}', ${layout.width}, ${layout.height})">下載</button>
+                `;
+
+                container.appendChild(canvas);
+                container.appendChild(infoBar);
+                grid.appendChild(container);
+
+                canvas.style.cursor = 'pointer';
+                canvas.addEventListener('click', () => showCropModal(canvas, layout.name));
+            });
+        }
+
+        function renderCropCanvas(canvas, layout) {
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+
+            img.onload = () => {
+                const srcW = img.width * layout.cropW;
+                const srcH = img.height * layout.cropH;
+                const srcX = img.width * layout.cropX;
+                const srcY = img.height * layout.cropY;
+
+                ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, canvas.width, canvas.height);
+            };
+
+            img.src = state.crop.image;
+        }
+
+        async function renderComposePreviews(layouts) {
+            const grid = document.getElementById('composePreviewGrid');
+            grid.innerHTML = '';
+
+            for (const layout of layouts) {
+                const container = document.createElement('div');
+                container.className = 'preview-card';
+
+                const canvas = document.createElement('canvas');
+                canvas.width = Math.min(layout.width, 400);
+                canvas.height = (canvas.width / layout.width) * layout.height;
+
+                await renderComposeCanvas(canvas, layout);
+
+                const infoBar = document.createElement('div');
+                infoBar.className = 'preview-info-bar';
+                infoBar.innerHTML = `
+                    <div class="preview-title">${layout.name}</div>
+                    <div class="preview-dimensions">${layout.width} × ${layout.height}px</div>
+                    <button class="download-btn" onclick="downloadComposePreview('${layout.name}', ${layout.width}, ${layout.height})">下載</button>
+                `;
+
+                container.appendChild(canvas);
+                container.appendChild(infoBar);
+                grid.appendChild(container);
+
+                canvas.style.cursor = 'pointer';
+                canvas.addEventListener('click', () => showComposeModal(canvas, layout.name));
+            }
+        }
+
+        async function renderComposeCanvas(canvas, layout) {
+            const ctx = canvas.getContext('2d');
+            const scale = canvas.width / layout.width;
+
+            // Draw background
+            await drawImageOnCanvas(ctx, state.compose.background, layout.background, canvas.width, canvas.height, layout.width, layout.height);
+
+            // Draw product
+            await drawProductOnCanvas(ctx, state.compose.product, layout.product, canvas.width, canvas.height, layout.width, layout.height);
+
+            // Draw decoration if exists
+            if (state.compose.decoration && layout.decoration) {
+                await drawProductOnCanvas(ctx, state.compose.decoration, layout.decoration, canvas.width, canvas.height, layout.width, layout.height);
+            }
+
+            // Draw text
+            if (layout.headline) {
+                drawText(ctx, state.compose.headline, layout.headline, scale);
+            }
+            if (layout.subtitle) {
+                drawText(ctx, state.compose.subtitle, layout.subtitle, scale);
+            }
+            if (layout.cta) {
+                drawText(ctx, state.compose.cta, layout.cta, scale);
+            }
+        }
+
+        function drawImageOnCanvas(ctx, imageSrc, rect, canvasW, canvasH, origW, origH) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => {
+                    const scale = canvasW / origW;
+                    const srcX = img.width * rect.cropX;
+                    const srcY = img.height * rect.cropY;
+                    const srcW = img.width * rect.cropW;
+                    const srcH = img.height * rect.cropH;
+
+                    ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, canvasW, canvasH);
+                    resolve();
+                };
+                img.src = imageSrc;
+            });
+        }
+
+        function drawProductOnCanvas(ctx, imageSrc, rect, canvasW, canvasH, origW, origH) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => {
+                    const scale = canvasW / origW;
+                    const x = rect.x * origW * scale;
+                    const y = rect.y * origH * scale;
+                    const w = img.width * rect.scale * scale;
+                    const h = img.height * rect.scale * scale;
+
+                    ctx.drawImage(img, x, y, w, h);
+                    resolve();
+                };
+                img.src = imageSrc;
+            });
+        }
+
+        function drawText(ctx, text, textLayout, scale) {
+            if (!text) return;
+
+            ctx.font = `bold ${textLayout.fontSize}px 'Noto Sans TC', sans-serif`;
+            ctx.fillStyle = textLayout.color || '#FFFFFF';
+            ctx.textAlign = textLayout.align || 'left';
+
+            const x = textLayout.x * scale;
+            const y = textLayout.y * scale;
+
+            if (textLayout.bgColor) {
+                const metrics = ctx.measureText(text);
+                const padding = textLayout.padding || 8;
+                const radius = textLayout.borderRadius || 0;
+                ctx.fillStyle = textLayout.bgColor;
+                roundRect(ctx, x - padding, y - textLayout.fontSize + padding, metrics.width + padding * 2, textLayout.fontSize + padding, radius);
+                ctx.fill();
+                ctx.fillStyle = textLayout.color;
+            }
+
+            ctx.fillText(text, x, y);
+        }
+
+        function roundRect(ctx, x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            ctx.lineTo(x + r, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+        }
+
+        // ==================== Download Handlers ====================
+        function downloadCropPreview(name, width, height) {
+            const canvas = createFullSizeCanvas(width, height, async (ctx) => {
+                const img = new Image();
+                const layout = state.results.crop.find(l => l.name === name);
+                img.onload = () => {
+                    const srcW = img.width * layout.cropW;
+                    const srcH = img.height * layout.cropH;
+                    const srcX = img.width * layout.cropX;
+                    const srcY = img.height * layout.cropY;
+                    ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, width, height);
+                };
+                img.src = state.crop.image;
+            });
+
+            setTimeout(() => {
+                canvas.toBlob(blob => {
+                    saveAs(blob, `${name}.png`);
+                });
+            }, 100);
+        }
+
+        async function downloadComposePreview(name, width, height) {
+            const canvas = createFullSizeCanvas(width, height, async (ctx) => {
+                const layout = state.results.compose.find(l => l.name === name);
+                await drawImageOnCanvas(ctx, state.compose.background, layout.background, width, height, width, height);
+                await drawProductOnCanvas(ctx, state.compose.product, layout.product, width, height, width, height);
+                if (state.compose.decoration && layout.decoration) {
+                    await drawProductOnCanvas(ctx, state.compose.decoration, layout.decoration, width, height, width, height);
+                }
+
+                const scale = width / layout.width;
+                if (layout.headline) drawText(ctx, state.compose.headline, layout.headline, scale);
+                if (layout.subtitle) drawText(ctx, state.compose.subtitle, layout.subtitle, scale);
+                if (layout.cta) drawText(ctx, state.compose.cta, layout.cta, scale);
+            });
+
+            setTimeout(() => {
+                canvas.toBlob(blob => {
+                    saveAs(blob, `${name}.png`);
+                });
+            }, 100);
+        }
+
+        function createFullSizeCanvas(width, height, drawFn) {
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            drawFn(ctx);
+            return canvas;
+        }
+
+        async function downloadAllAsZip(mode) {
+            const zip = new JSZip();
+            const results = state.results[mode];
+
+            for (const layout of results) {
+                const canvas = createFullSizeCanvas(layout.width, layout.height, async (ctx) => {
+                    if (mode === 'crop') {
+                        const img = new Image();
+                        img.onload = () => {
+                            const srcW = img.width * layout.cropW;
+                            const srcH = img.height * layout.cropH;
+                            const srcX = img.width * layout.cropX;
+                            const srcY = img.height * layout.cropY;
+                            ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, layout.width, layout.height);
+                        };
+                        img.src = state.crop.image;
+                    } else {
+                        await drawImageOnCanvas(ctx, state.compose.background, layout.background, layout.width, layout.height, layout.width, layout.height);
+                        await drawProductOnCanvas(ctx, state.compose.product, layout.product, layout.width, layout.height, layout.width, layout.height);
+                        if (state.compose.decoration && layout.decoration) {
+                            await drawProductOnCanvas(ctx, state.compose.decoration, layout.decoration, layout.width, layout.height, layout.width, layout.height);
+                        }
+
+                        const scale = layout.width / layout.width;
+                        if (layout.headline) drawText(ctx, state.compose.headline, layout.headline, scale);
+                        if (layout.subtitle) drawText(ctx, state.compose.subtitle, layout.subtitle, scale);
+                        if (layout.cta) drawText(ctx, state.compose.cta, layout.cta, scale);
+                    }
+                });
+
+                const imageData = canvas.toDataURL('image/png').split(',')[1];
+                zip.file(`${layout.name}.png`, imageData, { base64: true });
+            }
+
+            zip.generateAsync({ type: 'blob' }).then(blob => {
+                const timestamp = new Date().getTime();
+                saveAs(blob, `resize_results_${timestamp}.zip`);
+            });
+        }
+
+        // ==================== Modal Handling ====================
+        function showCropModal(canvas, name) {
+            const modal = document.getElementById('previewModal');
+            const modalImage = document.getElementById('modalImage');
+            modalImage.src = canvas.toDataURL();
+            modal.classList.add('active');
+        }
+
+        function showComposeModal(canvas, name) {
+            const modal = document.getElementById('previewModal');
+            const modalImage = document.getElementById('modalImage');
+            modalImage.src = canvas.toDataURL();
+            modal.classList.add('active');
+        }
+
+        document.getElementById('modalClose').addEventListener('click', () => {
+            document.getElementById('previewModal').classList.remove('active');
+        });
+
+        document.getElementById('previewModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('previewModal')) {
+                document.getElementById('previewModal').classList.remove('active');
+            }
+        });
+
+        // ==================== Toast Notifications ====================
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // ==================== Initialization ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeTabs();
+            initializeSizeSelectors();
+            initializeFileUploads();
+            initializeTextInputs();
+            initializeActions();
+        });
+    </script>
 </body>
 </html>
