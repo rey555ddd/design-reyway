@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>設計規範手冊 - 淨淨 CleanClean Brand Guidelines</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --teal: #61D0DF;
+            --teal-d: #329BAF;
+            --teal-l: #EBF9FC;
+            --dark: #1E2230;
+            --text: #2D3142;
+            --gray: #8C8C8C;
+            --white: #FFFFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            background: #FFFFFF;
+            color: var(--text);
+            font-family: 'Noto Sans TC', 'Inter', sans-serif;
+            line-height: 1.6;
+        }
+
+        /* Header Bar */
+        .header {
+            background: var(--teal);
+            padding: 1.2rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .header a {
+            color: var(--dark);
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: opacity 0.2s;
+        }
+
+        .header a:hover {
+            opacity: 0.8;
+        }
+
+        .badge {
+            background: #22C55E;
+            color: var(--white);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            margin-bottom: 4rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        .hero .subtitle {
+            font-size: 1.1rem;
+            color: var(--gray);
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+        }
+
+        /* Card Styles */
+        .card {
+            background: var(--white);
+            border: 1px solid #E5E5E5;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--teal);
+            box-shadow: 0 8px 24px rgba(97, 208, 223, 0.12);
+        }
+
+        .card h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        .card h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        .card p {
+            color: var(--text);
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        /* Philosophy Section */
+        .philosophy-quote {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--teal-d);
+            margin: 1.5rem 0;
+            padding-left: 1.5rem;
+            border-left: 4px solid var(--teal);
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        /* Logo Section */
+        .logo-examples {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .logo-example {
+            border: 1px solid #E5E5E5;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .logo-example.correct {
+            background: #F0FDF4;
+            border-color: #22C55E;
+        }
+
+        .logo-example.incorrect {
+            background: #FEF2F2;
+            border-color: #EF4444;
+        }
+
+        .logo-example.correct:hover {
+            border-color: #22C55E;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
+        }
+
+        .logo-example.incorrect:hover {
+            border-color: #EF4444;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+        }
+
+        .logo-demo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 1rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--white);
+            font-size: 1.2rem;
+        }
+
+        .logo-demo.correct {
+            background: var(--teal);
+        }
+
+        .logo-demo.incorrect {
+            background: linear-gradient(45deg, var(--teal), var(--teal-d));
+            opacity: 0.6;
+            filter: blur(1px);
+        }
+
+        .logo-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .logo-example.correct .logo-label {
+            color: #22C55E;
+        }
+
+        .logo-example.incorrect .logo-label {
+            color: #EF4444;
+        }
+
+        .logo-desc {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Color System */
+        .colors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .color-card {
+            text-align: center;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #E5E5E5;
+            transition: all 0.3s ease;
+        }
+
+        .color-card:hover {
+            box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .color-swatch {
+            width: 100%;
+            height: 120px;
+            border-bottom: 1px solid #E5E5E5;
+        }
+
+        .color-info {
+            padding: 1rem;
+            background: var(--white);
+        }
+
+        .color-name {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.3rem;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        .color-code {
+            font-size: 0.9rem;
+            color: var(--gray);
+            font-family: 'Inter', monospace;
+        }
+
+        /* Typography */
+        .typography-section {
+            margin: 1.5rem 0;
+        }
+
+        .font-example {
+            padding: 1.5rem;
+            background: var(--teal-l);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--teal);
+        }
+
+        .font-example.tc {
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        .font-example.en {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .font-example-title {
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .font-example-content {
+            font-size: 1.1rem;
+            color: var(--text);
+        }
+
+        /* Tone Section */
+        .tone-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .tone-do, .tone-dont {
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .tone-do {
+            background: #F0FDF4;
+            border: 1px solid #22C55E;
+        }
+
+        .tone-dont {
+            background: #FEF2F2;
+            border: 1px solid #EF4444;
+        }
+
+        .tone-header {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        .tone-do .tone-header {
+            color: #22C55E;
+        }
+
+        .tone-dont .tone-header {
+            color: #EF4444;
+        }
+
+        .tone-list {
+            list-style: none;
+        }
+
+        .tone-list li {
+            margin-bottom: 0.8rem;
+            padding-left: 1.5rem;
+            position: relative;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .tone-do li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #22C55E;
+            font-weight: 700;
+        }
+
+        .tone-dont li:before {
+            content: "✕";
+            position: absolute;
+            left: 0;
+            color: #EF4444;
+            font-weight: 700;
+        }
+
+        /* Checklist */
+        .checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 1rem;
+            border-radius: 8px;
+            background: var(--teal-l);
+            border: 1px solid var(--teal);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .checklist-item:hover {
+            background: #D4F3F8;
+        }
+
+        .checklist-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 1rem;
+            margin-top: 0.2rem;
+            cursor: pointer;
+            accent-color: var(--teal);
+            flex-shrink: 0;
+        }
+
+        .checklist-item input[type="checkbox"]:checked + label {
+            color: var(--teal-d);
+            font-weight: 600;
+        }
+
+        .checklist-item label {
+            cursor: pointer;
+            flex-grow: 1;
+            color: var(--text);
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        /* Workflow */
+        .workflow {
+            margin: 2rem 0;
+        }
+
+        .workflow-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            position: relative;
+            gap: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .workflow-step {
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .workflow-step-number {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--teal);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin: 0 auto 1rem;
+            border: 3px solid var(--white);
+            box-shadow: 0 2px 8px rgba(97, 208, 223, 0.3);
+        }
+
+        .workflow-step-title {
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        .workflow-step-desc {
+            font-size: 0.9rem;
+            color: var(--gray);
+            line-height: 1.6;
+        }
+
+        /* Connector Lines */
+        .workflow-steps::before {
+            content: "";
+            position: absolute;
+            top: 30px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(to right, var(--teal), var(--teal-l));
+            z-index: 0;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--dark);
+            color: var(--white);
+            padding: 2rem;
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        .footer p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .footer a {
+            color: var(--teal);
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+
+        .footer a:hover {
+            opacity: 0.8;
+        }
+
+        /* Links */
+        a {
+            color: var(--teal-d);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: var(--teal);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 2rem 1rem;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .logo-examples {
+                grid-template-columns: 1fr;
+            }
+
+            .tone-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .workflow-steps {
+                flex-direction: column;
+            }
+
+            .workflow-steps::before {
+                left: 30px;
+                right: auto;
+                width: 2px;
+                height: auto;
+                top: 0;
+                bottom: 0;
+            }
+
+            .workflow-step {
+                text-align: left;
+                padding-left: 100px;
+            }
+
+            .workflow-step-number {
+                position: absolute;
+                left: 0;
+                top: 0;
+            }
+
+            .colors-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                padding: 1rem;
+            }
+
+            .header a {
+                font-size: 1rem;
+            }
+        }
+
+        /* Link to colors page */
+        .color-system-link {
+            display: inline-block;
+            background: var(--teal);
+            color: var(--dark);
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .color-system-link:hover {
+            background: var(--teal-d);
+            color: var(--white);
+        }
+
+        /* Icon styling */
+        .section-icon {
+            font-size: 1.4rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <a href="index.html">← 淨淨美學工作室</a>
+        <span class="badge">已上線</span>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>設計規範手冊</h1>
+            <p class="subtitle">CleanClean Brand Guidelines</p>
+        </section>
+
+        <!-- 品牌理念 -->
+        <section class="card">
+            <h2><span class="section-icon">🎨</span> 品牌理念</h2>
+            <p>淨淨品牌致力於讓清潔不再是繁瑣的家務，而是每天的自我照顧儀式。透過設計、科技與人性化的服務，我們相信清潔的環境能帶來身心的寧靜。</p>
+            <div class="philosophy-quote">讓每一天的清潔，都是一場療癒的儀式</div>
+            <p>我們的設計語言反映了這一信念：簡潔、明淨、充滿溫度。每一個視覺元素都經過精心考量，力求傳達清潔的本質與內心的平靜。</p>
+        </section>
+
+        <!-- LOGO 規範 -->
+        <section class="card">
+            <h2><span class="section-icon">✏️</span> LOGO 規範</h2>
+            <h3>最小尺寸與清晰空間</h3>
+            <p>LOGO 最小使用尺寸為 80 × 80px。LOGO 周圍必須保留足夠的清晰空間（最少距離為 LOGO 高度的 1/4），確保視覺完整性。</p>
+
+            <h3>正確與錯誤示範</h3>
+            <div class="logo-examples">
+                <div class="logo-example correct">
+                    <div class="logo-demo correct">淨淨</div>
+                    <div class="logo-label">✓ 正確用法</div>
+                    <div class="logo-desc">保持原色，清晰清潔，足夠清晰空間</div>
+                </div>
+                <div class="logo-example incorrect">
+                    <div class="logo-demo incorrect">淨淨</div>
+                    <div class="logo-label">✕ 錯誤用法</div>
+                    <div class="logo-desc">不得變形、扭曲、改色或縮小過度</div>
+                </div>
+            </div>
+
+            <h3>不建議的做法</h3>
+            <ul style="margin-left: 1.5rem; color: var(--text);">
+                <li>改變 LOGO 顏色或透明度</li>
+                <li>LOGO 上添加陰影、光暈或其他效果</li>
+                <li>旋轉或傾斜 LOGO</li>
+                <li>在 LOGO 周圍放置過於複雜的背景</li>
+                <li>縮小 LOGO 至最小尺寸以下</li>
+            </ul>
+        </section>
+
+        <!-- 色彩系統 -->
+        <section class="card">
+            <h2><span class="section-icon">🎨</span> 色彩系統</h2>
+            <p>淨淨的色彩系統以清爽的青藍色為主，輔以深灰色文字，營造現代、清潔的視覺氛圍。所有色彩都經過專業調整，確保在各種應用場景中的一致性與可讀性。</p>
+
+            <div class="colors-grid">
+                <div class="color-card">
+                    <div class="color-swatch" style="background: #61D0DF;"></div>
+                    <div class="color-info">
+                        <div class="color-name">Primary Teal</div>
+                        <div class="color-code">#61D0DF</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background: #329BAF;"></div>
+                    <div class="color-info">
+                        <div class="color-name">Dark Teal</div>
+                        <div class="color-code">#329BAF</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background: #EBF9FC;"></div>
+                    <div class="color-info">
+                        <div class="color-name">Light Teal</div>
+                        <div class="color-code">#EBF9FC</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background: #1E2230;"></div>
+                    <div class="color-info">
+                        <div class="color-name">Dark</div>
+                        <div class="color-code">#1E2230</div>
+                    </div>
+                </div>
+            </div>
+
+            <a href="colors.html" class="color-system-link">查看完整色彩系統 →</a>
+        </section>
+
+        <!-- 字型系統 -->
+        <section class="card">
+            <h2><span class="section-icon">🔤</span> 字型系統</h2>
+            <p>淨淨使用兩套字型來確保最佳的可讀性和視覺層次：<strong>Noto Sans TC</strong> 用於中文、標題和重點文本，<strong>Inter</strong> 用於英文、數字和輔助文本。</p>
+
+            <div class="typography-section">
+                <div class="font-example tc">
+                    <div class="font-example-title">Noto Sans TC - 700 (標題)</div>
+                    <div class="font-example-content" style="font-weight: 700;">淨淨品牌設計規範</div>
+                </div>
+
+                <div class="font-example tc">
+                    <div class="font-example-title">Noto Sans TC - 400 (內文)</div>
+                    <div class="font-example-content" style="font-weight: 400;">我們相信清潔的環境能帶來身心的寧靜。</div>
+                </div>
+
+                <div class="font-example en">
+                    <div class="font-example-title">Inter - 600 (英文標題)</div>
+                    <div class="font-example-content" style="font-weight: 600;">CleanClean Brand Guidelines</div>
+                </div>
+
+                <div class="font-example en">
+                    <div class="font-example-title">Inter - 400 (英文內文)</div>
+                    <div class="font-example-content" style="font-weight: 400;">Design with clarity and purpose.</div>
+                </div>
+            </div>
+
+            <h3>字型使用原則</h3>
+            <ul style="margin-left: 1.5rem; color: var(--text);">
+                <li>標題使用 700 粗細，確保視覺層次</li>
+                <li>內文使用 400 粗細，提升可讀性</li>
+                <li>避免使用其他粗細，保持一致性</li>
+                <li>中英文混排時，注意字距與行高的協調</li>
+            </ul>
+        </section>
+
+        <!-- 品牌語調 -->
+        <section class="card">
+            <h2><span class="section-icon">💬</span> 品牌語調 Do / Don't</h2>
+            <p>淨淨的品牌語調溫暖、專業且具有同理心。我們與用戶進行有意義的對話，強調清潔帶來的生活品質提升。</p>
+
+            <div class="tone-grid">
+                <div class="tone-do">
+                    <div class="tone-header">✓ 推薦做法</div>
+                    <ul class="tone-list">
+                        <li>使用溫暖、鼓勵性的語言</li>
+                        <li>強調清潔帶來的正面改變</li>
+                        <li>簡潔而有力的表達</li>
+                        <li>重視用戶的時間和感受</li>
+                        <li>使用「我們」建立親切感</li>
+                    </ul>
+                </div>
+                <div class="tone-dont">
+                    <div class="tone-header">✕ 避免做法</div>
+                    <ul class="tone-list">
+                        <li>生硬、冷漠的語言風格</li>
+                        <li>過度誇大或不實承諾</li>
+                        <li>複雜的專業術語</li>
+                        <li>忽視用戶的時間成本</li>
+                        <li>使用命令式或指責的語氣</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8 點設計自我檢查清單 -->
+        <section class="card">
+            <h2><span class="section-icon">✅</span> 8 點設計自我檢查清單</h2>
+            <p>在設計完成前，請使用以下清單確保符合淨淨品牌標準。勾選所有項目，確保設計品質。</p>
+
+            <div class="checklist">
+                <div class="checklist-item">
+                    <input type="checkbox" id="check1">
+                    <label for="check1">色彩正確使用 - 主色 #61D0DF 和深色 #329BAF 的應用符合規範</label>
+                </div>
+
+                <div class="checklist-item">
+                    <input type="checkbox" id="check2">
+                    <label for="check2">字型一致性 - Noto Sans TC 與 Inter 的搭配與粗細正確</label>
+                </div>
+
+                <div class="checklist-item">
+                    <input type="checkbox" id="check3">
+                    <label for="check3">LOGO 規範 - LOGO 尺寸、清晰空間和應用方式符合規定</label>
+                </div>
+
+                <div class="checklist-item">
+                    <input type="checkbox" id="check4">
+                    <label for="check4">響應式設計 - 設計在不同屏幕尺寸上都能正常顯示</label>
+                </div>
+
+                <div class="checklist-item">
+                    <input type="checkbox" id="check5">
+                    <label for="check5">可讀性檢查 - 文本對比度足夠，易於識別和閱讀</label>
+                </div>
+
+                <div class="checklist-item">
+                    <input type="checkbox" id="check6">
+                    <label for="check6">品牌語調 - 文案風格符合溫暖、專業且同理心的品牌語調</label>
+                </div>
+
+                <div class="checklist-item">
+                    <input type="checkbox" id="check7">
+                    <label for="check7">視覺層次 - 標題、副標題與內文的區分清晰明確</label>
+                </div>
+
+                <div class="checklist-item">
+                    <input type="checkbox" id="check8">
+                    <label for="check8">統一性檢查 - 設計風格、間距、元素與既有設計系統保持一致</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- 設計部工作流程 -->
+        <section class="card">
+            <h2><span class="section-icon">🔄</span> 設計部工作流程</h2>
+            <p>淨淨設計團隊遵循以下工作流程，確保每個項目都符合品牌標準，並有效地進行協作。</p>
+
+            <div class="workflow">
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="workflow-step-number">1</div>
+                        <div class="workflow-step-title">需求分析</div>
+                        <div class="workflow-step-desc">理解項目目標、受眾和設計要求</div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="workflow-step-number">2</div>
+                        <div class="workflow-step-title">概念設計</div>
+                        <div class="workflow-step-desc">提出初步設計概念和視覺方向</div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="workflow-step-number">3</div>
+                        <div class="workflow-step-title">品牌檢查</div>
+                        <div class="workflow-step-desc">使用規範檢查清單驗證設計符合性</div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="workflow-step-number">4</div>
+                        <div class="workflow-step-title">反饋迭代</div>
+                        <div class="workflow-step-desc">收集意見並進行設計調整和優化</div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="workflow-step-number">5</div>
+                        <div class="workflow-step-title">最終交付</div>
+                        <div class="workflow-step-desc">準備所有必要資產並進行最終交付</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>淨淨美學工作室 © 2024 | <a href="index.html">返回首頁</a></p>
+        <p style="margin-top: 1rem; font-size: 0.85rem;">版本 1.0 - Design Guidelines v1.0</p>
+    </div>
+</body>
+</html>

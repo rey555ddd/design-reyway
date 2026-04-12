@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>淨淨素材導航 - Brand Assets Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--teal:#61D0DF;--teal-d:#329BAF;--teal-l:#EBF9FC;--teal-xl:#F4FBFC;--warm:#F5EDE3;--dark:#1E2230;--text:#2D3142;--gray:#8C8C8C;--white:#FFFFFF;--radius:20px;--radius-s:12px}
+        body{font-family:'Noto Sans TC','Inter',sans-serif;background-color:var(--white);color:var(--text);line-height:1.6}
+        .header{background-color:var(--teal);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+        .header-left{display:flex;align-items:center;gap:1rem}
+        .header-link{color:var(--white);text-decoration:none;font-size:1rem;font-weight:500;display:flex;align-items:center;gap:.5rem;transition:opacity .3s}
+        .header-link:hover{opacity:.85}
+        .badge{background-color:#10B981;color:var(--white);padding:.375rem .75rem;border-radius:4px;font-size:.75rem;font-weight:600;letter-spacing:.5px}
+        .hero{padding:3rem 2rem;text-align:center;background:linear-gradient(135deg,var(--teal-l) 0%,var(--white) 100%)}
+        .hero h1{font-size:2.5rem;font-weight:700;color:var(--dark);margin-bottom:.5rem}
+        .hero p{font-size:1rem;color:var(--gray);font-weight:500;max-width:500px;margin:0 auto}
+        .section{padding:2rem 2rem 1rem;max-width:1200px;margin:0 auto}
+        .section-title{font-size:1.5rem;font-weight:700;color:var(--dark);margin-bottom:.5rem;display:flex;align-items:center;gap:.75rem}
+        .section-title .icon{font-size:1.75rem}
+        .section-desc{color:var(--gray);font-size:.9rem;margin-bottom:1.5rem}
+        .folder-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem;margin-bottom:2rem}
+        .folder-card{background:var(--white);border:1px solid #E8E8E8;border-radius:var(--radius-s);padding:1.5rem;transition:all .3s;cursor:pointer;text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:.75rem;position:relative;overflow:hidden}
+        .folder-card:hover{border-color:var(--teal);box-shadow:0 4px 20px rgba(97,208,223,.15);transform:translateY(-2px)}
+        .folder-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--teal);opacity:0;transition:opacity .3s}
+        .folder-card:hover::before{opacity:1}
+        .folder-header{display:flex;align-items:center;gap:.75rem}
+        .folder-icon{width:48px;height:48px;border-radius:var(--radius-s);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0}
+        .folder-icon.product{background:linear-gradient(135deg,var(--teal-l),rgba(97,208,223,.3))}
+        .folder-icon.activity{background:linear-gradient(135deg,#FEF3C7,#FDE68A)}
+        .folder-icon.logo{background:linear-gradient(135deg,#F3E8FF,#DDD6FE)}
+        .folder-icon.archive{background:linear-gradient(135deg,#F1F5F9,#E2E8F0)}
+        .folder-name{font-weight:600;font-size:1.05rem;color:var(--dark);line-height:1.3}
+        .folder-desc{font-size:.85rem;color:var(--gray);line-height:1.5}
+        .folder-tag{display:inline-flex;align-items:center;gap:.25rem;background:var(--teal-l);color:var(--teal-d);padding:.25rem .625rem;border-radius:4px;font-size:.75rem;font-weight:500;width:fit-content}
+        .folder-tag.activity-tag{background:#FEF3C7;color:#B45309}
+        .folder-tag.logo-tag{background:#F3E8FF;color:#7C3AED}
+        .folder-tag.archive-tag{background:#F1F5F9;color:#64748B}
+        .open-link{display:inline-flex;align-items:center;gap:.375rem;color:var(--teal-d);font-size:.85rem;font-weight:500;margin-top:auto;padding-top:.75rem}
+        .open-link svg{width:16px;height:16px}
+        .divider{height:1px;background:linear-gradient(to right,transparent,#E8E8E8,transparent);margin:1rem 0 2rem;max-width:1200px;margin-left:auto;margin-right:auto}
+        .quick-links{background:var(--teal-xl);border:1px solid rgba(97,208,223,.2);border-radius:var(--radius);padding:2rem;max-width:1200px;margin:0 auto 2rem;display:flex;flex-wrap:wrap;gap:1rem;align-items:center;justify-content:center}
+        .quick-links-title{font-weight:600;color:var(--dark);font-size:.95rem;width:100%;text-align:center;margin-bottom:.5rem}
+        .quick-link{display:inline-flex;align-items:center;gap:.5rem;padding:.625rem 1.25rem;background:var(--white);border:1px solid #E0E0E0;border-radius:6px;text-decoration:none;color:var(--text);font-size:.9rem;font-weight:500;transition:all .3s}
+        .quick-link:hover{border-color:var(--teal);color:var(--teal-d);box-shadow:0 2px 8px rgba(97,208,223,.1)}
+        .footer{background-color:var(--dark);color:var(--white);padding:2rem;text-align:center;margin-top:3rem}
+        .footer-text{font-size:.9rem;opacity:.8}
+        .tip-box{background:var(--warm);border-radius:var(--radius-s);padding:1.25rem 1.5rem;margin:1.5rem auto 2rem;max-width:1200px;font-size:.9rem;color:var(--text);line-height:1.6}
+        .tip-box strong{color:var(--teal-d)}
+        @media(max-width:768px){
+            .header{flex-direction:column;gap:1rem;text-align:center}
+            .hero h1{font-size:2rem}
+            .folder-grid{grid-template-columns:1fr}
+            .section{padding:1.5rem 1rem .5rem}
+            .quick-links{padding:1.5rem 1rem}
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <a href="index.html" class="header-link">&larr; 淨淨美學工作室</a>
+        </div>
+        <div class="badge">已上線</div>
+    </div>
+
+    <div class="hero">
+        <h1>素材導航中心</h1>
+        <p>所有產品去背照、活動素材、Logo 標章的雲端資料夾，一站快速前往</p>
+    </div>
+
+    <div class="tip-box">
+        <strong>使用方式：</strong>點擊卡片即可直接開啟 Google Drive 雲端資料夾，下載你需要的素材檔案。所有素材皆為最新版本，由設計部門統一維護更新。
+    </div>
+
+    <!-- 快速連結 -->
+    <div class="quick-links">
+        <div class="quick-links-title">快速前往主資料夾</div>
+        <a href="https://drive.google.com/drive/folders/1Sm4p6fXnGjv5R1BvjqcbwS_cudL_zpbB" target="_blank" rel="noopener" class="quick-link">📦 產品去背照（全部）</a>
+        <a href="https://drive.google.com/drive/folders/1UQ_C-sCKUODJE4XaUCbahsqgfqgW004S" target="_blank" rel="noopener" class="quick-link">🎨 活動圖 RESIZE（全部）</a>
+    </div>
+
+    <!-- 產品去背照 -->
+    <div class="section">
+        <div class="section-title"><span class="icon">📦</span>產品去背照</div>
+        <div class="section-desc">各產品線的去背 PNG 檔案，適用於電商上架、社群圖、DM 設計</div>
+    </div>
+    <div style="max-width:1200px;margin:0 auto;padding:0 2rem">
+        <div class="folder-grid">
+            <a href="https://drive.google.com/drive/folders/1iGbZHeG7yGsmxDcwKqZ_dtn9z1eR3z7R" target="_blank" rel="noopener" class="folder-card">
+                <div class="folder-header">
+                    <div class="folder-icon product">🧴</div>
+                    <div class="folder-name">潔顏系列</div>
+                </div>
+                <div class="folder-desc">潔顏慕斯等臉部清潔產品去背照</div>
+                <div class="folder-tag">居家清潔 / 個人護理</div>
+                <div class="open-link">開啟雲端資料夾 <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.22 14.78a.75.75 0 001.06 0l7.22-7.22v5.69a.75.75 0 001.5 0v-7.5a.75.75 0 00-.75-.75h-7.5a.75.75 0 000 1.5h5.69l-7.22 7.22a.75.75 0 000 1.06z" clip-rule="evenodd"/></svg></div>
+            </a>
+            <a href="https://drive.google.com/drive/folders/1GjyHTmuBS2ptmKhjp-j1KrnRfYzT62Mo" target="_blank" rel="noopener" class="folder-card">
+                <div class="folder-header">
+                    <div class="folder-icon product">✨</div>
+                    <div class="folder-name">淨膚保養</div>
+                </div>
+                <div class="folder-desc">植萃水凝乳等保養產品去背照</div>
+                <div class="folder-tag">個人護理</div>
+                <div class="open-link">開啟雲端資料夾 <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.22 14.78a.75.75 0 001.06 0l7.22-7.22v5.69a.75.75 0 001.5 0v-7.5a.75.75 0 00-.75-.75h-7.5a.75.75 0 000 1.5h5.69l-7.22 7.22a.75.75 0 000 1.06z" clip-rule="evenodd"/></svg></div>
+            </a>
+            <a href="https://drive.google.com/drive/folders/1yFcfcUqPPNIBq2hVoEO-201CbKM8iT8v" target="_blank" rel="noopener" class="folder-card">
+                <div class="folder-header">
+                    <div class="folder-icon product">🌿</div>
+                    <div class="folder-name">淨心芳療</div>
+                </div>
+                <div class="folder-desc">精油、芳療系列產品去背照</div>
+                <div class="folder-tag">芳療精油</div>
+                <div class="open-link">開啟雲端資料夾 <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.22 14.78a.75.75 0 001.06 0l7.22-7.22v5.69a.75.75 0 001.5 0v-7.5a.75.75 0 00-.75-.75h-7.5a.75.75 0 000 1.5h5.69l-7.22 7.22a.75.75 0 000 1.06z" clip-rule="evenodd"/></svg></div>
+            </a>
+            <a href="https://drive.google.com/drive/folders/1qhYagwzTQw2fimecO6LoX_fED-CBF0-2" target="_blank" rel="noopener" class="folder-card">
+                <div class="folder-header">
+                    <div class="folder-icon product">🧻</div>
+                    <div class="folder-name">簡單柔濕巾</div>
+                </div>
+                <div class="folder-desc">超純水柔濕巾系列產品去背照</div>
+                <div class="folder-tag">居家清潔</div>
+                <div class="open-link">開啟雲端資料夾 <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.22 14.78a.75.75 0 001.06 0l7.22-7.22v5.69a.75.75 0 001.5 0v-7.5a.75.75 0 00-.75-.75h-7.5a.75.75 0 000 1.5h5.69l-7.22 7.22a.75.75 0 000 1.06z" clip-rule="evenodd"/></svg></div>
+            </a>
+            <a href="https://drive.google.com/drive/folders/12Vwr3NMqUf90dqcO6ZkHeNn9pBI5-FSU" target="_blank" rel="noopener" class="folder-card">
+                <div class="folder-header">
+                    <div class="folder-icon logo">🏷️</div>
+                    <div class="folder-name">Logo 檔案</div>
+                </div>
+                <div class="folder-desc">品牌 Logo、標章、認證圖檔</div>
+                <div class="folder-tag logo-tag">Logo & 標章</div>
+                <div class="open-link">開啟雲端資料夾 <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.22 14.78a.75.75 0 001.06 0l7.22-7.22v5.69a.75.75 0 001.5 0v-7.5a.75.75 0 00-.75-.75h-7.5a.75.75 0 000 1.5h5.69l-7.22 7.22a.75.75 0 000 1.06z" clip-rule="evenodd"/></svg></div>
+            </a>
+            <a href="https://drive.google.com/drive/folders/1LHGFyN3o01FUZOdTvBXThDRBVkMCats5" target="_blank" rel="noopener" class="folder-card">
+                <div class="folder-header">
+                    <div class="folder-icon archive">📁</div>
+                    <div class="folder-name">舊版素材</div>
+                </div>
+                <div class="folder-desc">過往版本的產品圖檔（僅供參考）</div>
+                <div class="folder-tag archive-tag">封存</div>
+                <div class="open-link">開啟雲端資料夾 <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.22 14.78a.75.75 0 001.06 0l7.22-7.22v5.69a.75.75 0 001.5 0v-7.5a.75.75 0 00-.75-.75h-7.5a.75.75 0 000 1.5h5.69l-7.22 7.22a.75.75 0 000 1.06z" clip-rule="evenodd"/></svg></div>
+            </a>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 活動圖 RESIZE -->
+    <div class="section">
+        <div class="section-title"><span class="icon">🎨</span>活動圖 RESIZE</div>
+        <div class="section-desc">各檔期活動的多尺寸素材，已裁切為各平台適用規格</div>
+    </div>
+    <div style="max-width:1200px;margin:0 auto;padding:0 2rem">
+        <div class="folder-grid">
+            <a href="https://drive.google.com/drive/folders/1GVy1eodvjdg0m9x1FF7ovnG0kOgOtDLV" target="_blank" rel="noopener" class="folder-card">
+                <div class="folder-header">
+                    <div class="folder-icon activity">💐</div>
+                    <div class="folder-name">20250430 母親節</div>
+                </div>
+                <div class="folder-desc">2025 母親節檔期活動素材（多尺寸）</div>
+                <div class="folder-tag activity-tag">節慶活動</div>
+                <div class="open-link">開啟雲端資料夾 <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.22 14.78a.75.75 0 001.06 0l7.22-7.22v5.69a.75.75 0 001.5 0v-7.5a.75.75 0 00-.75-.75h-7.5a.75.75 0 000 1.5h5.69l-7.22 7.22a.75.75 0 000 1.06z" clip-rule="evenodd"/></svg></div>
+            </a>
+            <a href="https://drive.google.com/drive/folders/1UY7WEbIWw7N9MOouHKhC2GXDut5JfDem" target="_blank" rel="noopener" class="folder-card">
+                <div class="folder-header">
+                    <div class="folder-icon activity">🔥</div>
+                    <div class="folder-name">20251107 雙11最大檔</div>
+                </div>
+                <div class="folder-desc">2025 雙十一促銷檔期素材（多尺寸）</div>
+                <div class="folder-tag activity-tag">促銷檔期</div>
+                <div class="open-link">開啟雲端資料夾 <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.22 14.78a.75.75 0 001.06 0l7.22-7.22v5.69a.75.75 0 001.5 0v-7.5a.75.75 0 00-.75-.75h-7.5a.75.75 0 000 1.5h5.69l-7.22 7.22a.75.75 0 000 1.06z" clip-rule="evenodd"/></svg></div>
+            </a>
+            <a href="https://drive.google.com/drive/folders/1-oD9Oiby0BSKK9G49LQyKNB4so-OgSgg" target="_blank" rel="noopener" class="folder-card">
+                <div class="folder-header">
+                    <div class="folder-icon activity">🌈</div>
+                    <div class="folder-name">彩虹之家公益活動</div>
+                </div>
+                <div class="folder-desc">彩虹之家公益合作活動素材</div>
+                <div class="folder-tag activity-tag">公益活動</div>
+                <div class="open-link">開啟雲端資料夾 <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.22 14.78a.75.75 0 001.06 0l7.22-7.22v5.69a.75.75 0 001.5 0v-7.5a.75.75 0 00-.75-.75h-7.5a.75.75 0 000 1.5h5.69l-7.22 7.22a.75.75 0 000 1.06z" clip-rule="evenodd"/></svg></div>
+            </a>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p class="footer-text">&copy; 2024 淨淨 CleanClean. Brand Assets Hub. All rights reserved.</p>
+    </div>
+</body>
+</html>

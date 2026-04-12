@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>淨淨 品牌周邊模擬器 - Brand Merchandise Mockup</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --teal: #61D0DF;
+            --teal-d: #329BAF;
+            --teal-l: #EBF9FC;
+            --warm: #F5EDE3;
+            --dark: #1E2230;
+            --text: #2D3142;
+            --gray: #8C8C8C;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', 'Inter', sans-serif;
+            background: white;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: var(--teal);
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .header a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header a:hover {
+            opacity: 0.9;
+        }
+
+        .badge {
+            background: #10B981;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: var(--teal-l);
+            padding: 48px 32px;
+            text-align: center;
+            border-bottom: 1px solid rgba(97, 208, 223, 0.2);
+        }
+
+        .hero h1 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--dark);
+        }
+
+        .hero p {
+            font-size: 16px;
+            color: var(--gray);
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 48px auto;
+            padding: 0 32px;
+        }
+
+        /* Tool Area */
+        .tool-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+            margin-bottom: 64px;
+        }
+
+        .upload-area {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .upload-area h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--dark);
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--teal);
+            border-radius: 12px;
+            padding: 48px 32px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--teal-l);
+        }
+
+        .drop-zone:hover,
+        .drop-zone.dragover {
+            background: rgba(97, 208, 223, 0.3);
+            border-color: var(--teal-d);
+        }
+
+        .drop-zone input {
+            display: none;
+        }
+
+        .drop-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .drop-zone p {
+            color: var(--text);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .drop-zone small {
+            color: var(--gray);
+            display: block;
+            font-size: 14px;
+        }
+
+        /* Preview Area */
+        .preview-area {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .preview-area h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--dark);
+        }
+
+        .preview-container {
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+        }
+
+        #previewImage {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .logo-overlay {
+            position: absolute;
+            font-weight: 700;
+            pointer-events: none;
+            mix-blend-mode: multiply;
+        }
+
+        .logo-overlay.teal-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--teal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            color: white;
+        }
+
+        .logo-overlay.text {
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 2px;
+            color: var(--teal-d);
+        }
+
+        .logo-overlay.wave {
+            width: 120px;
+            height: 120px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><path d="M10 60 Q30 40, 50 60 T90 60" stroke="%23329BAF" stroke-width="8" fill="none" stroke-linecap="round"/></svg>') no-repeat center;
+            background-size: contain;
+        }
+
+        /* Controls */
+        .controls {
+            background: var(--warm);
+            padding: 32px;
+            border-radius: 12px;
+            margin-bottom: 48px;
+        }
+
+        .controls h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: var(--dark);
+        }
+
+        .control-group {
+            margin-bottom: 24px;
+        }
+
+        .control-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 12px;
+            color: var(--text);
+            font-size: 14px;
+        }
+
+        .style-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .style-btn {
+            padding: 16px;
+            border: 2px solid #E5E7EB;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 13px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .style-btn:hover {
+            border-color: var(--teal);
+        }
+
+        .style-btn.active {
+            background: var(--teal);
+            color: white;
+            border-color: var(--teal);
+        }
+
+        .slider-container {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: #E5E7EB;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--teal);
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--teal);
+            cursor: pointer;
+            border: none;
+        }
+
+        .slider-value {
+            min-width: 50px;
+            text-align: right;
+            font-weight: 600;
+            color: var(--teal-d);
+            font-size: 14px;
+        }
+
+        .position-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .position-btn {
+            aspect-ratio: 1;
+            border: 2px solid #E5E7EB;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .position-btn:hover {
+            border-color: var(--teal);
+        }
+
+        .position-btn.active {
+            background: var(--teal);
+            border-color: var(--teal);
+        }
+
+        /* Templates */
+        .templates {
+            margin-bottom: 64px;
+        }
+
+        .templates h2 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 32px;
+            color: var(--dark);
+        }
+
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 32px;
+        }
+
+        .template-card {
+            text-align: center;
+        }
+
+        .template-mockup {
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 48px 24px;
+            margin-bottom: 16px;
+            height: 320px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Tote Bag */
+        .tote-bag {
+            background: linear-gradient(135deg, #F3E8D8 0%, #E8DCC8 100%);
+            clip-path: polygon(20% 0%, 80% 0%, 100% 15%, 100% 100%, 0% 100%, 0% 15%);
+        }
+
+        .tote-bag::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 30%;
+            right: 30%;
+            height: 60px;
+            background: linear-gradient(to bottom, #D4C4A8, transparent);
+            clip-path: ellipse(50% 100%);
+        }
+
+        .tote-logo {
+            font-size: 48px;
+            color: var(--teal);
+            font-weight: 700;
+        }
+
+        /* T-Shirt */
+        .tshirt {
+            background: linear-gradient(to bottom, #61D0DF 0%, #61D0DF 40%, #5AC4CF 100%);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 100%, 0% 100%, 0% 25%);
+            height: 280px;
+        }
+
+        .tshirt::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 40px;
+            height: 40px;
+            background: var(--teal);
+            border-radius: 0 0 20px 20px;
+            transform: translateX(-50%);
+        }
+
+        .tshirt-logo {
+            color: white;
+            font-size: 42px;
+            font-weight: 700;
+        }
+
+        /* Laundry Bag */
+        .laundry-bag {
+            background: linear-gradient(135deg, #329BAF 0%, #2A8599 100%);
+            clip-path: polygon(15% 0%, 85% 0%, 90% 20%, 100% 35%, 100% 100%, 0% 100%, 0% 35%, 10% 20%);
+        }
+
+        .laundry-logo {
+            color: white;
+            font-size: 56px;
+            font-weight: 700;
+        }
+
+        .template-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .template-desc {
+            font-size: 14px;
+            color: var(--gray);
+        }
+
+        /* Description */
+        .description {
+            background: var(--teal-l);
+            padding: 48px;
+            border-radius: 12px;
+            margin-bottom: 64px;
+        }
+
+        .description h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--dark);
+        }
+
+        .description p {
+            font-size: 16px;
+            color: var(--text);
+            margin-bottom: 12px;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 32px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .tool-section {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+
+            .hero h1 {
+                font-size: 28px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .template-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .style-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 0 16px;
+            }
+
+            .hero,
+            .controls,
+            .description {
+                padding: 24px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <a href="index.html">← 淨淨美學工作室</a>
+        <span class="badge">已上線</span>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>品牌周邊模擬器</h1>
+        <p>Brand Merchandise Mockup Tool</p>
+    </section>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Tool Section -->
+        <section class="tool-section">
+            <!-- Upload Area -->
+            <div class="upload-area">
+                <h3>上傳商品圖片</h3>
+                <div class="drop-zone" id="dropZone">
+                    <div class="drop-icon">📸</div>
+                    <p>拖放圖片到此</p>
+                    <small>或點擊上傳 (JPG, PNG, GIF)</small>
+                    <input type="file" id="imageInput" accept="image/*">
+                </div>
+            </div>
+
+            <!-- Preview Area -->
+            <div class="preview-area">
+                <h3>預覽效果</h3>
+                <div class="preview-container" id="previewContainer">
+                    <img id="previewImage" style="display: none;">
+                    <div id="logoOverlay" class="logo-overlay teal-circle" style="display: none;">淨</div>
+                    <p style="color: var(--gray); text-align: center;">上傳圖片開始預覽</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Controls -->
+        <section class="controls">
+            <h3>自訂設定</h3>
+
+            <!-- Logo Style -->
+            <div class="control-group">
+                <label>標誌樣式</label>
+                <div class="style-buttons">
+                    <button class="style-btn active" data-style="teal-circle">淨 圓形</button>
+                    <button class="style-btn" data-style="text">CLEANCLEAN</button>
+                    <button class="style-btn" data-style="wave">波紋</button>
+                </div>
+            </div>
+
+            <!-- Logo Size -->
+            <div class="control-group">
+                <label>標誌尺寸</label>
+                <div class="slider-container">
+                    <input type="range" id="sizeSlider" min="50" max="300" value="120">
+                    <span class="slider-value"><span id="sizeValue">120</span>px</span>
+                </div>
+            </div>
+
+            <!-- Logo Position -->
+            <div class="control-group">
+                <label>標誌位置</label>
+                <div class="position-grid">
+                    <button class="position-btn active" data-pos="top-left"></button>
+                    <button class="position-btn" data-pos="top-center"></button>
+                    <button class="position-btn" data-pos="top-right"></button>
+                    <button class="position-btn" data-pos="mid-left"></button>
+                    <button class="position-btn" data-pos="center"></button>
+                    <button class="position-btn" data-pos="mid-right"></button>
+                    <button class="position-btn" data-pos="bottom-left"></button>
+                    <button class="position-btn" data-pos="bottom-center"></button>
+                    <button class="position-btn" data-pos="bottom-right"></button>
+                </div>
+            </div>
+
+            <!-- Logo Opacity -->
+            <div class="control-group">
+                <label>標誌透明度</label>
+                <div class="slider-container">
+                    <input type="range" id="opacitySlider" min="30" max="100" value="100">
+                    <span class="slider-value"><span id="opacityValue">100</span>%</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Templates -->
+        <section class="templates">
+            <h2>預建模板</h2>
+            <div class="template-grid">
+                <div class="template-card">
+                    <div class="template-mockup tote-bag">
+                        <div class="tote-logo">淨</div>
+                    </div>
+                    <p class="template-name">購物袋 Tote Bag</p>
+                    <p class="template-desc">環保棉麻購物袋</p>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-mockup tshirt">
+                        <div class="tshirt-logo">淨</div>
+                    </div>
+                    <p class="template-name">T 恤 T-Shirt</p>
+                    <p class="template-desc">有機棉 T 恤</p>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-mockup laundry-bag">
+                        <div class="laundry-logo">淨</div>
+                    </div>
+                    <p class="template-name">洗衣袋 Laundry Bag</p>
+                    <p class="template-desc">防水收納洗衣袋</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Description -->
+        <section class="description">
+            <h2>關於此工具</h2>
+            <p>淨淨品牌周邊模擬器是一個互動式設計工具，幫助您視覺化淨淨標誌在各類商品上的呈現效果。</p>
+            <p>上傳任何商品或材質圖片，即時調整標誌的樣式、大小、位置和透明度，找到最適合的品牌呈現方式。預建的模板展示了典型的應用場景。</p>
+            <p>完成設計後，您可以將預覽效果保存或分享，協助進行品牌推廣。</p>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 淨淨 CleanClean. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // State
+        let currentImage = null;
+        let logoStyle = 'teal-circle';
+        let logoSize = 120;
+        let logoPosition = 'top-left';
+        let logoOpacity = 100;
+
+        // DOM Elements
+        const dropZone = document.getElementById('dropZone');
+        const imageInput = document.getElementById('imageInput');
+        const previewImage = document.getElementById('previewImage');
+        const previewContainer = document.getElementById('previewContainer');
+        const logoOverlay = document.getElementById('logoOverlay');
+        const sizeSlider = document.getElementById('sizeSlider');
+        const opacitySlider = document.getElementById('opacitySlider');
+
+        // Position mapping
+        const positionMap = {
+            'top-left': { top: '20px', left: '20px' },
+            'top-center': { top: '20px', left: '50%', transform: 'translateX(-50%)' },
+            'top-right': { top: '20px', right: '20px' },
+            'mid-left': { top: '50%', left: '20px', transform: 'translateY(-50%)' },
+            'center': { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' },
+            'mid-right': { top: '50%', right: '20px', transform: 'translateY(-50%)' },
+            'bottom-left': { bottom: '20px', left: '20px' },
+            'bottom-center': { bottom: '20px', left: '50%', transform: 'translateX(-50%)' },
+            'bottom-right': { bottom: '20px', right: '20px' }
+        };
+
+        // File handling
+        dropZone.addEventListener('click', () => imageInput.click());
+        imageInput.addEventListener('change', (e) => handleFileSelect(e.target.files[0]));
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            handleFileSelect(e.dataTransfer.files[0]);
+        });
+
+        function handleFileSelect(file) {
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    currentImage = e.target.result;
+                    previewImage.src = currentImage;
+                    previewImage.style.display = 'block';
+                    logoOverlay.style.display = 'flex';
+                    dropZone.style.display = 'none';
+                    updateLogoPosition();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Logo Style
+        document.querySelectorAll('.style-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                logoStyle = btn.dataset.style;
+                updateLogoStyle();
+            });
+        });
+
+        function updateLogoStyle() {
+            logoOverlay.className = 'logo-overlay ' + logoStyle;
+
+            if (logoStyle === 'teal-circle') {
+                logoOverlay.innerHTML = '淨';
+                logoOverlay.style.color = 'white';
+            } else if (logoStyle === 'text') {
+                logoOverlay.innerHTML = 'CLEANCLEAN';
+                logoOverlay.style.fontSize = (logoSize * 0.4) + 'px';
+            } else if (logoStyle === 'wave') {
+                logoOverlay.innerHTML = '';
+            }
+
+            updateLogoSize();
+        }
+
+        // Logo Size
+        sizeSlider.addEventListener('input', (e) => {
+            logoSize = parseInt(e.target.value);
+            document.getElementById('sizeValue').textContent = logoSize;
+            updateLogoSize();
+        });
+
+        function updateLogoSize() {
+            logoOverlay.style.width = logoSize + 'px';
+            logoOverlay.style.height = logoSize + 'px';
+
+            if (logoStyle === 'text') {
+                logoOverlay.style.fontSize = (logoSize * 0.4) + 'px';
+                logoOverlay.style.lineHeight = logoSize + 'px';
+            }
+        }
+
+        // Logo Position
+        document.querySelectorAll('.position-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.position-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                logoPosition = btn.dataset.pos;
+                updateLogoPosition();
+            });
+        });
+
+        function updateLogoPosition() {
+            const pos = positionMap[logoPosition];
+            logoOverlay.style.top = pos.top || 'auto';
+            logoOverlay.style.bottom = pos.bottom || 'auto';
+            logoOverlay.style.left = pos.left || 'auto';
+            logoOverlay.style.right = pos.right || 'auto';
+            logoOverlay.style.transform = pos.transform || 'none';
+        }
+
+        // Logo Opacity
+        opacitySlider.addEventListener('input', (e) => {
+            logoOpacity = parseInt(e.target.value);
+            document.getElementById('opacityValue').textContent = logoOpacity;
+            logoOverlay.style.opacity = logoOpacity / 100;
+        });
+
+        // Initialize
+        logoOverlay.style.opacity = logoOpacity / 100;
+    </script>
+</body>
+</html>
