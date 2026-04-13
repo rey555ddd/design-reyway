@@ -1216,7 +1216,139 @@
                     link.click();
                     await new Promise(r => setTimeout(r, 300));
                 }
-            })
+            });
+        }
+
+        async function handleCropStart() {
+            if (!state.crop.image) {
+                showToast('è«ä¸å³è¨­è¨å', 'error');
+                return;
+            }
+            if (state.crop.selectedSizes.length === 0) {
+                showToast('è«é¸æè³å°ä¸åå°ºå¯¸', 'error');
+                return;
+            }
+
+            await processCrop();
+        }
+
+        async function handleComposeStart() {
+            if (!state.compose.background || !state.compose.product) {
+                showToast('è«ä¸å³èæ¯ååç¢åå', 'error');
+                return;
+            }
+            if (!state.compose.headline) {
+                showToast('è«ä¸å³ä¸»æ¨é¡åå±¤', 'error');
+                return;
+            }
+            if (state.compose.selectedSizes.length === 0) {
+                showToast('è«é¸æè³å°ä¸åå°ºå¯¸', 'error');
+                return;
+            }
+
+            await processCompose();
+        }
+
+        async function processCrop() {
+            const progressContainer = document.getElementById('cropProgress');
+            const previewSection = document.getElementById('cropPreviewSection');
+            const previewGrid = document.getElementById('cropPreviewGrid');
+
+            progressContainer.classList.add('active');
+            previewSection.classList.remove('active');
+
+            try {
+                const payload = {
+                    mode: 'crop',
+                    image: state.crop.image,
+                    mimeType: state.crop.mimeType,
+                    sizes: state.crop.selectedSizes
+                };
+
+                const layouts = await callAPI(payload);
+
+                state.results.crop = layouts;
+                renderCropPreviews(layouts);
+                previewSection.classList.add('active');
+                showToast('æºè½è£åå®æï¼', 'success');
+            } catch (error) {
+                showToast('èçå¤±æ: ' + error.message, 'error');
+            } finally {
+                progressContainer.classList.remove('active');
+            }
+        }
+
+        async function processCompose() {
+            const progressContainer = document.getElementById('composeProgress');
+            const previewSection = document.getElementById('composePreviewSection');
+            const previewGrid = document.getElementById('composePreviewGrid');
+
+            progressContainer.classList.add('active');
+            previewSection.classList.remove('active');
+
+            try {
+                const payload = {
+                    mode: 'compose',
+                    background: state.compose.background,
+                    product: state.compose.product,
+                    decoration: state.compose.decoration || null,
+                    headline: state.compose.headline,
+                    subtitle: state.compose.subtitle,
+                    cta: state.compose.cta,
+                    sizes: state.compose.selectedSizes
+                };
+
+                const layouts = await callAPI(payload);
+
+                state.results.compose = layouts;
+                await renderComposePreviews(layouts);
+                previewSection.classList.add('active');
+                showToast('AI æçå®æï¼', 'success');
+            } catch (error) {
+                showToast('èçå¤±æ: ' + error.message, 'error');
+            } finally {
+                progressContainer.classList.remove('active');
+            }
+        }
+
+        // ==================== API Communication ====================
+        function stripDataURL(dataUrl) {
+            if (!dataUrl) return null;
+            const idx = dataUrl.indexOf(',');
+            return idx >= 0 ? dataUrl.substring(idx + 1) : dataUrl;
+        }
+        function getMimeFromDataURL(dataUrl) {
+            if (!dataUrl) return 'image/png';
+            const m = dataUrl.match(/^data:([^;]+);/);
+            return m ? m[1] : 'image/png';
+        }
+
+        async function callAPI(payload) {
+            if (!IS_DESIGN_PORTAL) {
+                return generateFallbackLayouts(payload);
+            }
+            // Strip data URL prefixes for API
+            const cleanPayload = { ...payload };
+            if (cleanPayload.mode === 'crop') {
+                cleanPayload.mimeType = getMimeFromDataURL(cleanPayload.image);
+                cleanPayload.image = stripDataURL(cleanPayload.image);
+            } else {
+                cleanPayload.backgroundMime = getMimeFromDataURL(cleanPayload.background);
+                cleanPayload.productMime = getMimeFromDataURL(cleanPayload.product);
+                cleanPayload.background = stripDataURL(cleanPayload.background);
+                cleanPayload.product = stripDataURL(cleanPayload.product);
+                if (cleanPayload.decoration) {
+                    cleanPayload.decorationMime = getMimeFromDataURL(cleanPayload.decoration);
+                    cleanPayload.decoration = stripDataURL(cleanPayload.decoration);
+                }
+            }
+
+            try {
+                const response = await fetch(API_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(cleanPayload)
+                });
 
                 if (!response.ok) throw new Error('API request failed');
                 const data = await response.json();
@@ -1594,7 +1726,7 @@
             initializeTabs();
             initializeSizeSelectors();
             initializeFileUploads();
-            initializeTextInputs();
+            setupComposeTextInputs();
             initializeActions();
         });
     </script>
