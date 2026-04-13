@@ -211,6 +211,68 @@
             background-size: contain;
         }
 
+        .logo-overlay.custom {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+        }
+
+        .logo-overlay.custom img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* Logo Upload Area */
+        .logo-upload-hint {
+            display: none;
+            margin-top: 12px;
+            padding: 16px;
+            border: 2px dashed var(--teal);
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--teal-l);
+        }
+
+        .logo-upload-hint:hover {
+            background: rgba(97, 208, 223, 0.2);
+            border-color: var(--teal-d);
+        }
+
+        .logo-upload-hint.has-logo {
+            border-style: solid;
+            border-color: #10B981;
+            background: #ECFDF5;
+        }
+
+        .logo-upload-hint .upload-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .logo-upload-hint .upload-text {
+            font-size: 13px;
+            color: var(--text);
+        }
+
+        .logo-upload-hint .upload-text small {
+            display: block;
+            color: var(--gray);
+            margin-top: 2px;
+        }
+
+        .logo-upload-preview {
+            max-width: 80px;
+            max-height: 60px;
+            object-fit: contain;
+            margin: 4px auto;
+            display: block;
+            border-radius: 4px;
+        }
+
         /* Controls */
         .controls {
             background: var(--warm);
@@ -240,7 +302,7 @@
 
         .style-buttons {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 12px;
         }
 
@@ -555,6 +617,14 @@
                     <button class="style-btn active" data-style="teal-circle">淨 圓形</button>
                     <button class="style-btn" data-style="text">CLEANCLEAN</button>
                     <button class="style-btn" data-style="wave">波紋</button>
+                    <button class="style-btn" data-style="custom">📤 自訂上傳</button>
+                </div>
+                <div class="logo-upload-hint" id="logoUploadHint">
+                    <div class="upload-icon">🖼</div>
+                    <div class="upload-text">
+                        點擊上傳 Logo 去背圖
+                        <small>PNG 透明背景效果最佳</small>
+                    </div>
                 </div>
             </div>
 
@@ -644,6 +714,7 @@
         let logoSize = 120;
         let logoPosition = 'top-left';
         let logoOpacity = 100;
+        let customLogoSrc = null;
 
         // DOM Elements
         const dropZone = document.getElementById('dropZone');
@@ -693,7 +764,10 @@
                     currentImage = e.target.result;
                     previewImage.src = currentImage;
                     previewImage.style.display = 'block';
-                    logoOverlay.style.display = 'flex';
+                    // Show logo overlay (unless custom mode without uploaded logo)
+                    if (logoStyle !== 'custom' || customLogoSrc) {
+                        logoOverlay.style.display = 'flex';
+                    }
                     dropZone.style.display = 'none';
                     updateLogoPosition();
                 };
@@ -713,15 +787,36 @@
 
         function updateLogoStyle() {
             logoOverlay.className = 'logo-overlay ' + logoStyle;
+            logoOverlay.style.mixBlendMode = 'multiply';
+            const uploadHint = document.getElementById('logoUploadHint');
 
             if (logoStyle === 'teal-circle') {
                 logoOverlay.innerHTML = '淨';
                 logoOverlay.style.color = 'white';
+                if (currentImage) logoOverlay.style.display = 'flex';
+                uploadHint.style.display = 'none';
             } else if (logoStyle === 'text') {
                 logoOverlay.innerHTML = 'CLEANCLEAN';
                 logoOverlay.style.fontSize = (logoSize * 0.4) + 'px';
+                if (currentImage) logoOverlay.style.display = 'flex';
+                uploadHint.style.display = 'none';
             } else if (logoStyle === 'wave') {
                 logoOverlay.innerHTML = '';
+                if (currentImage) logoOverlay.style.display = 'flex';
+                uploadHint.style.display = 'none';
+            } else if (logoStyle === 'custom') {
+                uploadHint.style.display = 'block';
+                if (customLogoSrc) {
+                    logoOverlay.innerHTML = '';
+                    const img = document.createElement('img');
+                    img.src = customLogoSrc;
+                    img.alt = '自訂 Logo';
+                    logoOverlay.appendChild(img);
+                    if (currentImage) logoOverlay.style.display = 'flex';
+                } else {
+                    logoOverlay.innerHTML = '';
+                    logoOverlay.style.display = 'none';
+                }
             }
 
             updateLogoSize();
@@ -768,6 +863,47 @@
             logoOpacity = parseInt(e.target.value);
             document.getElementById('opacityValue').textContent = logoOpacity;
             logoOverlay.style.opacity = logoOpacity / 100;
+        });
+
+        // Logo Upload
+        const logoUploadHint = document.getElementById('logoUploadHint');
+
+        function handleLogoUpload(file) {
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    customLogoSrc = ev.target.result;
+                    logoUploadHint.classList.add('has-logo');
+                    logoUploadHint.innerHTML = '';
+                    const prevImg = document.createElement('img');
+                    prevImg.className = 'logo-upload-preview';
+                    prevImg.src = customLogoSrc;
+                    prevImg.alt = 'Logo 預覽';
+                    logoUploadHint.appendChild(prevImg);
+                    const textDiv = document.createElement('div');
+                    textDiv.className = 'upload-text';
+                    textDiv.innerHTML = '已上傳 — 點擊更換<small>' + file.name + '</small>';
+                    logoUploadHint.appendChild(textDiv);
+                    logoOverlay.style.display = 'flex';
+                    logoOverlay.innerHTML = '';
+                    const logoImg = document.createElement('img');
+                    logoImg.src = customLogoSrc;
+                    logoImg.alt = '自訂 Logo';
+                    logoOverlay.appendChild(logoImg);
+                    logoOverlay.style.mixBlendMode = 'multiply';
+                    updateLogoSize();
+                    updateLogoPosition();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        logoUploadHint.addEventListener('click', () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.addEventListener('change', (e) => handleLogoUpload(e.target.files[0]));
+            input.click();
         });
 
         // Initialize
