@@ -665,7 +665,20 @@
                 max-width: none;
             }
         }
-    </style>
+    
+            /* Text Layer Upload Zones */
+            .headline-layer { border-color: var(--teal); background: linear-gradient(135deg, rgba(97,208,223,0.06) 0%, rgba(255,255,255,0.8) 100%); }
+            .subtitle-layer { border-color: #B8D4E3; background: linear-gradient(135deg, rgba(184,212,227,0.06) 0%, rgba(255,255,255,0.8) 100%); }
+            .cta-layer { border-color: #F0D9D9; background: linear-gradient(135deg, rgba(240,217,217,0.06) 0%, rgba(255,255,255,0.8) 100%); }
+            .headline-layer:hover, .subtitle-layer:hover, .cta-layer:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+
+            /* Export Options */
+            .export-options { background: var(--light-gray); border-radius: var(--radius-s); padding: 16px 20px; margin-top: 16px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+            .export-options label { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; }
+            .export-options input[type="text"] { flex: 1; min-width: 200px; padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; }
+            .export-options select { padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; background: white; }
+
+            </style>
 </head>
 <body>
     <!-- Header -->
@@ -753,19 +766,28 @@
             </div>
 
             <div class="upload-section">
-                <h3>文案內容</h3>
-                <div class="text-inputs">
-                    <div class="text-input-group">
-                        <label for="composeHeadline">主標題 *</label>
-                        <input type="text" id="composeHeadline" placeholder="輸入主標題">
+                <h3>文字圖層</h3>
+                <div class="layer-grid">
+                    <div class="layer-box headline-layer" id="headlineDropZone">
+                        <div class="layer-icon">🏷️</div>
+                        <div class="layer-label">主標題圖層</div>
+                        <div class="layer-hint">PNG (透明背景，必需)</div>
+                        <input type="file" accept="image/*" style="display:none" id="headlineFileInput">
+                        <div class="upload-preview" id="headlinePreview"></div>
                     </div>
-                    <div class="text-input-group">
-                        <label for="composeSubtitle">副標題</label>
-                        <input type="text" id="composeSubtitle" placeholder="輸入副標題 (選填)">
+                    <div class="layer-box subtitle-layer" id="subtitleDropZone">
+                        <div class="layer-icon">📝</div>
+                        <div class="layer-label">副標題圖層</div>
+                        <div class="layer-hint">PNG (透明背景，選填)</div>
+                        <input type="file" accept="image/*" style="display:none" id="subtitleFileInput">
+                        <div class="upload-preview" id="subtitlePreview"></div>
                     </div>
-                    <div class="text-input-group">
-                        <label for="composeCta">CTA 文案</label>
-                        <input type="text" id="composeCta" placeholder="輸入按鈕文案 (選填)">
+                    <div class="layer-box cta-layer" id="ctaDropZone">
+                        <div class="layer-icon">🔘</div>
+                        <div class="layer-label">CTA 按鈕圖層</div>
+                        <div class="layer-hint">PNG (透明背景，選填)</div>
+                        <input type="file" accept="image/*" style="display:none" id="ctaFileInput">
+                        <div class="upload-preview" id="ctaPreview"></div>
                     </div>
                 </div>
             </div>
@@ -789,6 +811,16 @@
             <div class="preview-section" id="composePreviewSection">
                 <h3>預覽結果</h3>
                 <div class="preview-grid" id="composePreviewGrid"></div>
+                <div class="export-options" id="composeExportOptions" style="display:none">
+                    <label>檔名前綴：</label>
+                    <input type="text" id="composeFilenamePrefix" value="cleanclean" placeholder="輸入檔名前綴">
+                    <label>格式：</label>
+                    <select id="composeExportFormat">
+                        <option value="png">PNG 無損</option>
+                        <option value="jpg-90" selected>JPG 高品質 90%</option>
+                        <option value="jpg-80">JPG 標準 80%</option>
+                    </select>
+                </div>
                 <button class="download-all-btn" id="composeDownloadAll">全部下載 (ZIP)</button>
             </div>
         </div>
@@ -849,9 +881,9 @@
                 background: null,
                 product: null,
                 decoration: null,
-                headline: '',
-                subtitle: '',
-                cta: '',
+                headline: null,
+                subtitle: null,
+                cta: null,
                 selectedSizes: []
             },
             results: {
@@ -1080,20 +1112,35 @@
             `;
         }
 
-        function displayComposePreview(type, fileName, fileSize) {
-            const previewId = type === 'background' ? 'bgPreview' : type === 'product' ? 'productPreview' : 'decorationPreview';
+        function displayComposePreview(type, dataUrl) {
+            const previewMap = {
+                background: 'bgPreview',
+                product: 'productPreview',
+                decoration: 'decorationPreview',
+                headline: 'headlinePreview',
+                subtitle: 'subtitlePreview',
+                cta: 'ctaPreview'
+            };
+            const previewId = previewMap[type];
+            if (!previewId) return;
             const preview = document.getElementById(previewId);
-            const imageData = state.compose[type === 'background' ? 'background' : type];
-            preview.innerHTML = `
-                <div class="preview-item">
-                    <img src="${imageData}" class="preview-thumbnail" alt="">
-                    <div class="preview-info">
-                        <div class="preview-name">${fileName}</div>
-                        <div class="preview-size">${formatFileSize(fileSize)}</div>
-                    </div>
-                    <button class="remove-btn" onclick="removeComposeImage('${type}')">移除</button>
-                </div>
-            `;
+            if (!preview) return;
+            preview.innerHTML = '';
+            const img = document.createElement('img');
+            img.src = dataUrl;
+            img.style.maxWidth = '100%';
+            img.style.maxHeight = '120px';
+            img.style.borderRadius = '8px';
+            preview.appendChild(img);
+            preview.style.display = 'block';
+            // Hide the icon and labels in the drop zone
+            const dropZone = preview.parentElement;
+            const icon = dropZone.querySelector('.layer-icon');
+            const label = dropZone.querySelector('.layer-label');
+            const hint = dropZone.querySelector('.layer-hint');
+            if (icon) icon.style.display = 'none';
+            if (label) label.style.display = 'none';
+            if (hint) hint.style.display = 'none';
         }
 
         function removeCropImage() {
@@ -1119,15 +1166,27 @@
         }
 
         // ==================== Text Input Handling ====================
-        function initializeTextInputs() {
-            document.getElementById('composeHeadline').addEventListener('change', (e) => {
-                state.compose.headline = e.target.value;
-            });
-            document.getElementById('composeSubtitle').addEventListener('change', (e) => {
-                state.compose.subtitle = e.target.value;
-            });
-            document.getElementById('composeCta').addEventListener('change', (e) => {
-                state.compose.cta = e.target.value;
+        function setupComposeTextInputs() {
+            // Text layer drop zones (headline, subtitle, cta)
+            const textLayerTypes = [
+                { type: 'headline', dropZone: 'headlineDropZone', fileInput: 'headlineFileInput', preview: 'headlinePreview', required: true },
+                { type: 'subtitle', dropZone: 'subtitleDropZone', fileInput: 'subtitleFileInput', preview: 'subtitlePreview', required: false },
+                { type: 'cta', dropZone: 'ctaDropZone', fileInput: 'ctaFileInput', preview: 'ctaPreview', required: false }
+            ];
+            textLayerTypes.forEach(({ type, dropZone, fileInput, preview, required }) => {
+                const dz = document.getElementById(dropZone);
+                const fi = document.getElementById(fileInput);
+                if (!dz || !fi) return;
+                dz.addEventListener('click', () => fi.click());
+                dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.classList.add('drag-over'); });
+                dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
+                dz.addEventListener('drop', (e) => {
+                    e.preventDefault(); dz.classList.remove('drag-over');
+                    if (e.dataTransfer.files.length) handleComposeImageSelected(type, e.dataTransfer.files[0]);
+                });
+                fi.addEventListener('change', (e) => {
+                    if (e.target.files.length) handleComposeImageSelected(type, e.target.files[0]);
+                });
             });
         }
 
@@ -1136,140 +1195,28 @@
             document.getElementById('cropStartBtn').addEventListener('click', handleCropStart);
             document.getElementById('composeStartBtn').addEventListener('click', handleComposeStart);
             document.getElementById('cropDownloadAll').addEventListener('click', () => downloadAllAsZip('crop'));
-            document.getElementById('composeDownloadAll').addEventListener('click', () => downloadAllAsZip('compose'));
-        }
-
-        async function handleCropStart() {
-            if (!state.crop.image) {
-                showToast('請上傳設計圖', 'error');
-                return;
-            }
-            if (state.crop.selectedSizes.length === 0) {
-                showToast('請選擇至少一個尺寸', 'error');
-                return;
-            }
-
-            await processCrop();
-        }
-
-        async function handleComposeStart() {
-            if (!state.compose.background || !state.compose.product) {
-                showToast('請上傳背景圖和產品圖', 'error');
-                return;
-            }
-            if (!state.compose.headline) {
-                showToast('請輸入主標題', 'error');
-                return;
-            }
-            if (state.compose.selectedSizes.length === 0) {
-                showToast('請選擇至少一個尺寸', 'error');
-                return;
-            }
-
-            await processCompose();
-        }
-
-        async function processCrop() {
-            const progressContainer = document.getElementById('cropProgress');
-            const previewSection = document.getElementById('cropPreviewSection');
-            const previewGrid = document.getElementById('cropPreviewGrid');
-
-            progressContainer.classList.add('active');
-            previewSection.classList.remove('active');
-
-            try {
-                const payload = {
-                    mode: 'crop',
-                    image: state.crop.image,
-                    mimeType: state.crop.mimeType,
-                    sizes: state.crop.selectedSizes
-                };
-
-                const layouts = await callAPI(payload);
-
-                state.results.crop = layouts;
-                renderCropPreviews(layouts);
-                previewSection.classList.add('active');
-                showToast('智能裁切完成！', 'success');
-            } catch (error) {
-                showToast('處理失敗: ' + error.message, 'error');
-            } finally {
-                progressContainer.classList.remove('active');
-            }
-        }
-
-        async function processCompose() {
-            const progressContainer = document.getElementById('composeProgress');
-            const previewSection = document.getElementById('composePreviewSection');
-            const previewGrid = document.getElementById('composePreviewGrid');
-
-            progressContainer.classList.add('active');
-            previewSection.classList.remove('active');
-
-            try {
-                const payload = {
-                    mode: 'compose',
-                    background: state.compose.background,
-                    product: state.compose.product,
-                    decoration: state.compose.decoration || null,
-                    headline: state.compose.headline,
-                    subtitle: state.compose.subtitle,
-                    cta: state.compose.cta,
-                    sizes: state.compose.selectedSizes
-                };
-
-                const layouts = await callAPI(payload);
-
-                state.results.compose = layouts;
-                await renderComposePreviews(layouts);
-                previewSection.classList.add('active');
-                showToast('AI 排版完成！', 'success');
-            } catch (error) {
-                showToast('處理失敗: ' + error.message, 'error');
-            } finally {
-                progressContainer.classList.remove('active');
-            }
-        }
-
-        // ==================== API Communication ====================
-        function stripDataURL(dataUrl) {
-            if (!dataUrl) return null;
-            const idx = dataUrl.indexOf(',');
-            return idx >= 0 ? dataUrl.substring(idx + 1) : dataUrl;
-        }
-        function getMimeFromDataURL(dataUrl) {
-            if (!dataUrl) return 'image/png';
-            const m = dataUrl.match(/^data:([^;]+);/);
-            return m ? m[1] : 'image/png';
-        }
-
-        async function callAPI(payload) {
-            if (!IS_DESIGN_PORTAL) {
-                return generateFallbackLayouts(payload);
-            }
-
-            // Strip data URL prefixes for API
-            const cleanPayload = { ...payload };
-            if (cleanPayload.mode === 'crop') {
-                cleanPayload.mimeType = getMimeFromDataURL(cleanPayload.image);
-                cleanPayload.image = stripDataURL(cleanPayload.image);
-            } else {
-                cleanPayload.backgroundMime = getMimeFromDataURL(cleanPayload.background);
-                cleanPayload.productMime = getMimeFromDataURL(cleanPayload.product);
-                cleanPayload.background = stripDataURL(cleanPayload.background);
-                cleanPayload.product = stripDataURL(cleanPayload.product);
-                if (cleanPayload.decoration) {
-                    cleanPayload.decorationMime = getMimeFromDataURL(cleanPayload.decoration);
-                    cleanPayload.decoration = stripDataURL(cleanPayload.decoration);
+            document.getElementById('composeDownloadAll').addEventListener('click', async () => {
+                const prefix = document.getElementById('composeFilenamePrefix').value || 'cleanclean';
+                const formatOption = document.getElementById('composeExportFormat').value;
+                const grid = document.getElementById('composePreviewGrid');
+                const containers = grid.querySelectorAll('.preview-card, [data-size-name]');
+                const canvases = grid.querySelectorAll('canvas');
+                for (let i = 0; i < canvases.length; i++) {
+                    const canvas = canvases[i];
+                    const container = canvas.closest('.preview-card') || canvas.parentElement;
+                    const sizeName = (container && container.dataset.sizeName) || (canvas.dataset.sizeName) || ('size_' + (i + 1));
+                    let mimeType, quality, ext;
+                    if (formatOption === 'png') { mimeType = 'image/png'; quality = 1; ext = 'png'; }
+                    else if (formatOption === 'jpg-90') { mimeType = 'image/jpeg'; quality = 0.9; ext = 'jpg'; }
+                    else { mimeType = 'image/jpeg'; quality = 0.8; ext = 'jpg'; }
+                    const dataUrl = canvas.toDataURL(mimeType, quality);
+                    const link = document.createElement('a');
+                    link.download = prefix + '_' + sizeName.replace(/\s+/g, '_') + '.' + ext;
+                    link.href = dataUrl;
+                    link.click();
+                    await new Promise(r => setTimeout(r, 300));
                 }
-            }
-
-            try {
-                const response = await fetch(API_ENDPOINT, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(cleanPayload)
-                });
+            })
 
                 if (!response.ok) throw new Error('API request failed');
                 const data = await response.json();
@@ -1392,6 +1339,7 @@
                 const canvas = document.createElement('canvas');
                 canvas.width = Math.min(layout.width, 400);
                 canvas.height = (canvas.width / layout.width) * layout.height;
+                canvas.dataset.sizeName = layout.name;
 
                 await renderComposeCanvas(canvas, layout);
 
@@ -1410,6 +1358,7 @@
                 canvas.style.cursor = 'pointer';
                 canvas.addEventListener('click', () => showComposeModal(canvas, layout.name));
             }
+            document.getElementById('composeExportOptions').style.display = 'flex';
         }
 
         async function renderComposeCanvas(canvas, layout) {
