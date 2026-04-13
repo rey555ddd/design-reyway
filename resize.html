@@ -678,7 +678,24 @@
             .export-options input[type="text"] { flex: 1; min-width: 200px; padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; }
             .export-options select { padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; background: white; }
 
-            </style>
+            
+        /* AI Chat Panel */
+        .ai-chat-panel { background: var(--light-gray); border: 1px solid #e0e0e0; border-radius: var(--radius); padding: 20px; margin-top: 20px; }
+        .chat-header h3 { margin: 0 0 4px 0; font-size: 16px; color: var(--text); }
+        .chat-hint { font-size: 12px; color: var(--text-light); }
+        .chat-messages { max-height: 300px; overflow-y: auto; margin: 16px 0; display: flex; flex-direction: column; gap: 8px; min-height: 40px; }
+        .chat-msg { padding: 10px 14px; border-radius: 12px; font-size: 14px; line-height: 1.5; max-width: 85%; word-break: break-word; }
+        .chat-msg.user { background: var(--teal); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .chat-msg.ai { background: #fff; border: 1px solid #e0e0e0; align-self: flex-start; border-bottom-left-radius: 4px; color: var(--text); }
+        .chat-msg.loading { opacity: 0.7; font-style: italic; }
+        .chat-input-area { display: flex; gap: 8px; }
+        .chat-input-area input { flex: 1; padding: 10px 14px; border-radius: 12px; border: 1px solid #ddd; background: #fff; color: var(--text); font-size: 14px; outline: none; }
+        .chat-input-area input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(97,208,223,0.15); }
+        .chat-send-btn { padding: 10px 20px; background: var(--teal); color: #fff; border: none; border-radius: 12px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.2s; }
+        .chat-send-btn:hover { background: var(--teal-d); }
+        .chat-send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .chat-empty-hint { text-align: center; color: var(--text-light); font-size: 13px; padding: 12px 0; }
+</style>
 </head>
 <body>
     <!-- Header -->
@@ -823,6 +840,21 @@
                 </div>
                 <button class="download-all-btn" id="composeDownloadAll">全部下載 (ZIP)</button>
             </div>
+
+            <!-- AI Chat Dialog -->
+            <div class="ai-chat-panel" id="composeChatPanel" style="display:none">
+                <div class="chat-header">
+                    <h3>💬 AI 排版助手</h3>
+                    <span class="chat-hint">告訴 AI 你想怎麼調整，例如「產品圖往左移」「標題放大」「CTA 按鈕移到右下角」</span>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="chat-empty-hint">生成完成！如果需要調整，請在下方輸入指令。</div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="chatInput" placeholder="輸入調整指令..." />
+                    <button id="chatSendBtn" class="chat-send-btn">發送</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -889,6 +921,10 @@
             results: {
                 crop: [],
                 compose: []
+            },
+            chat: {
+                history: [],
+                isProcessing: false
             }
         };
 
@@ -1333,7 +1369,7 @@
             if (cleanPayload.mode === 'crop') {
                 cleanPayload.mimeType = getMimeFromDataURL(cleanPayload.image);
                 cleanPayload.image = stripDataURL(cleanPayload.image);
-            } else {
+            } else if (cleanPayload.mode === 'compose') {
                 cleanPayload.backgroundMime = getMimeFromDataURL(cleanPayload.background);
                 cleanPayload.productMime = getMimeFromDataURL(cleanPayload.product);
                 cleanPayload.background = stripDataURL(cleanPayload.background);
@@ -1343,6 +1379,7 @@
                     cleanPayload.decoration = stripDataURL(cleanPayload.decoration);
                 }
             }
+            // refine mode: no image stripping needed
 
             try {
                 const response = await fetch(API_ENDPOINT, {
@@ -1361,6 +1398,10 @@
         }
 
         function generateFallbackLayouts(payload) {
+            if (payload.mode === 'refine') {
+                // Fallback: return previous layouts unchanged
+                return payload.previousLayouts || [];
+            }
             if (payload.mode === 'crop') {
                 // Smart center-crop based on target aspect ratio
                 return payload.sizes.map(size => {
@@ -1492,6 +1533,7 @@
                 canvas.addEventListener('click', () => showComposeModal(canvas, layout.name));
             }
             document.getElementById('composeExportOptions').style.display = 'flex';
+            showChatPanel();
         }
 
         async function renderComposeCanvas(canvas, layout) {
@@ -1722,6 +1764,86 @@
             }, 3000);
         }
 
+        // ==================== AI Chat ====================
+        function setupChatHandler() {
+            const input = document.getElementById('chatInput');
+            const sendBtn = document.getElementById('chatSendBtn');
+            if (!input || !sendBtn) return;
+
+            async function sendChat() {
+                const feedback = input.value.trim();
+                if (!feedback || state.chat.isProcessing) return;
+
+                state.chat.isProcessing = true;
+                sendBtn.disabled = true;
+                input.value = '';
+
+                const emptyHint = document.querySelector('#chatMessages .chat-empty-hint');
+                if (emptyHint) emptyHint.remove();
+
+                addChatMessage(feedback, 'user');
+                const loadingMsg = addChatMessage('AI \u6B63\u5728\u8ABF\u6574\u6392\u7248...', 'ai loading');
+
+                try {
+                    const payload = {
+                        mode: 'refine',
+                        previousLayouts: state.results.compose,
+                        feedback: feedback,
+                        sizes: state.compose.selectedSizes
+                    };
+
+                    const layouts = await callAPI(payload);
+                    state.results.compose = layouts;
+                    await renderComposePreviews(layouts);
+
+                    loadingMsg.textContent = '\u2705 \u6392\u7248\u5DF2\u66F4\u65B0\uFF01\u8ACB\u67E5\u770B\u4E0A\u65B9\u9810\u89BD\u3002';
+                    loadingMsg.classList.remove('loading');
+
+                    state.chat.history.push({ role: 'user', content: feedback });
+                    state.chat.history.push({ role: 'ai', content: '\u6392\u7248\u5DF2\u66F4\u65B0' });
+
+                    showToast('\u6392\u7248\u5DF2\u66F4\u65B0\uFF01', 'success');
+                } catch (error) {
+                    loadingMsg.textContent = '\u274C \u8ABF\u6574\u5931\u6557: ' + error.message;
+                    loadingMsg.classList.remove('loading');
+                    showToast('\u8ABF\u6574\u5931\u6557: ' + error.message, 'error');
+                } finally {
+                    state.chat.isProcessing = false;
+                    sendBtn.disabled = false;
+                    input.focus();
+                }
+            }
+
+            sendBtn.addEventListener('click', sendChat);
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.isComposing) sendChat();
+            });
+        }
+
+        function addChatMessage(text, className) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const msg = document.createElement('div');
+            msg.className = 'chat-msg ' + className;
+            msg.textContent = text;
+            messagesDiv.appendChild(msg);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            return msg;
+        }
+
+        function showChatPanel() {
+            const panel = document.getElementById('composeChatPanel');
+            if (panel) panel.style.display = 'block';
+        }
+
+        function resetChatPanel() {
+            const panel = document.getElementById('composeChatPanel');
+            const messages = document.getElementById('chatMessages');
+            if (panel) panel.style.display = 'none';
+            if (messages) messages.innerHTML = '<div class="chat-empty-hint">\u751F\u6210\u5B8C\u6210\uFF01\u5982\u679C\u9700\u8981\u8ABF\u6574\uFF0C\u8ACB\u5728\u4E0B\u65B9\u8F38\u5165\u6307\u4EE4\u3002</div>';
+            state.chat.history = [];
+            state.chat.isProcessing = false;
+        }
+
         // ==================== Initialization ====================
         document.addEventListener('DOMContentLoaded', () => {
             initializeTabs();
@@ -1729,6 +1851,7 @@
             initializeFileUploads();
             setupComposeTextInputs();
             initializeActions();
+            setupChatHandler();
         });
     </script>
 </body>
