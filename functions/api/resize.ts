@@ -33,9 +33,39 @@ interface ComposeRequest {
   sizes: SizeSpec[];
 }
 
-type ResizeRequest = CropRequest | ComposeRequest;
 
-function buildCropPrompt(sizes: SizeSpec[]): string {
+interface RefineRequest {
+  mode: 'refine';
+  previousLayouts: any[];
+  feedback: string;
+  sizes: SizeSpec[];
+}
+
+type ResizeRequest = CropRequest | ComposeRequest | RefineRequest;
+
+function buildRefinePrompt(previousLayouts: any[], feedback: string): string {
+  return `ä½ æ¯ä¸åå°æ¥­çå¹³é¢è¨­è¨æç AIãä»¥ä¸æ¯ä½ ä¹åçºå¤åçä½ç¢åºçæçæä»¤ JSONï¼
+
+${JSON.stringify(previousLayouts, null, 2)}
+
+ä½¿ç¨èå¸æåä»¥ä¸èª¿æ´ï¼
+"${feedback}"
+
+è«æ ¹æä½¿ç¨èçè¦æ±ï¼ä¿®æ¹ä¸è¿°æçæä»¤ãè¦åï¼
+1. åªä¿®æ¹ä½¿ç¨èæå°çé¨åï¼å¶ä»åæ¸ä¿æä¸è®
+2. ææåº§æ¨ä»ç¶æ¯ 0~1 çæ¯ä¾å¼
+3. fontSize ä»ç¶æ¯çµå°åç´ å¼ï¼è¦æ ¹æçä½å°ºå¯¸åçèª¿æ´
+4. åå³å®æ´ç layouts JSONï¼æ ¼å¼èåæ¬å®å¨ç¸å
+5. æ¯åçä½é½è¦å¥ç¨ç¸åçèª¿æ´éè¼¯
+
+è«å´æ ¼ä»¥ JSON æ ¼å¼åå³ï¼ä¸è¦æä»»ä½å¶ä»æå­ãæ ¼å¼ï¼
+{
+  "layouts": [å®æ´çä¿®æ¹å¾æçé£å]
+}`;
+}
+
+function buildCropPrompt
+(sizes: SizeSpec[]): string {
   const sizeList = sizes.map(s => `- "${s.name}": ${s.width}Ã${s.height}`).join('\n');
 
   return `ä½ æ¯ä¸åå°æ¥­çå¹³é¢è¨­è¨æç AIãåæéå¼µè¨­è¨ç¨¿åçï¼æ¾åºç«é¢ä¸­çééµå§å®¹ååï¼ç¢åãæå­ãLogoãä¸»è¦è¦è¦ºåç´ ï¼ã
@@ -232,12 +262,23 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         });
       }
       parts.push({ text: prompt });
+    } else if (body.mode === 'refine') {
+      const refineBody = body as RefineRequest;
+      if (!refineBody.previousLayouts || !refineBody.feedback) {
+        return new Response(
+          JSON.stringify({ error: 'Missing previousLayouts or feedback for refine mode' }),
+          { status: 400, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+      prompt = buildRefinePrompt(refineBody.previousLayouts, refineBody.feedback);
+      parts.push({ text: prompt });
     } else {
       return new Response(
-        JSON.stringify({ error: 'Invalid mode. Use "crop" or "compose".' }),
+        JSON.stringify({ error: 'Invalid mode. Use "crop", "compose", or "refine".' }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
+
 
     // Call Gemini API
     const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
