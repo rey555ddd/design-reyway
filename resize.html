@@ -1034,7 +1034,8 @@
         function setupComposeUploads() {
             ['background', 'product', 'decoration'].forEach(type => {
                 const card = document.getElementById(`${type === 'background' ? 'bg' : type}UploadCard`);
-                const input = document.getElementById(`${type}ImageInput`);
+                const input = document.getElementById(`${type === 'background' ? 'bg' : type}ImageInput`);
+                if (!card || !input) return;
 
                 card.addEventListener('dragover', (e) => {
                     e.preventDefault();
