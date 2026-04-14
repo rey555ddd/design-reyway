@@ -1,0 +1,56 @@
+/* ============================================================
+   淨淨 CleanClean — Brand CSS
+   design.reyway.com 共用設計 token 與基底樣式
+   視覺規範：淺色白底、teal 點綴、Noto Sans TC + Inter
+   ============================================================ */
+
+:root {
+  /* 主色：居家清潔青綠 */
+  --teal: #61D0DF;
+  --teal-d: #329BAF;
+  --teal-l: #EBF9FC;
+  --teal-xl: #F4FBFC;
+
+  /* 暖色：個護／周邊 */
+  --warm: #F5EDE3;
+  --warm-d: #E8D5C0;
+  --blush: #F0D9D9;
+
+  /* 文字與中性色 */
+  --dark: #1E2230;
+  --text: #2D3142;
+  --gray: #8C8C8C;
+  --light-gray: #F7F8FA;
+  --white: #FFFFFF;
+
+  /* 狀態色 */
+  --amber: #B8860B;
+  --amber-bg: #FFF8E6;
+  --success: #1A8A56;
+  --success-bg: #E6F9F0;
+
+  /* 形狀 */
+  --radius: 20px;
+  --radius-s: 12px;
+
+  /* 字體 */
+  --font-sans: 'Noto Sans TC', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'Inter', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* Reset */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  font-family: var(--font-sans);
+  background: var(--white);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body { min-height: 100vh; overflow-x: hidden; }
+
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
