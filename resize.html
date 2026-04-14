@@ -1854,5 +1854,29 @@
             setupChatHandler();
         });
     </script>
+
+    <!-- 淨淨 AI 對話面板 -->
+    <script src="assets/chat-panel.js"></script>
+    <script>
+    CCChatPanel.init({
+        toolName: 'Resize 小幫手',
+        systemPrompt: '你是淨淨美學工作室的 AI 設計助理，專門協助使用者調整 Resize 小幫手產出的排版。淨淨品牌調性：淺色淡雅、teal 青綠色（#61D0DF）為主、中文 Noto Sans TC、英文 Inter、以家人標準開發、安心清潔。請用繁體中文、專業但溫暖的語氣。回答精簡（最多 3 段），並給出具體可執行的建議（例如「標題往上移 40px」「主色改為 #329BAF 加強對比」）。如果使用者上傳了素材圖，請先觀察它的構圖、顏色、主體位置再提建議。',
+        greeting: '嗨！我是 Resize 小幫手的 AI 助理。\n生成結果不滿意嗎？告訴我你想怎麼調整，我幫你想辦法 ✨',
+        suggestions: ['標題再放大一點', '產品置中', '主色太淡，加強對比', '加入更多留白'],
+        dailyLimit: 30,
+        getContext: () => {
+            const img = (typeof state !== 'undefined' && state.crop && state.crop.image) ? state.crop.image : null;
+            const notes = [];
+            if (typeof state !== 'undefined') {
+                if (state.crop && state.crop.ratio) notes.push(`目前比例：${state.crop.ratio}`);
+                if (state.selectedSize && state.selectedSize.name) notes.push(`目標版位：${state.selectedSize.name}`);
+            }
+            return {
+                imageUrl: img,
+                note: notes.length ? notes.join('；') : '使用者尚未上傳素材',
+            };
+        },
+    });
+    </script>
 </body>
 </html>
