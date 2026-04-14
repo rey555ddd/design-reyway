@@ -1,0 +1,21 @@
+# Local env / secrets
+.env
+.env.local
+.env.*.local
+.dev.vars
+
+# Cloudflare Wrangler
+.wrangler/
+wrangler.toml.backup
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Node (若未來引入)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
