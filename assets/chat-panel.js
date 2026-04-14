@@ -173,7 +173,8 @@
 
         const ctx = (opts.getContext && opts.getContext()) || {};
         const contextNote = ctx.note ? `\n\n【當前素材 context】\n${ctx.note}` : '';
-        const systemPrompt = opts.systemPrompt + contextNote;
+        const langLock = '\n\n【語言規範】請一律使用繁體中文（台灣用語）回覆，不可使用簡體字或中國大陸用語（例如：幫助 ✅ / 帮助 ❌、什麼 ✅ / 什么 ❌）。';
+        const systemPrompt = opts.systemPrompt + contextNote + langLock;
 
         let assistantBubble = null;
         let assistantText = '';
@@ -191,25 +192,31 @@
             }),
           });
 
-          const contentType = res.headers.get('content-type') || '';
-
-          // 錯誤路徑：後端回 JSON 錯誤（non-stream）
-          if(!res.ok || contentType.includes('application/json')){
+          // 錯誤路徑：後端回 JSON 錯誤（status 非 2xx）
+          if(!res.ok){
             const data = await res.json().catch(()=>({ error:'回應格式錯誤' }));
             loading.remove();
-            if(!res.ok || data.error){
-              const msg = `⚠ ${data.error || '發生錯誤'}${data.hint ? '\n'+data.hint : ''}${data.detail ? '\n'+data.detail : ''}`;
-              addMsg(body, 'assistant', msg, 'error');
-            }else if(data.reply){
-              // 極端情況：後端 fallback 成 non-stream
+            const msg = `⚠ ${data.error || '發生錯誤'}${data.hint ? '\n'+data.hint : ''}${data.detail ? '\n'+data.detail : ''}`;
+            addMsg(body, 'assistant', msg, 'error');
+            return;
+          }
+
+          // 沒有 body（理論上不會，但保險）→ 當 JSON 處理
+          if(!res.body){
+            const data = await res.json().catch(()=>({ error:'回應格式錯誤' }));
+            loading.remove();
+            if(data.reply){
               addMsg(body, 'assistant', data.reply);
               history.push({ role:'assistant', content: data.reply });
               quota.used += 1; writeQuota(quota); renderQuota();
+            }else{
+              addMsg(body, 'assistant', `⚠ ${data.error || '沒有回應'}`, 'error');
             }
             return;
           }
 
           // Streaming 路徑：SSE 逐段讀取
+          // 先偷看第一個 chunk：若起始字元是 '{'，表示後端意外回 JSON（非 stream），改走 JSON 分支
           const reader = res.body.getReader();
           const decoder = new TextDecoder();
           let buffer = '';
@@ -244,8 +251,22 @@
           }
 
           if(firstChunk){
-            // 串流沒任何內容
+            // 串流沒吐出 SSE delta → 可能是後端 fallback 成整塊 JSON
             loading.remove();
+            const leftover = buffer.trim();
+            if(leftover.startsWith('{')){
+              try{
+                const data = JSON.parse(leftover);
+                if(data.reply){
+                  addMsg(body, 'assistant', data.reply);
+                  history.push({ role:'assistant', content: data.reply });
+                  quota.used += 1; writeQuota(quota); renderQuota();
+                  return;
+                }
+                addMsg(body, 'assistant', `⚠ ${data.error || '沒有回應'}${data.hint ? '\n'+data.hint : ''}`, 'error');
+                return;
+              }catch{}
+            }
             addMsg(body, 'assistant', '（沒有收到回應）', 'error');
           }else{
             history.push({ role:'assistant', content: assistantText });
