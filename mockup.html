@@ -909,5 +909,28 @@
         // Initialize
         logoOverlay.style.opacity = logoOpacity / 100;
     </script>
+
+    <!-- 淨淨 AI 對話面板 -->
+    <script src="assets/chat-panel.js"></script>
+    <script>
+    CCChatPanel.init({
+        toolName: '周邊模擬器',
+        systemPrompt: '你是淨淨美學工作室的 AI 設計助理，專門協助使用者調整品牌周邊（購物袋、洗衣袋、T恤等）上的 Logo 配置。淨淨品牌調性：淺色淡雅、teal 青綠 #61D0DF、以家人標準開發、乾淨質感。請用繁體中文、專業但溫暖的語氣，回答精簡（最多 3 段）。給具體數值建議，例如：「Logo 放左上、大小約 120px、透明度 85% 配合材質紋理」、「改用白色圓形底的版本讓深色袋子更顯眼」。',
+        greeting: '嗨～我是周邊模擬器的 AI 助理。\n想讓 Logo 在袋子/T恤上更自然嗎？告訴我你的想法 ✨',
+        suggestions: ['Logo 偏大', '位置換右下', '配淺色袋子版本', '透明度降低更像印在布上'],
+        dailyLimit: 30,
+        getContext: () => {
+            const notes = [];
+            if (typeof logoStyle !== 'undefined') notes.push(`Logo 樣式：${logoStyle}`);
+            if (typeof logoSize !== 'undefined') notes.push(`Logo 大小：${logoSize}px`);
+            if (typeof logoPosition !== 'undefined') notes.push(`Logo 位置：${logoPosition}`);
+            if (typeof logoOpacity !== 'undefined') notes.push(`透明度：${logoOpacity}%`);
+            return {
+                imageUrl: (typeof currentImage !== 'undefined') ? currentImage : null,
+                note: notes.length ? notes.join('；') : '使用者尚未上傳周邊照片',
+            };
+        },
+    });
+    </script>
 </body>
 </html>

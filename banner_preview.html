@@ -421,6 +421,8 @@ const btnClear = document.getElementById('btn-clear');
 const slots = document.querySelectorAll('[data-slot]');
 
 function applyImage(dataUrl, name, size){
+  window.__ccCurrentImage = dataUrl;
+  window.__ccCurrentImageName = name;
   slots.forEach(s=>{
     s.style.backgroundImage = `url("${dataUrl}")`;
     s.classList.add('has-img');
@@ -433,6 +435,8 @@ function applyImage(dataUrl, name, size){
 }
 
 function clearImage(){
+  window.__ccCurrentImage = null;
+  window.__ccCurrentImageName = null;
   slots.forEach(s=>{
     s.style.backgroundImage = '';
     s.classList.remove('has-img');
@@ -466,6 +470,24 @@ uploader.addEventListener('drop', e => handleFile(e.dataTransfer.files[0]));
 
 btnReplace.addEventListener('click', e => { e.preventDefault(); input.click(); });
 btnClear.addEventListener('click', e => { e.preventDefault(); clearImage(); });
+</script>
+
+<!-- 淨淨 AI 對話面板 -->
+<script src="assets/chat-panel.js"></script>
+<script>
+CCChatPanel.init({
+  toolName: '素材即時預覽',
+  systemPrompt: '你是淨淨美學工作室的 AI 設計助理，專門協助使用者檢視素材在各平台（Shopline 官網+APP、IG 貼文、IG 限動、FB 粉專、蝦皮、Momo）的呈現。淨淨品牌調性：淺色淡雅、teal 青綠 #61D0DF、以家人標準開發。請用繁體中文、專業但溫暖的語氣，回答精簡（最多 3 段）。請針對素材在不同版位/比例/平台環境下的可讀性、主體位置、留白、對比給出具體建議，例如：「IG 限動 9:16 會把標題裁掉上下，建議把標題從中間往下移 10%」、「Shopline APP 的尺寸窄，主產品應放畫面 1/3 位置」。',
+  greeting: '嗨！我是素材即時預覽的 AI 助理。\n上傳素材後，我可以幫你檢查它在各平台是否 OK、怎麼調整會更好 ✨',
+  suggestions: ['這張在 IG 限動 OK 嗎？', '蝦皮商品圖會被切到嗎？', '給我改版建議', 'FB 貼文的主視覺夠清楚嗎？'],
+  dailyLimit: 30,
+  getContext: () => ({
+    imageUrl: window.__ccCurrentImage || null,
+    note: window.__ccCurrentImageName
+      ? `當前素材：${window.__ccCurrentImageName}；預覽平台：Shopline 網站/APP、IG 貼文/限動、FB、蝦皮、Momo`
+      : '使用者尚未上傳素材',
+  }),
+});
 </script>
 
 </body>
