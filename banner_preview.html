@@ -1,40 +1,472 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Banner é è¦½ | æ·¨æ·¨ç¾å­¸å·¥ä½å®¤</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --teal: #61D0DF;
-            --teal-d: #329BAF;
-            --dark: #1E2230;
-            --text: #2D3142;
-            --gray: #8C8C8C;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background-color: #FFF; color: var(--text); font-family: 'Noto Sans TC', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; animation: fadeIn 0.6s ease-in; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .container { text-align: center; max-width: 500px; width: 100%; }
-        .card { background: #FFF; border-radius: 12px; padding: 48px 32px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #F0F0F0; }
-        .icon { font-size: 56px; margin-bottom: 24px; display: block; }
-        .badge { display: inline-block; background: var(--teal); color: #FFF; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; margin-bottom: 16px; }
-        h1 { font-size: 28px; font-weight: 700; margin-bottom: 12px; color: var(--dark); }
-        .description { font-size: 14px; color: var(--gray); line-height: 1.6; margin-bottom: 32px; }
-        .button { display: inline-block; background: var(--teal); color: #FFF; padding: 12px 32px; border-radius: 6px; text-decoration: none; font-weight: 500; font-size: 14px; transition: all 0.3s; border: none; cursor: pointer; font-family: 'Noto Sans TC', sans-serif; }
-        .button:hover { background: var(--teal-d); transform: translateY(-2px); }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>素材即時預覽 — 淨淨美學工作室</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/brand.css">
+<style>
+/* ─── Page Header ─── */
+.page-header{
+  background:linear-gradient(135deg,var(--teal-xl) 0%,var(--white) 40%,var(--white) 60%,var(--teal-l) 100%);
+  padding:40px 40px 32px;border-bottom:1px solid #EEF0F2;
+}
+.page-header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+.page-title{display:flex;align-items:center;gap:16px;}
+.page-title .logo{
+  width:48px;height:48px;border-radius:14px;background:var(--teal);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:900;font-size:20px;
+  box-shadow:0 4px 16px rgba(97,208,223,.3);
+}
+.page-title h1{font-size:24px;font-weight:900;color:var(--dark);}
+.page-title .subtitle{font-size:13px;color:var(--gray);margin-top:2px;}
+.back-link{
+  font-size:13px;color:var(--gray);text-decoration:none;
+  padding:8px 14px;border-radius:var(--radius-s);border:1px solid #EEF0F2;
+  transition:all .2s;
+}
+.back-link:hover{color:var(--teal-d);border-color:var(--teal);}
+
+/* ─── Layout ─── */
+.main{max-width:1200px;margin:0 auto;padding:32px 40px 80px;}
+
+/* ─── Uploader ─── */
+.uploader{
+  background:var(--white);border:2px dashed #D8DEE3;border-radius:var(--radius);
+  padding:40px 32px;text-align:center;transition:all .25s ease;
+  cursor:pointer;margin-bottom:32px;position:relative;
+}
+.uploader:hover,.uploader.drag{border-color:var(--teal);background:var(--teal-xl);}
+.uploader-icon{
+  width:56px;height:56px;border-radius:50%;
+  background:var(--teal-l);color:var(--teal-d);
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;margin:0 auto 16px;
+}
+.uploader h2{font-size:18px;font-weight:700;color:var(--dark);margin-bottom:6px;}
+.uploader p{font-size:13px;color:var(--gray);}
+.uploader input[type=file]{display:none;}
+.uploader.has-img{padding:20px;text-align:left;display:flex;align-items:center;gap:16px;border-style:solid;border-color:var(--teal);}
+.uploader.has-img .uploader-icon{margin:0;width:48px;height:48px;font-size:20px;flex-shrink:0;}
+.uploader.has-img .uploader-meta{flex:1;min-width:0;}
+.uploader.has-img h2{font-size:15px;margin-bottom:2px;}
+.uploader.has-img p{font-size:12px;}
+.uploader-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.btn{
+  background:var(--white);border:1px solid #EEF0F2;color:var(--text);
+  padding:8px 14px;border-radius:var(--radius-s);
+  font-size:13px;font-weight:500;cursor:pointer;
+  font-family:inherit;transition:all .2s;
+}
+.btn:hover{border-color:var(--teal);color:var(--teal-d);}
+.btn.primary{background:var(--teal);border-color:var(--teal);color:#fff;}
+.btn.primary:hover{background:var(--teal-d);border-color:var(--teal-d);color:#fff;}
+
+/* ─── Section ─── */
+.section-label{
+  font-size:13px;font-weight:700;color:var(--teal-d);
+  letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;padding-left:4px;
+}
+
+/* ─── Preview Grid ─── */
+.preview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:24px;}
+.preview-card{
+  background:var(--white);border:1px solid #EEF0F2;
+  border-radius:var(--radius);padding:20px;
+  display:flex;flex-direction:column;gap:14px;
+  transition:all .25s ease;
+}
+.preview-card:hover{border-color:var(--teal);box-shadow:0 8px 32px rgba(97,208,223,.1);}
+.pc-head{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.pc-title{display:flex;align-items:center;gap:10px;}
+.pc-title strong{font-size:15px;font-weight:700;color:var(--dark);}
+.pc-title .platform-dot{
+  width:24px;height:24px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;
+}
+.pc-spec{font-size:11px;color:var(--gray);font-family:'Inter',monospace;}
+
+/* Mockup frames */
+.frame{background:#F4F6F8;border-radius:var(--radius-s);overflow:hidden;position:relative;}
+.frame .img-slot{
+  width:100%;background:#E8EBEE no-repeat center/cover;
+  display:flex;align-items:center;justify-content:center;
+  color:#B4BBC2;font-size:12px;
+}
+.frame .img-slot::before{content:'素材顯示區';}
+.frame .img-slot.has-img::before{content:'';}
+
+/* Browser chrome (Shopify) */
+.frame.browser .chrome{
+  background:#E8EBEE;padding:8px 12px;
+  display:flex;align-items:center;gap:6px;border-bottom:1px solid #D8DEE3;
+}
+.frame.browser .chrome .dots{display:flex;gap:5px;}
+.frame.browser .chrome .dots span{width:9px;height:9px;border-radius:50%;background:#CDD3D8;}
+.frame.browser .chrome .url{
+  flex:1;background:#fff;border-radius:4px;padding:3px 8px;
+  font-size:10px;color:var(--gray);font-family:'Inter',monospace;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.frame.browser .img-slot{aspect-ratio:1920/600;}
+.frame.browser .below{
+  background:#fff;padding:10px 12px;display:flex;gap:8px;
+  border-top:1px solid #EEF0F2;
+}
+.frame.browser .below .thumb{flex:1;aspect-ratio:1;background:#F4F6F8;border-radius:4px;}
+
+/* Phone chrome (IG post / story, FB post) */
+.frame.phone{background:#1E2230;padding:14px 10px 10px;border-radius:24px;}
+.frame.phone .phone-head{
+  color:#fff;font-size:10px;display:flex;justify-content:space-between;
+  padding:0 8px 8px;opacity:.7;
+}
+.frame.phone .app{background:#fff;border-radius:12px;overflow:hidden;}
+.frame.phone .app-bar{
+  display:flex;align-items:center;gap:8px;padding:8px 10px;
+  border-bottom:1px solid #EEF0F2;
+}
+.frame.phone .avatar{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#F0D9D9,#E8D5C0);flex-shrink:0;}
+.frame.phone .meta{flex:1;}
+.frame.phone .meta strong{font-size:11px;color:var(--dark);display:block;}
+.frame.phone .meta span{font-size:9px;color:var(--gray);}
+.frame.phone .more{color:var(--gray);font-size:14px;letter-spacing:2px;}
+
+/* IG post — 1:1 */
+.frame.ig-post .img-slot{aspect-ratio:1/1;}
+.frame.ig-post .actions{padding:8px 10px;display:flex;gap:10px;font-size:14px;}
+.frame.ig-post .actions span{color:var(--dark);}
+.frame.ig-post .caption{padding:0 10px 10px;font-size:11px;color:var(--dark);line-height:1.5;}
+.frame.ig-post .caption b{font-weight:700;}
+
+/* IG Story — 9:16 fullbleed */
+.frame.ig-story{padding:10px 8px 8px;}
+.frame.ig-story .app{background:#000;}
+.frame.ig-story .ring{
+  display:flex;gap:4px;padding:8px;align-items:center;
+}
+.frame.ig-story .ring .bar{flex:1;height:2px;background:rgba(255,255,255,.5);border-radius:2px;}
+.frame.ig-story .ring .bar.active{background:#fff;}
+.frame.ig-story .story-head{
+  display:flex;align-items:center;gap:8px;padding:0 10px 8px;color:#fff;
+}
+.frame.ig-story .story-head .avatar{width:22px;height:22px;}
+.frame.ig-story .story-head strong{font-size:10px;color:#fff;}
+.frame.ig-story .story-head span{font-size:9px;color:rgba(255,255,255,.7);}
+.frame.ig-story .img-slot{aspect-ratio:9/16;background:#222;color:#555;}
+
+/* FB post */
+.frame.fb-post .img-slot{aspect-ratio:1.91/1;}
+.frame.fb-post .app-bar .meta strong::after{
+  content:' · 粉絲專頁';font-weight:400;color:var(--gray);font-size:9px;
+}
+
+/* Shopee */
+.frame.shopee{background:#F53D2D;padding:10px 8px 8px;border-radius:18px;}
+.frame.shopee .app-bar{background:#fff;border-radius:8px 8px 0 0;}
+.frame.shopee .app{border-radius:8px;}
+.frame.shopee .img-slot{aspect-ratio:1/1;}
+.frame.shopee .product-info{padding:8px 10px;background:#fff;border-radius:0 0 8px 8px;}
+.frame.shopee .product-info .title{font-size:11px;color:var(--dark);margin-bottom:4px;}
+.frame.shopee .product-info .price{font-size:14px;color:#F53D2D;font-weight:700;}
+
+/* Momo */
+.frame.momo{background:#E50060;padding:10px 8px 8px;border-radius:18px;}
+.frame.momo .m-head{
+  background:#fff;border-radius:8px 8px 0 0;padding:6px 10px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.frame.momo .m-head .logo-txt{color:#E50060;font-weight:900;font-size:12px;font-family:'Inter',sans-serif;}
+.frame.momo .m-head .search{flex:1;margin:0 8px;background:#F4F6F8;border-radius:12px;padding:4px 10px;font-size:10px;color:var(--gray);}
+.frame.momo .img-slot{aspect-ratio:1000/500;}
+.frame.momo .nav{
+  background:#fff;padding:6px 10px 8px;display:flex;gap:8px;
+  border-radius:0 0 8px 8px;
+}
+.frame.momo .nav span{font-size:10px;color:var(--gray);flex:1;text-align:center;}
+
+/* Empty state */
+.empty-state{
+  grid-column:1/-1;text-align:center;padding:60px 20px;
+  color:var(--gray);font-size:14px;
+}
+
+@media(max-width:680px){
+  .page-header{padding:24px 20px;}
+  .main{padding:24px 20px 60px;}
+  .preview-grid{grid-template-columns:1fr;}
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="card">
-            <span class="icon">ð¼</span>
-            <span class="badge">å³å°éæ°ä¸ç·</span>
-            <h1>Banner é è¦§å·¥å·</h1>
-            <p class="description">Banner é è¦§å·¥å·ï¼å³å°éæ°ä¸ç·</p>
-            <a href="index.html" class="button">è¿åå·¥ä½å®¤</a>
-        </div>
+
+<header class="page-header">
+  <div class="page-header-inner">
+    <div class="page-title">
+      <div class="logo">淨</div>
+      <div>
+        <h1>素材即時預覽</h1>
+        <div class="subtitle">上傳一張素材，同時預覽在 7 個平台的實際樣子</div>
+      </div>
     </div>
+    <a href="index.html" class="back-link">← 返回工作室</a>
+  </div>
+</header>
+
+<main class="main">
+
+  <label class="uploader" id="uploader" for="file-input">
+    <input type="file" id="file-input" accept="image/*">
+    <div class="uploader-icon" id="u-icon">⬆</div>
+    <div class="uploader-meta">
+      <h2 id="u-title">點擊或拖拉圖片到這裡</h2>
+      <p id="u-desc">支援 JPG / PNG / WebP，建議寬度 ≥ 1200px</p>
+    </div>
+    <div class="uploader-actions" id="u-actions" style="display:none;">
+      <button type="button" class="btn" id="btn-replace">更換</button>
+      <button type="button" class="btn" id="btn-clear">清除</button>
+    </div>
+  </label>
+
+  <div class="section-label">平台預覽</div>
+  <div class="preview-grid" id="grid">
+
+    <!-- Shopline 官網 Hero Banner -->
+    <div class="preview-card">
+      <div class="pc-head">
+        <div class="pc-title">
+          <span class="platform-dot" style="background:#00B2A9;">SL</span>
+          <strong>Shopline 官網首頁</strong>
+        </div>
+        <span class="pc-spec">1920 × 600</span>
+      </div>
+      <div class="frame browser">
+        <div class="chrome">
+          <div class="dots"><span></span><span></span><span></span></div>
+          <div class="url">cleanclean.com.tw</div>
+        </div>
+        <div class="img-slot" data-slot></div>
+        <div class="below">
+          <div class="thumb"></div><div class="thumb"></div>
+          <div class="thumb"></div><div class="thumb"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shopline APP -->
+    <div class="preview-card">
+      <div class="pc-head">
+        <div class="pc-title">
+          <span class="platform-dot" style="background:#00B2A9;">SL</span>
+          <strong>Shopline APP</strong>
+        </div>
+        <span class="pc-spec">750 × 750</span>
+      </div>
+      <div class="frame phone ig-post" style="background:#00B2A9;">
+        <div class="phone-head"><span>9:41</span><span>●●●</span></div>
+        <div class="app">
+          <div class="app-bar" style="background:#00B2A9;color:#fff;">
+            <span style="color:#fff;font-size:18px;">☰</span>
+            <div style="flex:1;text-align:center;font-weight:700;color:#fff;font-size:13px;">淨淨 CleanClean</div>
+            <span style="color:#fff;font-size:14px;">🛒</span>
+          </div>
+          <div class="img-slot" data-slot></div>
+          <div style="padding:10px;">
+            <div style="font-size:12px;color:var(--dark);font-weight:600;">新品上市</div>
+            <div style="font-size:11px;color:var(--gray);margin-top:2px;">以家人標準開發 →</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- IG 貼文 -->
+    <div class="preview-card">
+      <div class="pc-head">
+        <div class="pc-title">
+          <span class="platform-dot" style="background:linear-gradient(135deg,#F58529,#DD2A7B,#8134AF);">IG</span>
+          <strong>IG 貼文</strong>
+        </div>
+        <span class="pc-spec">1080 × 1080</span>
+      </div>
+      <div class="frame phone ig-post">
+        <div class="phone-head"><span>9:41</span><span>●●●</span></div>
+        <div class="app">
+          <div class="app-bar">
+            <div class="avatar"></div>
+            <div class="meta"><strong>cleanclean_tw</strong><span>淨淨美學工作室</span></div>
+            <div class="more">⋯</div>
+          </div>
+          <div class="img-slot" data-slot></div>
+          <div class="actions"><span>♡</span><span>💬</span><span>↗</span></div>
+          <div class="caption"><b>cleanclean_tw</b> 以家人標準開發，讓每個家庭安心清潔 ✨</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- IG 限動 -->
+    <div class="preview-card">
+      <div class="pc-head">
+        <div class="pc-title">
+          <span class="platform-dot" style="background:linear-gradient(135deg,#F58529,#DD2A7B,#8134AF);">IG</span>
+          <strong>IG 限動 / Reels</strong>
+        </div>
+        <span class="pc-spec">1080 × 1920</span>
+      </div>
+      <div class="frame phone ig-story">
+        <div class="phone-head"><span>9:41</span><span>●●●</span></div>
+        <div class="app">
+          <div class="ring"><div class="bar active"></div><div class="bar"></div><div class="bar"></div></div>
+          <div class="story-head">
+            <div class="avatar"></div>
+            <strong>cleanclean_tw</strong>
+            <span>2h</span>
+          </div>
+          <div class="img-slot" data-slot></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FB 粉專貼文 -->
+    <div class="preview-card">
+      <div class="pc-head">
+        <div class="pc-title">
+          <span class="platform-dot" style="background:#1877F2;">f</span>
+          <strong>FB 粉絲團貼文</strong>
+        </div>
+        <span class="pc-spec">1200 × 630</span>
+      </div>
+      <div class="frame phone fb-post">
+        <div class="phone-head"><span>9:41</span><span>●●●</span></div>
+        <div class="app">
+          <div class="app-bar">
+            <div class="avatar"></div>
+            <div class="meta"><strong>淨淨美學工作室</strong><span>2 小時前</span></div>
+            <div class="more">⋯</div>
+          </div>
+          <div class="caption" style="padding:0 10px 8px;font-size:11px;color:var(--dark);">新品上市，以家人標準開發 →</div>
+          <div class="img-slot" data-slot></div>
+          <div class="actions" style="padding:8px 10px;display:flex;gap:10px;font-size:12px;color:var(--gray);">
+            <span>👍 讚</span><span>💬 留言</span><span>↗ 分享</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 蝦皮商品圖 -->
+    <div class="preview-card">
+      <div class="pc-head">
+        <div class="pc-title">
+          <span class="platform-dot" style="background:#F53D2D;">蝦</span>
+          <strong>蝦皮商品主圖</strong>
+        </div>
+        <span class="pc-spec">1024 × 1024</span>
+      </div>
+      <div class="frame shopee">
+        <div class="phone-head" style="color:#fff;font-size:10px;display:flex;justify-content:space-between;padding:0 8px 8px;opacity:.85;">
+          <span>9:41</span><span>●●●</span>
+        </div>
+        <div class="app">
+          <div class="app-bar">
+            <div class="avatar" style="background:#F53D2D;"></div>
+            <div class="meta"><strong>淨淨 CleanClean 官方旗艦店</strong><span>★ 4.9 · 5.2k 追蹤</span></div>
+          </div>
+          <div class="img-slot" data-slot></div>
+          <div class="product-info">
+            <div class="title">淨淨 椰油液態皂 500ml</div>
+            <div class="price">$380</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Momo Banner -->
+    <div class="preview-card">
+      <div class="pc-head">
+        <div class="pc-title">
+          <span class="platform-dot" style="background:#E50060;">M</span>
+          <strong>Momo 商城 Banner</strong>
+        </div>
+        <span class="pc-spec">1000 × 500</span>
+      </div>
+      <div class="frame momo">
+        <div class="phone-head" style="color:#fff;font-size:10px;display:flex;justify-content:space-between;padding:0 8px 8px;opacity:.85;">
+          <span>9:41</span><span>●●●</span>
+        </div>
+        <div class="m-head">
+          <span class="logo-txt">momo</span>
+          <span class="search">搜尋商品…</span>
+          <span style="color:#E50060;font-size:14px;">🛒</span>
+        </div>
+        <div class="img-slot" data-slot></div>
+        <div class="nav">
+          <span>首頁</span><span>分類</span><span>購物車</span><span>會員</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+const input = document.getElementById('file-input');
+const uploader = document.getElementById('uploader');
+const uIcon = document.getElementById('u-icon');
+const uTitle = document.getElementById('u-title');
+const uDesc = document.getElementById('u-desc');
+const uActions = document.getElementById('u-actions');
+const btnReplace = document.getElementById('btn-replace');
+const btnClear = document.getElementById('btn-clear');
+const slots = document.querySelectorAll('[data-slot]');
+
+function applyImage(dataUrl, name, size){
+  slots.forEach(s=>{
+    s.style.backgroundImage = `url("${dataUrl}")`;
+    s.classList.add('has-img');
+  });
+  uploader.classList.add('has-img');
+  uIcon.textContent = '✓';
+  uTitle.textContent = name;
+  uDesc.textContent = `已載入 · ${(size/1024).toFixed(0)} KB`;
+  uActions.style.display = 'flex';
+}
+
+function clearImage(){
+  slots.forEach(s=>{
+    s.style.backgroundImage = '';
+    s.classList.remove('has-img');
+  });
+  uploader.classList.remove('has-img');
+  uIcon.textContent = '⬆';
+  uTitle.textContent = '點擊或拖拉圖片到這裡';
+  uDesc.textContent = '支援 JPG / PNG / WebP，建議寬度 ≥ 1200px';
+  uActions.style.display = 'none';
+  input.value = '';
+}
+
+function handleFile(file){
+  if(!file || !file.type.startsWith('image/')) return;
+  const reader = new FileReader();
+  reader.onload = e => applyImage(e.target.result, file.name, file.size);
+  reader.readAsDataURL(file);
+}
+
+input.addEventListener('change', e => handleFile(e.target.files[0]));
+
+['dragenter','dragover'].forEach(ev => uploader.addEventListener(ev, e=>{
+  e.preventDefault(); e.stopPropagation();
+  uploader.classList.add('drag');
+}));
+['dragleave','drop'].forEach(ev => uploader.addEventListener(ev, e=>{
+  e.preventDefault(); e.stopPropagation();
+  uploader.classList.remove('drag');
+}));
+uploader.addEventListener('drop', e => handleFile(e.dataTransfer.files[0]));
+
+btnReplace.addEventListener('click', e => { e.preventDefault(); input.click(); });
+btnClear.addEventListener('click', e => { e.preventDefault(); clearImage(); });
+</script>
+
 </body>
 </html>
