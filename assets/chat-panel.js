@@ -175,6 +175,10 @@
         const contextNote = ctx.note ? `\n\n【當前素材 context】\n${ctx.note}` : '';
         const systemPrompt = opts.systemPrompt + contextNote;
 
+        let assistantBubble = null;
+        let assistantText = '';
+        let firstChunk = true;
+
         try{
           const res = await fetch(opts.endpoint, {
             method:'POST',
@@ -183,24 +187,80 @@
               systemPrompt,
               messages: history.slice(-MAX_HISTORY),
               imageUrl: ctx.imageUrl || undefined,
+              stream: true,
             }),
           });
-          const data = await res.json();
-          loading.remove();
 
-          if(!res.ok || data.error){
-            addMsg(body, 'assistant', `⚠ ${data.error || '發生錯誤'}${data.detail ? '\n'+data.detail : ''}`, 'error');
+          const contentType = res.headers.get('content-type') || '';
+
+          // 錯誤路徑：後端回 JSON 錯誤（non-stream）
+          if(!res.ok || contentType.includes('application/json')){
+            const data = await res.json().catch(()=>({ error:'回應格式錯誤' }));
+            loading.remove();
+            if(!res.ok || data.error){
+              const msg = `⚠ ${data.error || '發生錯誤'}${data.hint ? '\n'+data.hint : ''}${data.detail ? '\n'+data.detail : ''}`;
+              addMsg(body, 'assistant', msg, 'error');
+            }else if(data.reply){
+              // 極端情況：後端 fallback 成 non-stream
+              addMsg(body, 'assistant', data.reply);
+              history.push({ role:'assistant', content: data.reply });
+              quota.used += 1; writeQuota(quota); renderQuota();
+            }
+            return;
+          }
+
+          // Streaming 路徑：SSE 逐段讀取
+          const reader = res.body.getReader();
+          const decoder = new TextDecoder();
+          let buffer = '';
+
+          while(true){
+            const { done, value } = await reader.read();
+            if(done) break;
+            buffer += decoder.decode(value, { stream:true });
+
+            let idx;
+            while((idx = buffer.indexOf('\n')) !== -1){
+              const line = buffer.slice(0, idx).trim();
+              buffer = buffer.slice(idx + 1);
+              if(!line.startsWith('data:')) continue;
+              const payload = line.slice(5).trim();
+              if(payload === '[DONE]') continue;
+              try{
+                const obj = JSON.parse(payload);
+                const delta = obj.choices && obj.choices[0] && obj.choices[0].delta && obj.choices[0].delta.content;
+                if(delta){
+                  if(firstChunk){
+                    loading.remove();
+                    assistantBubble = addMsg(body, 'assistant', '');
+                    firstChunk = false;
+                  }
+                  assistantText += delta;
+                  assistantBubble.textContent = assistantText;
+                  body.scrollTop = body.scrollHeight;
+                }
+              }catch{ /* ignore keep-alive / 不完整片段 */ }
+            }
+          }
+
+          if(firstChunk){
+            // 串流沒任何內容
+            loading.remove();
+            addMsg(body, 'assistant', '（沒有收到回應）', 'error');
           }else{
-            const reply = data.reply || '（沒有回應）';
-            addMsg(body, 'assistant', reply);
-            history.push({ role:'assistant', content: reply });
+            history.push({ role:'assistant', content: assistantText });
             quota.used += 1;
             writeQuota(quota);
             renderQuota();
           }
         }catch(e){
-          loading.remove();
-          addMsg(body, 'assistant', '⚠ 連線失敗：' + e.message, 'error');
+          try{ loading.remove(); }catch{}
+          if(assistantBubble && assistantText){
+            // 部分成功 → 保留已收到的內容，但標記中斷
+            assistantBubble.textContent = assistantText + '\n\n⚠ 串流中斷：' + e.message;
+          }else{
+            addMsg(body, 'assistant', '⚠ 連線失敗：' + e.message, 'error');
+          }
         }finally{
           isSending = false;
           sendBtn.disabled = false;

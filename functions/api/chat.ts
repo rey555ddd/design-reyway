@@ -2,10 +2,7 @@
 // 路徑：POST /api/chat
 // 環境變數：OPENAI_API_KEY（Cloudflare Pages → Settings → Environment variables）
 //
-// 設計原則：
-//  - 任何錯誤都回 JSON（不讓 Cloudflare 邊緣吐 HTML 502）
-//  - 所有 path 都 console.log，方便 Real-time logs 診斷
-//  - 外層 try/catch 包住整支 handler，杜絕 uncaught exception
+// 預設以 SSE streaming 回覆（token 逐字吐字）；錯誤情境一律回 JSON。
 
 interface ChatMessage {
   role: 'system' | 'user' | 'assistant';
@@ -21,6 +18,7 @@ interface ChatRequestBody {
   model?: string;
   imageUrl?: string;
   maxTokens?: number;
+  stream?: boolean;
 }
 
 interface Env {
@@ -54,7 +52,6 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       );
     }
 
-    // Parse body
     let body: ChatRequestBody = {};
     try {
       const raw = await request.text();
@@ -88,10 +85,10 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
     const model = body.model || DEFAULT_MODEL;
     const maxTokens = Math.min(body.maxTokens ?? 800, MAX_TOKENS_CAP);
+    const useStream = body.stream !== false; // 預設 streaming
 
-    console.log(`[chat] calling OpenAI model=${model} msgs=${messages.length}`);
+    console.log(`[chat] calling OpenAI model=${model} msgs=${messages.length} stream=${useStream}`);
 
-    // Call OpenAI (絕對 try/catch 住)
     let upstream: Response;
     try {
       upstream = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -105,6 +102,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
           messages,
           max_tokens: maxTokens,
           temperature: 0.7,
+          stream: useStream,
         }),
       });
     } catch (e) {
@@ -120,8 +118,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       if (upstream.status === 401) {
         hint = 'OpenAI API Key 無效或帳戶權限異常。請確認 Key 正確、所屬專案未停用。';
       } else if (upstream.status === 429) {
-        hint =
-          'OpenAI 額度不足或觸發速率限制。請確認帳戶為 Paid tier 且有 credits；若剛升級，請等 5 分鐘讓額度生效。';
+        hint = 'OpenAI 額度不足或觸發速率限制。請確認帳戶為 Paid tier 且有 credits；若剛升級，請等 5 分鐘讓額度生效。';
       } else if (upstream.status === 403) {
         hint = 'OpenAI 拒絕請求。可能是組織/專案權限、地區限制或模型未授權。';
       }
@@ -138,6 +135,19 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       );
     }
 
+    if (useStream && upstream.body) {
+      console.log('[chat] streaming response back to client');
+      return new Response(upstream.body, {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/event-stream; charset=utf-8',
+          'Cache-Control': 'no-cache, no-transform',
+          'X-Accel-Buffering': 'no',
+        },
+      });
+    }
+
+    // 非 streaming 路徑（向後相容）
     const data = (await upstream.json()) as {
       choices?: Array<{ message?: { content?: string } }>;
       usage?: { total_tokens?: number };
@@ -146,13 +156,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const reply = data.choices?.[0]?.message?.content ?? '';
     console.log(`[chat] OpenAI ok reply_len=${reply.length} tokens=${data.usage?.total_tokens}`);
 
-    return json({
-      reply,
-      usage: data.usage ?? null,
-      model,
-    });
+    return json({ reply, usage: data.usage ?? null, model });
   } catch (e) {
-    // 最終保險：任何預期外錯誤一律吞下、回 JSON
     console.log('[chat] unexpected error', String(e));
     const err = e as Error;
     return json(
@@ -166,7 +171,6 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   }
 };
 
-// 友善提示：若誤用 GET，不要讓它落到 SPA fallback 200
 export const onRequestGet: PagesFunction<Env> = async () => {
   return json({ error: '此端點只接受 POST', method: 'POST' }, 405);
 };
