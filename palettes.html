@@ -57,6 +57,22 @@
 .p-actions{display:flex;gap:8px;margin-top:auto;padding-top:12px;border-top:1px solid #EEF0F2;}
 .btn-small{font-size:12px;padding:6px 12px;border-radius:8px;background:var(--white);border:1px solid #EEF0F2;color:var(--text);cursor:pointer;font-family:inherit;transition:all .2s;}
 .btn-small:hover{border-color:var(--teal);color:var(--teal-d);}
+.btn-small.accent{background:#FFF8E6;border-color:#F3E6B8;color:#8a6d1a;}
+.btn-small.accent:hover{background:#F3E6B8;}
+.btn-small.primary{background:var(--teal);border-color:var(--teal);color:#fff;}
+.btn-small.primary:hover{background:var(--teal-d);}
+.edit-block{background:var(--teal-xl);border:1px solid var(--teal-l);border-radius:var(--radius-s);padding:12px;display:none;flex-direction:column;gap:8px;}
+.edit-block.on{display:flex;}
+.edit-block textarea{font-family:inherit;font-size:13px;color:var(--text);border:1px solid #E1E5E8;border-radius:8px;padding:8px 10px;background:#fff;outline:none;min-height:56px;resize:vertical;}
+.edit-block textarea:focus{border-color:var(--teal);}
+.edit-suggestions{display:flex;flex-wrap:wrap;gap:6px;}
+.edit-suggestions button{font-size:11px;padding:4px 10px;border-radius:12px;background:#fff;border:1px solid var(--teal-l);color:var(--teal-d);cursor:pointer;font-family:inherit;transition:all .15s;}
+.edit-suggestions button:hover{background:var(--teal-l);}
+.edit-actions{display:flex;gap:6px;justify-content:flex-end;}
+.edit-spinner{display:flex;align-items:center;justify-content:center;gap:6px;padding:6px;color:var(--gray);font-size:12px;}
+.edit-spinner .dots span{width:6px;height:6px;border-radius:50%;background:var(--teal);display:inline-block;margin:0 1px;animation:lBounce 1.2s infinite ease-in-out;}
+.edit-spinner .dots span:nth-child(2){animation-delay:.15s;}
+.edit-spinner .dots span:nth-child(3){animation-delay:.3s;}
 
 .state{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--gray);font-size:14px;}
 .state.loading{display:flex;flex-direction:column;align-items:center;gap:12px;}
@@ -221,6 +237,23 @@ function renderPalettes(palettes){
       <div class="p-actions">
         <button class="btn-small" data-copy="hex">複製所有 hex</button>
         <button class="btn-small" data-copy="full">複製完整方案</button>
+        <button class="btn-small accent" data-act="edit">🪄 AI 編修</button>
+      </div>
+      <div class="edit-block" data-edit-block>
+        <div style="font-size:11px;color:var(--teal-d);font-weight:700;letter-spacing:1px;">🪄 告訴 AI 想怎麼調這組配色</div>
+        <textarea placeholder="例：主色太深、加個暖色、避開粉紅、整體再清爽一點"></textarea>
+        <div class="edit-suggestions">
+          <button type="button" data-sug="主色再亮一點">主色再亮</button>
+          <button type="button" data-sug="主色再深一點">主色再深</button>
+          <button type="button" data-sug="加一個溫暖的米色或杏色">加暖色</button>
+          <button type="button" data-sug="整體改清爽色調">改清爽</button>
+          <button type="button" data-sug="避開粉紅色系">避粉紅</button>
+          <button type="button" data-sug="對比度再強一點">加強對比</button>
+        </div>
+        <div class="edit-actions">
+          <button type="button" class="btn-small" data-act="edit-cancel">取消</button>
+          <button type="button" class="btn-small primary" data-act="edit-submit">送出編修</button>
+        </div>
       </div>
     `;
 
@@ -243,8 +276,89 @@ function renderPalettes(palettes){
       });
     });
 
+    // AI 編修此配色
+    const editBlock = card.querySelector('[data-edit-block]');
+    const editArea = editBlock.querySelector('textarea');
+    card.querySelector('[data-act=edit]').addEventListener('click', () => {
+      editBlock.classList.toggle('on');
+      if(editBlock.classList.contains('on')) setTimeout(() => editArea.focus(), 50);
+    });
+    card.querySelector('[data-act=edit-cancel]').addEventListener('click', () => editBlock.classList.remove('on'));
+    editBlock.querySelectorAll('[data-sug]').forEach(btn => {
+      btn.addEventListener('click', () => { editArea.value = btn.dataset.sug; editArea.focus(); });
+    });
+    card.querySelector('[data-act=edit-submit]').addEventListener('click', async () => {
+      const ins = editArea.value.trim();
+      if(!ins){ showToast('請先說明要怎麼改'); return; }
+      await editPalette(card, p, i, ins);
+    });
+
     grid.appendChild(card);
   });
+}
+
+async function editPalette(card, originalPalette, index, editInstruction){
+  const submitBtn = card.querySelector('[data-act=edit-submit]');
+  const editBlock = card.querySelector('[data-edit-block]');
+  submitBtn.disabled = true;
+  submitBtn.textContent = '生成中…';
+  editBlock.insertAdjacentHTML('beforeend', `<div class="edit-spinner" data-spin>AI 調色中… <span class="dots"><span></span><span></span><span></span></span></div>`);
+
+  const s = window.__ccCurrentPalettes || {};
+
+  const systemPrompt = `你是淨淨美學工作室的配色顧問。使用者要你修改一組「已有的配色」。只回傳 **單一配色 JSON**（不是 palettes 陣列），在原色票基礎上按指令調整。
+
+嚴格回傳 JSON，不要 markdown code fence。schema：
+{
+  "name": "配色名稱",
+  "mood": "情緒形容",
+  "colors": [{"hex":"#FFFFFF","role":"背景底色"},...共 5 色，角色：背景/主色/輔色/襯色/文字],
+  "usage": "建議用法（2-3 句）"
+}
+
+規範：背景必為淺色（亮度 > 85%）；文字與背景 WCAG 對比 ≥ 4.5；淨淨品牌淺色淡雅、白底為主；hex 用 6 位大寫；一律繁體中文台灣用語。`;
+
+  const userMsg = `【原配色】
+名稱：${originalPalette.name}
+情緒：${originalPalette.mood || ''}
+色票：${(originalPalette.colors || []).map(c => `${c.hex}(${c.role||''})`).join('、')}
+用法：${originalPalette.usage || ''}
+
+【主題 context】${s.topic || ''}｜調性 ${s.tone || ''}
+
+【使用者想改什麼】
+${editInstruction}
+
+請產出修改後的單一配色 JSON。`;
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ systemPrompt, messages: [{ role:'user', content: userMsg }], stream: false, maxTokens: 1000 }),
+    });
+    const data = await res.json();
+    if(!res.ok || data.error){ showToast(`⚠ ${data.error || '編修失敗'}`); return; }
+    let reply = (data.reply || '').trim().replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim();
+    const fb = reply.indexOf('{'), lb = reply.lastIndexOf('}');
+    if(fb !== -1 && lb > fb) reply = reply.slice(fb, lb+1);
+    let newP;
+    try { newP = JSON.parse(reply); } catch { showToast('AI 回應格式錯誤，請再試'); return; }
+
+    if(window.__ccCurrentPalettes){
+      window.__ccCurrentPalettes.palettes[index] = newP;
+    }
+    renderPalettes(window.__ccCurrentPalettes.palettes);
+    showToast(`配色 ${index+1} 已編修 ✓`);
+  } catch(e){
+    showToast('連線失敗：' + e.message);
+  } finally {
+    if(document.body.contains(submitBtn)){
+      submitBtn.disabled = false;
+      submitBtn.textContent = '送出編修';
+      const sp = editBlock.querySelector('[data-spin]');
+      if(sp) sp.remove();
+    }
+  }
 }
 
 function showLoading(){

@@ -84,6 +84,22 @@
 .p-actions{display:flex;gap:8px;margin-top:auto;padding-top:14px;border-top:1px solid #EEF0F2;}
 .btn-small{font-size:12px;padding:6px 12px;border-radius:8px;background:var(--white);border:1px solid #EEF0F2;color:var(--text);cursor:pointer;font-family:inherit;transition:all .2s;}
 .btn-small:hover{border-color:var(--teal);color:var(--teal-d);}
+.btn-small.accent{background:#FFF8E6;border-color:#F3E6B8;color:#8a6d1a;}
+.btn-small.accent:hover{background:#F3E6B8;}
+.btn-small.primary{background:var(--teal);border-color:var(--teal);color:#fff;}
+.btn-small.primary:hover{background:var(--teal-d);}
+.edit-block{background:var(--teal-xl);border:1px solid var(--teal-l);border-radius:var(--radius-s);padding:12px;display:none;flex-direction:column;gap:8px;}
+.edit-block.on{display:flex;}
+.edit-block textarea{font-family:inherit;font-size:13px;color:var(--text);border:1px solid #E1E5E8;border-radius:8px;padding:8px 10px;background:#fff;outline:none;min-height:56px;resize:vertical;}
+.edit-block textarea:focus{border-color:var(--teal);}
+.edit-suggestions{display:flex;flex-wrap:wrap;gap:6px;}
+.edit-suggestions button{font-size:11px;padding:4px 10px;border-radius:12px;background:#fff;border:1px solid var(--teal-l);color:var(--teal-d);cursor:pointer;font-family:inherit;transition:all .15s;}
+.edit-suggestions button:hover{background:var(--teal-l);}
+.edit-actions{display:flex;gap:6px;justify-content:flex-end;}
+.edit-spinner{display:flex;align-items:center;justify-content:center;gap:6px;padding:6px;color:var(--gray);font-size:12px;}
+.edit-spinner .dots span{width:6px;height:6px;border-radius:50%;background:var(--teal);display:inline-block;margin:0 1px;animation:lBounce 1.2s infinite ease-in-out;}
+.edit-spinner .dots span:nth-child(2){animation-delay:.15s;}
+.edit-spinner .dots span:nth-child(3){animation-delay:.3s;}
 
 .state{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--gray);font-size:14px;}
 .state.loading{display:flex;flex-direction:column;align-items:center;gap:12px;}
@@ -303,6 +319,23 @@ function renderProposals(proposals, canvasW, canvasH){
       <div class="p-actions">
         <button class="btn-small" data-copy="all">複製完整方案</button>
         <button class="btn-small" data-copy="headline">複製主標</button>
+        <button class="btn-small accent" data-act="edit">🪄 AI 編修</button>
+      </div>
+      <div class="edit-block" data-edit-block>
+        <div style="font-size:11px;color:var(--teal-d);font-weight:700;letter-spacing:1px;">🪄 告訴 AI 想怎麼改這個方案</div>
+        <textarea placeholder="例：標題太長想縮成 8 字內、配色改成暖色系、加個節日裝飾、CTA 往右下移"></textarea>
+        <div class="edit-suggestions">
+          <button type="button" data-sug="標題縮短到 8 個字內">標題縮短</button>
+          <button type="button" data-sug="改成暖色調配色">改暖色</button>
+          <button type="button" data-sug="加一個節慶裝飾元素">加節慶裝飾</button>
+          <button type="button" data-sug="把 CTA 放到右下角">CTA 右下</button>
+          <button type="button" data-sug="整體留白多一點，元素再小一些">多留白</button>
+          <button type="button" data-sug="加一個 SGS 認證標章">加 SGS 標章</button>
+        </div>
+        <div class="edit-actions">
+          <button type="button" class="btn-small" data-act="edit-cancel">取消</button>
+          <button type="button" class="btn-small primary" data-act="edit-submit">送出編修</button>
+        </div>
       </div>
     `;
 
@@ -330,8 +363,109 @@ function renderProposals(proposals, canvasW, canvasH){
       sw.addEventListener('click', () => copyText(sw.dataset.hex, `已複製 ${sw.dataset.hex}`));
     });
 
+    // AI 編修此方案
+    const editBlock = card.querySelector('[data-edit-block]');
+    const editArea = editBlock.querySelector('textarea');
+    card.querySelector('[data-act=edit]').addEventListener('click', () => {
+      editBlock.classList.toggle('on');
+      if(editBlock.classList.contains('on')) setTimeout(() => editArea.focus(), 50);
+    });
+    card.querySelector('[data-act=edit-cancel]').addEventListener('click', () => editBlock.classList.remove('on'));
+    editBlock.querySelectorAll('[data-sug]').forEach(btn => {
+      btn.addEventListener('click', () => { editArea.value = btn.dataset.sug; editArea.focus(); });
+    });
+    card.querySelector('[data-act=edit-submit]').addEventListener('click', async () => {
+      const editInstruction = editArea.value.trim();
+      if(!editInstruction){ showToast('請先說明要怎麼改'); return; }
+      await editProposal(card, p, i, editInstruction, canvasW, canvasH);
+    });
+
     grid.appendChild(card);
   });
+}
+
+async function editProposal(card, originalProposal, index, editInstruction, canvasW, canvasH){
+  const submitBtn = card.querySelector('[data-act=edit-submit]');
+  const editBlock = card.querySelector('[data-edit-block]');
+  submitBtn.disabled = true;
+  submitBtn.textContent = '生成中…';
+  editBlock.insertAdjacentHTML('beforeend', `<div class="edit-spinner" data-spin>AI 修改中… <span class="dots"><span></span><span></span><span></span></span></div>`);
+
+  const state = window.__ccCurrentProposals ? window.__ccCurrentProposals.state : {};
+  const tag = String.fromCharCode(65 + index);
+
+  const systemPrompt = `你是淨淨美學工作室的資深視覺設計師。
+使用者要求你修改一個「已有的排版方案」。只回傳 **單一方案 JSON**（不是 proposals 陣列），保留原方案的整體調性與結構，只根據修改指令調整必要的部分。
+
+【淨淨品牌規範】
+- 品牌色：#61D0DF / #329BAF / #EBF9FC / #F5EDE3 / #F0D9D9
+- 淺色淡雅、白底、不做深色
+- 中文 Noto Sans TC、英文 Inter
+
+【輸出格式】嚴格回傳 JSON，不要 markdown code fence。單一物件：
+{
+  "name": "方案名稱",
+  "oneliner": "一句話說明",
+  "headline": "主標題",
+  "subtitle": "副標題（可省）",
+  "cta": "CTA 文字（可省）",
+  "palette": ["#主色","#輔色","#文字色"],
+  "blocks": [{ "type":"title","label":"...","x":5,"y":15,"w":50,"h":18 }, ...],
+  "rationale": "設計理由（說明這次改了什麼）"
+}
+
+blocks 座標為 0-100 百分比；type 限 title/subtitle/product/cta/decor/logo/badge。
+三個方案的原設定：版位 ${state.platform || '未知'}、調性 ${state.tone || '未知'}。
+語言一律繁體中文台灣用語。`;
+
+  const userMsg = `【原方案 ${tag}】
+名稱：${originalProposal.name}
+一句話：${originalProposal.oneliner}
+主標：${originalProposal.headline}
+副標：${originalProposal.subtitle || '無'}
+CTA：${originalProposal.cta || '無'}
+配色：${(originalProposal.palette || []).join(' / ')}
+區塊：${JSON.stringify(originalProposal.blocks || [])}
+
+【使用者想改什麼】
+${editInstruction}
+
+請產出修改後的單一方案 JSON。`;
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ systemPrompt, messages: [{ role:'user', content: userMsg }], stream: false, maxTokens: 1200 }),
+    });
+    const data = await res.json();
+    if(!res.ok || data.error){ showToast(`⚠ ${data.error || '編修失敗'}`); return; }
+
+    let reply = (data.reply || '').trim().replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim();
+    const fb = reply.indexOf('{'), lb = reply.lastIndexOf('}');
+    if(fb !== -1 && lb > fb) reply = reply.slice(fb, lb+1);
+    let newP;
+    try { newP = JSON.parse(reply); } catch { showToast('AI 回應格式錯誤，請再試'); return; }
+
+    // 更新 state
+    if(window.__ccCurrentProposals){
+      window.__ccCurrentProposals.proposals[index] = newP;
+    }
+
+    // 重渲染整塊
+    const proposals = window.__ccCurrentProposals.proposals;
+    renderProposals(proposals, canvasW, canvasH);
+    showToast(`方案 ${tag} 已編修 ✓`);
+  } catch(e){
+    showToast('連線失敗：' + e.message);
+  } finally {
+    // 若沒被重渲染（error path），復原按鈕狀態
+    if(document.body.contains(submitBtn)){
+      submitBtn.disabled = false;
+      submitBtn.textContent = '送出編修';
+      const spin = editBlock.querySelector('[data-spin]');
+      if(spin) spin.remove();
+    }
+  }
 }
 
 function showLoading(){
