@@ -1,550 +1,401 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>情境照生成器 | 淨淨美學工作室</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --teal: #61D0DF;
-            --teal-d: #329BAF;
-            --teal-l: #EBF9FC;
-            --dark: #1E2230;
-            --text: #2D3142;
-            --gray: #8C8C8C;
-            --warm: #F5EDE3;
-            --warm-d: #E8D5C0;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>情境照生成器 — 淨淨美學工作室</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/brand.css">
+<style>
+.page-header{
+  background:linear-gradient(135deg,var(--teal-xl) 0%,var(--white) 40%,var(--white) 60%,var(--teal-l) 100%);
+  padding:40px 40px 32px;border-bottom:1px solid #EEF0F2;
+}
+.page-header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+.page-title{display:flex;align-items:center;gap:16px;}
+.page-title .logo{
+  width:48px;height:48px;border-radius:14px;background:var(--teal);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:900;font-size:20px;
+  box-shadow:0 4px 16px rgba(97,208,223,.3);
+}
+.page-title h1{font-size:24px;font-weight:900;color:var(--dark);}
+.page-title .subtitle{font-size:13px;color:var(--gray);margin-top:2px;}
+.back-link{
+  font-size:13px;color:var(--gray);text-decoration:none;
+  padding:8px 14px;border-radius:var(--radius-s);border:1px solid #EEF0F2;
+  transition:all .2s;
+}
+.back-link:hover{color:var(--teal-d);border-color:var(--teal);}
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+.main{max-width:1200px;margin:0 auto;padding:32px 40px 80px;}
 
-        body {
-            font-family: 'Noto Sans TC', 'Inter', sans-serif;
-            background: #FFFFFF;
-            color: var(--text);
-            line-height: 1.6;
-        }
+.cost-note{
+  background:#FFF8E6;border:1px solid #F3E6B8;color:#8a6d1a;
+  padding:10px 14px;border-radius:10px;font-size:12px;margin-bottom:20px;
+  display:flex;align-items:center;gap:8px;
+}
+.cost-note strong{color:#6b5314;}
 
-        /* Header */
-        .header {
-            background: var(--teal);
-            padding: 16px 24px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            animation: slideDown 0.5s ease-out;
-        }
+.form-card{background:var(--white);border:1px solid #EEF0F2;border-radius:var(--radius);padding:28px;margin-bottom:28px;}
+.section-label{font-size:13px;font-weight:700;color:var(--teal-d);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;padding-left:4px;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.form-field{display:flex;flex-direction:column;gap:6px;}
+.form-field.full{grid-column:1/-1;}
+.form-field label{font-size:13px;font-weight:700;color:var(--dark);}
+.form-field .hint{font-size:11px;color:var(--gray);}
+.form-field input[type=text],
+.form-field textarea,
+.form-field select{
+  font-family:inherit;font-size:14px;color:var(--text);
+  padding:10px 12px;border:1px solid #E1E5E8;border-radius:10px;
+  background:var(--white);outline:none;transition:border-color .2s;
+}
+.form-field input[type=text]:focus,
+.form-field textarea:focus,
+.form-field select:focus{border-color:var(--teal);}
+.form-field textarea{min-height:72px;resize:vertical;}
 
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+.chip-row{display:flex;flex-wrap:wrap;gap:8px;}
+.chip{
+  font-size:13px;padding:7px 14px;border-radius:20px;
+  background:var(--light-gray);border:1px solid #EEF0F2;color:var(--text);
+  cursor:pointer;transition:all .2s;font-family:inherit;
+}
+.chip:hover{border-color:var(--teal);color:var(--teal-d);}
+.chip.on{background:var(--teal);border-color:var(--teal);color:#fff;}
 
-        .header a {
-            color: #FFFFFF;
-            text-decoration: none;
-            font-size: 16px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: opacity 0.3s;
-        }
+.form-actions{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:20px;padding-top:20px;border-top:1px solid #EEF0F2;flex-wrap:wrap;}
+.cost-est{font-size:12px;color:var(--gray);}
+.cost-est strong{color:var(--teal-d);font-family:'Inter',monospace;}
+.action-buttons{display:flex;gap:10px;}
+.btn{background:var(--white);border:1px solid #EEF0F2;color:var(--text);padding:10px 20px;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .2s;}
+.btn:hover{border-color:var(--teal);color:var(--teal-d);}
+.btn.primary{background:var(--teal);border-color:var(--teal);color:#fff;font-weight:700;}
+.btn.primary:hover{background:var(--teal-d);border-color:var(--teal-d);color:#fff;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
 
-        .header a:hover {
-            opacity: 0.8;
-        }
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px;}
+.result-card{
+  background:var(--white);border:1px solid #EEF0F2;border-radius:var(--radius);
+  padding:16px;display:flex;flex-direction:column;gap:12px;
+}
+.result-img{
+  background:#F4F6F8;border-radius:var(--radius-s);overflow:hidden;
+  aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;
+}
+.result-img.portrait{aspect-ratio:2/3;}
+.result-img.landscape{aspect-ratio:3/2;}
+.result-img img{width:100%;height:100%;object-fit:cover;display:block;}
+.result-meta{font-size:12px;color:var(--gray);line-height:1.5;}
+.result-actions{display:flex;gap:8px;margin-top:auto;}
+.btn-small{font-size:12px;padding:6px 12px;border-radius:8px;background:var(--white);border:1px solid #EEF0F2;color:var(--text);cursor:pointer;font-family:inherit;transition:all .2s;}
+.btn-small:hover{border-color:var(--teal);color:var(--teal-d);}
+.btn-small.primary{background:var(--teal);border-color:var(--teal);color:#fff;}
+.btn-small.primary:hover{background:var(--teal-d);color:#fff;}
 
-        /* Main Container */
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 40px 24px;
-            animation: fadeIn 0.8s ease-out 0.2s both;
-        }
+.state{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--gray);font-size:14px;}
+.state.loading{display:flex;flex-direction:column;align-items:center;gap:12px;}
+.state .dots{display:flex;gap:6px;}
+.state .dots span{width:8px;height:8px;border-radius:50%;background:var(--teal);animation:lBounce 1.2s infinite ease-in-out;}
+.state .dots span:nth-child(2){animation-delay:.15s;}
+.state .dots span:nth-child(3){animation-delay:.3s;}
+@keyframes lBounce{0%,60%,100%{transform:scale(.7);opacity:.4;}30%{transform:scale(1);opacity:1;}}
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--dark);color:#fff;padding:10px 18px;border-radius:24px;font-size:13px;opacity:0;pointer-events:none;transition:all .25s;z-index:1000;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
-        /* Badge */
-        .badge {
-            display: inline-block;
-            background: #FFF3CD;
-            color: #856404;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 16px;
-            letter-spacing: 0.5px;
-        }
-
-        /* Title */
-        h1 {
-            font-size: 36px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            color: var(--dark);
-        }
-
-        .subtitle {
-            color: var(--gray);
-            font-size: 14px;
-            margin-bottom: 40px;
-        }
-
-        /* Preview Section */
-        .preview-section {
-            background: var(--teal-l);
-            border-radius: 16px;
-            padding: 40px;
-            margin-bottom: 40px;
-            animation: fadeIn 0.8s ease-out 0.4s both;
-        }
-
-        .preview-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text);
-            margin-bottom: 24px;
-            text-align: center;
-        }
-
-        /* Visual Demo - Split View */
-        .demo-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            flex-wrap: wrap;
-            min-height: 300px;
-        }
-
-        .demo-side {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .demo-label {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text);
-            text-align: center;
-        }
-
-        /* Product Cutout */
-        .product-cutout {
-            width: 140px;
-            height: 180px;
-            background: linear-gradient(135deg, #F0F8FB 0%, #E0F4F8 100%);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            box-shadow: 0 4px 16px rgba(99, 208, 223, 0.15);
-            border: 2px dashed var(--teal);
-        }
-
-        .product-icon {
-            font-size: 64px;
-            opacity: 0.8;
-        }
-
-        /* Arrow */
-        .arrow {
-            font-size: 24px;
-            color: var(--teal-d);
-            font-weight: 700;
-        }
-
-        /* Scene Container */
-        .scene-mockup {
-            width: 200px;
-            height: 180px;
-            background: linear-gradient(135deg, #FFF5E6 0%, #F5E8DC 50%, #E8DCC8 100%);
-            border-radius: 12px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .scene-mockup::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 40%;
-            background: linear-gradient(180deg, #E0F4F8 0%, transparent 100%);
-            opacity: 0.3;
-        }
-
-        .product-placed {
-            position: absolute;
-            bottom: 15px;
-            right: 15px;
-            font-size: 48px;
-            opacity: 0.9;
-        }
-
-        .scene-decoration {
-            position: absolute;
-            font-size: 24px;
-            opacity: 0.4;
-        }
-
-        .deco-1 { top: 12px; left: 12px; }
-        .deco-2 { top: 20px; right: 20px; }
-        .deco-3 { bottom: 12px; left: 16px; }
-
-        /* Description */
-        .description {
-            background: white;
-            border: 1px solid #E0E0E0;
-            border-radius: 16px;
-            padding: 32px;
-            margin-bottom: 40px;
-            animation: fadeIn 0.8s ease-out 0.5s both;
-        }
-
-        .description h2 {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: var(--dark);
-        }
-
-        .description p {
-            color: var(--text);
-            line-height: 1.8;
-            font-size: 15px;
-        }
-
-        /* Features Grid */
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
-            animation: fadeIn 0.8s ease-out 0.6s both;
-        }
-
-        .feature-card {
-            background: white;
-            border: 1px solid #E0E0E0;
-            border-radius: 14px;
-            padding: 20px;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-
-        .feature-card:hover {
-            border-color: var(--teal);
-            box-shadow: 0 8px 24px rgba(99, 208, 223, 0.15);
-            transform: translateY(-2px);
-        }
-
-        .feature-icon {
-            font-size: 24px;
-            margin-bottom: 12px;
-        }
-
-        .feature-card h3 {
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--dark);
-            margin-bottom: 8px;
-        }
-
-        .feature-card p {
-            font-size: 13px;
-            color: var(--gray);
-            line-height: 1.6;
-        }
-
-        /* Footer */
-        .footer {
-            text-align: center;
-            padding: 32px 24px;
-            border-top: 1px solid #E0E0E0;
-            color: var(--gray);
-            font-size: 13px;
-            animation: fadeIn 0.8s ease-out 0.7s both;
-        }
-
-        .footer a {
-            color: var(--teal);
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        .footer a:hover {
-            color: var(--teal-d);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .container {
-                padding: 24px 16px;
-            }
-
-            h1 {
-                font-size: 28px;
-            }
-
-            .preview-section {
-                padding: 24px;
-            }
-
-            .demo-container {
-                gap: 16px;
-                flex-direction: column;
-            }
-
-            .features {
-                grid-template-columns: 1fr;
-            }
-
-            .header {
-                padding: 12px 16px;
-            }
-        }
-    </style>
+@media(max-width:680px){
+  .page-header{padding:24px 20px;}
+  .main{padding:24px 20px 60px;}
+  .form-grid{grid-template-columns:1fr;}
+}
+</style>
 </head>
 <body>
-    <div class="header">
-        <a href="index.html">← 淨淨美學工作室</a>
-    </div>
 
-    <div class="container">
-        <div class="badge">開發中</div>
+<header class="page-header">
+  <div class="page-header-inner">
+    <div class="page-title">
+      <div class="logo">淨</div>
+      <div>
         <h1>情境照生成器</h1>
-        <p class="subtitle">AI 智能場景合成工具</p>
+        <div class="subtitle">選產品、選場景、選光線 → AI 合成淨淨情境照</div>
+      </div>
+    </div>
+    <a href="index.html" class="back-link">← 返回工作室</a>
+  </div>
+</header>
 
-        <div class="preview-section">
-            <div class="preview-title">生成效果預覽</div>
-            <div class="demo-container">
-                <div class="demo-side">
-                    <div class="demo-label">上傳產品</div>
-                    <div class="product-cutout">
-                        <div class="product-icon">🧴</div>
-                    </div>
-                </div>
-                <div class="arrow">→</div>
-                <div class="demo-side">
-                    <div class="demo-label">AI 生成情境照</div>
-                    <div class="scene-mockup">
-                        <div class="scene-decoration deco-1">🌿</div>
-                        <div class="scene-decoration deco-2">✨</div>
-                        <div class="scene-decoration deco-3">💧</div>
-                        <div class="product-placed">🧴</div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<main class="main">
 
-        <div class="description">
-            <h2>一鍵生成專業情境照</h2>
-            <p>選擇產品 → 選擇場景風格 → AI 自動生成情境合成照。支援攝影棚感、自然光居家、浴室場景等多種風格。省去找模特兒、租攝影棚的時間，直接獲得高質感商品照。</p>
-        </div>
+  <div class="cost-note">
+    <span>💡</span>
+    <span><strong>成本提醒</strong>：每張約 <strong>$0.04 USD</strong>（medium 品質），high 品質 <strong>$0.17</strong>。low 品質 <strong>$0.01</strong> 適合試稿。</span>
+  </div>
 
-        <div class="features">
-            <div class="feature-card">
-                <div class="feature-icon">🎬</div>
-                <h3>多場景風格選擇</h3>
-                <p>攝影棚感、居家溫暖、浴室簡約、戶外自然、品牌展示等風格。</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">✂️</div>
-                <h3>自動去背合成</h3>
-                <p>無需手動去背，系統自動抓取產品輪廓並合成到場景中。</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">⚡</div>
-                <h3>支援批量生成</h3>
-                <p>一次上傳多個產品，快速生成各式場景組合。</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🎨</div>
-                <h3>符合品牌視覺</h3>
-                <p>根據淨淨品牌色系和調性自動調整生成風格。</p>
-            </div>
+  <div class="form-card">
+    <div class="section-label">產品與場景</div>
+    <div class="form-grid">
+
+      <div class="form-field full">
+        <label>產品 / 主角描述</label>
+        <input type="text" id="product" placeholder="例：淨淨椰油洗衣精 2L 大瓶裝、淨淨食器清潔皂、淨淨個人護理組合" value="淨淨椰油洗衣精 2L 大瓶裝">
+        <span class="hint">寫清楚「產品名 + 形狀 / 容量」，AI 才畫得像</span>
+      </div>
+
+      <div class="form-field">
+        <label>場景</label>
+        <div class="chip-row" id="scene-row">
+          <button type="button" class="chip on" data-v="明亮廚房流理台">廚房流理台</button>
+          <button type="button" class="chip" data-v="北歐風格洗手台">洗手台</button>
+          <button type="button" class="chip" data-v="乾淨現代浴室">浴室</button>
+          <button type="button" class="chip" data-v="陽台洗衣晾曬區">陽台</button>
+          <button type="button" class="chip" data-v="嬰兒房柔和角落">嬰兒房</button>
+          <button type="button" class="chip" data-v="實木餐桌與早餐">餐桌</button>
+          <button type="button" class="chip" data-v="純白攝影棚背景">攝影棚</button>
         </div>
+      </div>
+
+      <div class="form-field">
+        <label>光線</label>
+        <div class="chip-row" id="light-row">
+          <button type="button" class="chip on" data-v="柔和自然光、窗邊灑落">自然光</button>
+          <button type="button" class="chip" data-v="均勻攝影棚柔光">柔光棚</button>
+          <button type="button" class="chip" data-v="清晨溫暖金色光線">晨光</button>
+          <button type="button" class="chip" data-v="黃昏暖調夕陽光">夕陽</button>
+          <button type="button" class="chip" data-v="純白背光、極簡">白背光</button>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label>構圖比例</label>
+        <div class="chip-row" id="ratio-row">
+          <button type="button" class="chip on" data-v="1024x1024" data-label="square">方形 1:1（IG/蝦皮）</button>
+          <button type="button" class="chip" data-v="1536x1024" data-label="landscape">橫幅 3:2（Banner）</button>
+          <button type="button" class="chip" data-v="1024x1536" data-label="portrait">直幅 2:3（IG 限動）</button>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label>品質</label>
+        <div class="chip-row" id="quality-row">
+          <button type="button" class="chip" data-v="low">Low（$0.01）</button>
+          <button type="button" class="chip on" data-v="medium">Medium（$0.04）</button>
+          <button type="button" class="chip" data-v="high">High（$0.17）</button>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label>張數</label>
+        <div class="chip-row" id="count-row">
+          <button type="button" class="chip on" data-v="1">1 張</button>
+          <button type="button" class="chip" data-v="2">2 張（比較）</button>
+        </div>
+      </div>
+
+      <div class="form-field full">
+        <label>額外風格提示（選填）</label>
+        <textarea id="extra" placeholder="例：加一個木質砧板、畫面帶一點綠色植物、減少雜物、避免出現文字"></textarea>
+      </div>
     </div>
 
-    <div class="footer">
-        <p>淨淨美學工作室 · 美學設計部</p>
-        <p><a href="index.html">回首頁</a></p>
+    <div class="form-actions">
+      <div class="cost-est">預估成本：<strong id="cost-display">$0.04 USD</strong></div>
+      <div class="action-buttons">
+        <button class="btn" id="btn-reset" type="button">重設</button>
+        <button class="btn primary" id="btn-generate" type="button">生成情境照 →</button>
+      </div>
     </div>
-</body>
-</html>
-<html lang="zh-Hant">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>情境照生成器 | 淨淨美學工作室</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --teal: #61D0DF;
-            --teal-d: #329BAF;
-            --dark: #1E2230;
-            --text: #2D3142;
-            --gray: #8C8C8C;
-            --amber: #B8860B;
-            --amber-bg: #FFF8E6;
-        }
+  </div>
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <div class="section-label" id="results-label" style="display:none;">生成結果</div>
+  <div class="results" id="results"></div>
 
-        body {
-            background-color: #FFFFFF;
-            color: var(--text);
-            font-family: 'Noto Sans TC', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-            animation: fadeIn 0.6s ease-in;
-        }
+</main>
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+<div class="toast" id="toast"></div>
 
-        .container {
-            text-align: center;
-            max-width: 500px;
-            width: 100%;
-        }
+<script>
+const $ = s => document.querySelector(s);
 
-        .card {
-            background: #FFFFFF;
-            border-radius: 12px;
-            padding: 48px 32px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            border: 1px solid #F0F0F0;
-        }
+const state = {
+  scene: '明亮廚房流理台',
+  light: '柔和自然光、窗邊灑落',
+  size: '1024x1024',
+  ratioLabel: 'square',
+  quality: 'medium',
+  count: 1,
+};
 
-        .icon {
-            font-size: 56px;
-            margin-bottom: 24px;
-            display: block;
-        }
+function bindChipGroup(rowId, stateKey, onChange){
+  const row = $(rowId);
+  row.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
+    row.querySelectorAll('.chip').forEach(x => x.classList.remove('on'));
+    c.classList.add('on');
+    onChange(c);
+  }));
+}
 
-        .badge {
-            display: inline-block;
-            background-color: var(--amber-bg);
-            color: var(--amber);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
-            margin-bottom: 16px;
-            letter-spacing: 0.5px;
-        }
+bindChipGroup('#scene-row', 'scene', c => state.scene = c.dataset.v);
+bindChipGroup('#light-row', 'light', c => state.light = c.dataset.v);
+bindChipGroup('#ratio-row', 'size', c => { state.size = c.dataset.v; state.ratioLabel = c.dataset.label; updateCost(); });
+bindChipGroup('#quality-row', 'quality', c => { state.quality = c.dataset.v; updateCost(); });
+bindChipGroup('#count-row', 'count', c => { state.count = +c.dataset.v; updateCost(); });
 
-        h1 {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            color: var(--dark);
-        }
+const QUALITY_COST = { low: 0.011, medium: 0.042, high: 0.167 };
+function updateCost(){
+  const per = QUALITY_COST[state.quality] || 0.042;
+  const total = (per * state.count).toFixed(3);
+  $('#cost-display').textContent = `$${total} USD`;
+}
+updateCost();
 
-        .description {
-            font-size: 14px;
-            color: var(--gray);
-            line-height: 1.6;
-            margin-bottom: 32px;
-        }
+function showToast(msg){
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), 2000);
+}
 
-        .button {
-            display: inline-block;
-            background-color: var(--teal);
-            color: #FFFFFF;
-            padding: 12px 32px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 14px;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            border: none;
-            cursor: pointer;
-            font-family: 'Noto Sans TC', sans-serif;
-        }
+window.__ccCurrentScene = null;
 
-        .button:hover {
-            background-color: var(--teal-d);
-            transform: translateY(-2px);
-        }
+function getPrompt(){
+  const product = $('#product').value.trim();
+  const extra = $('#extra').value.trim();
+  return `高質感商業產品情境照。主體：${product}。場景：${state.scene}。光線：${state.light}。
+整體風格：乾淨、明亮、現代感，偏淺色調、白底暖調為主，符合日系北歐風格的生活感。
+構圖：產品為畫面主角，清晰置於構圖黃金比例位置，周圍配合少量情境元素（如植物、毛巾、木質托盤）營造使用氛圍，不雜亂。
+畫面質感：柔和、舒服、溫暖、真實，不要過度 HDR 或卡通風格。
+品牌調性：淨淨 CleanClean，以家人標準開發的清潔產品，訴求安心、天然、日常使用。
+避免：文字、Logo、浮誇特效、深色背景、暗沉色調、化學感、工業風。
+${extra ? '額外要求：' + extra : ''}`;
+}
 
-        .button:active {
-            transform: translateY(0);
-        }
+function showLoading(){
+  $('#results-label').style.display = 'block';
+  $('#results').innerHTML = `<div class="state loading">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div>AI 正在生成情境照…（約 15–40 秒，品質越高越慢）</div>
+  </div>`;
+}
 
-        @media (max-width: 480px) {
-            .card {
-                padding: 36px 24px;
-            }
+function showError(msg){
+  $('#results').innerHTML = `<div class="state">⚠ ${msg}</div>`;
+}
 
-            h1 {
-                font-size: 24px;
-            }
+function renderResults(images, prompt){
+  const grid = $('#results');
+  grid.innerHTML = '';
+  $('#results-label').style.display = 'block';
 
-            .icon {
-                font-size: 48px;
-            }
+  images.forEach((img, i) => {
+    const src = img.b64 || img.url;
+    if(!src) return;
+    const card = document.createElement('div');
+    card.className = 'result-card';
+    card.innerHTML = `
+      <div class="result-img ${state.ratioLabel}">
+        <img src="${src}" alt="情境照 ${i+1}">
+      </div>
+      <div class="result-meta">${state.size}　${state.quality}　第 ${i+1} 張</div>
+      <div class="result-actions">
+        <button class="btn-small primary" data-act="download">下載 PNG</button>
+        <button class="btn-small" data-act="copy-prompt">複製 prompt</button>
+      </div>
+    `;
+    card.querySelector('[data-act=download]').addEventListener('click', () => {
+      const a = document.createElement('a');
+      a.href = src;
+      a.download = `cleanclean-scene-${Date.now()}-${i+1}.png`;
+      a.click();
+    });
+    card.querySelector('[data-act=copy-prompt]').addEventListener('click', () => {
+      navigator.clipboard.writeText(prompt).then(() => showToast('已複製 prompt'));
+    });
+    grid.appendChild(card);
+  });
+}
 
-            .button {
-                padding: 10px 28px;
-                font-size: 13px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="card">
-            <span class="icon">📸</span>
-            <span class="badge">開發中</span>
-            <h1>情境照生成器</h1>
-            <p class="description">AI 生成產品使用場景照片，開發中</p>
-            <a href="index.html" class="button">返回工作室</a>
-        </div>
-    </div>
+async function generate(){
+  const product = $('#product').value.trim();
+  if(!product){ showToast('請先填寫產品描述'); return; }
+
+  const prompt = getPrompt();
+  showLoading();
+  $('#btn-generate').disabled = true;
+
+  try {
+    const res = await fetch('/api/image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        prompt,
+        size: state.size,
+        quality: state.quality,
+        n: state.count,
+      }),
+    });
+    const data = await res.json();
+    if(!res.ok || data.error){
+      showError(`${data.error || '生成失敗'}${data.hint ? '｜' + data.hint : ''}`);
+      return;
+    }
+    const images = data.images || [];
+    if(images.length === 0){ showError('沒有收到圖片'); return; }
+
+    window.__ccCurrentScene = {
+      product, scene: state.scene, light: state.light,
+      ratio: state.ratioLabel, quality: state.quality,
+      prompt, firstImage: images[0].b64 || images[0].url,
+    };
+
+    renderResults(images, prompt);
+  } catch(e){
+    showError('連線失敗：' + e.message);
+  } finally {
+    $('#btn-generate').disabled = false;
+  }
+}
+
+$('#btn-generate').addEventListener('click', generate);
+$('#btn-reset').addEventListener('click', () => {
+  $('#product').value = '';
+  $('#extra').value = '';
+  $('#results').innerHTML = '';
+  $('#results-label').style.display = 'none';
+  window.__ccCurrentScene = null;
+});
+</script>
+
+<!-- 淨淨 AI 對話面板 -->
+<script src="assets/chat-panel.js"></script>
+<script>
+CCChatPanel.init({
+  toolName: '情境照生成器',
+  systemPrompt: '你是淨淨美學工作室的 AI 設計助理，專門協助使用者微調情境照生成的 prompt。淨淨調性：淺色淡雅、生活感、真實、不過度 HDR 或卡通化。請用繁體中文，回答精簡（最多 3 段），給「下一次生成應該改什麼 prompt」的具體建議（例：「把『廚房』改成『早晨逆光的廚房中島』可以更有層次」）。可以回答如何加裝飾物、調光線、避免畫面雜亂等。',
+  greeting: '嗨！我是情境照生成器的 AI 助理。\n生成的圖不滿意嗎？告訴我哪裡怪，我幫你想怎麼調 prompt 再生成一次 ✨',
+  suggestions: ['畫面太雜', '產品不夠突出', '光線再亮一點', '加一些植物裝飾'],
+  dailyLimit: 30,
+  getContext: () => {
+    const s = window.__ccCurrentScene;
+    if(!s) return { note: '使用者尚未生成任何情境照' };
+    return {
+      imageUrl: s.firstImage,
+      note: `當前設定：
+產品：${s.product}
+場景：${s.scene}
+光線：${s.light}
+比例：${s.ratio}
+品質：${s.quality}
+
+完整 prompt：
+${s.prompt}`,
+    };
+  },
+});
+</script>
+
 </body>
 </html>
