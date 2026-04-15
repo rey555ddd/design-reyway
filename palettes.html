@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>配色方案產生器 — 淨淨美學工作室</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/brand.css">
+<style>
+.page-header{background:linear-gradient(135deg,var(--teal-xl) 0%,var(--white) 40%,var(--white) 60%,var(--teal-l) 100%);padding:40px 40px 32px;border-bottom:1px solid #EEF0F2;}
+.page-header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+.page-title{display:flex;align-items:center;gap:16px;}
+.page-title .logo{width:48px;height:48px;border-radius:14px;background:var(--teal);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:20px;box-shadow:0 4px 16px rgba(97,208,223,.3);}
+.page-title h1{font-size:24px;font-weight:900;color:var(--dark);}
+.page-title .subtitle{font-size:13px;color:var(--gray);margin-top:2px;}
+.back-link{font-size:13px;color:var(--gray);text-decoration:none;padding:8px 14px;border-radius:var(--radius-s);border:1px solid #EEF0F2;transition:all .2s;}
+.back-link:hover{color:var(--teal-d);border-color:var(--teal);}
+
+.main{max-width:1200px;margin:0 auto;padding:32px 40px 80px;}
+.form-card{background:var(--white);border:1px solid #EEF0F2;border-radius:var(--radius);padding:28px;margin-bottom:28px;}
+.section-label{font-size:13px;font-weight:700;color:var(--teal-d);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;padding-left:4px;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.form-field{display:flex;flex-direction:column;gap:6px;}
+.form-field.full{grid-column:1/-1;}
+.form-field label{font-size:13px;font-weight:700;color:var(--dark);}
+.form-field .hint{font-size:11px;color:var(--gray);}
+.form-field input[type=text],.form-field textarea{font-family:inherit;font-size:14px;color:var(--text);padding:10px 12px;border:1px solid #E1E5E8;border-radius:10px;background:var(--white);outline:none;transition:border-color .2s;}
+.form-field input[type=text]:focus,.form-field textarea:focus{border-color:var(--teal);}
+.chip-row{display:flex;flex-wrap:wrap;gap:8px;}
+.chip{font-size:13px;padding:7px 14px;border-radius:20px;background:var(--light-gray);border:1px solid #EEF0F2;color:var(--text);cursor:pointer;transition:all .2s;font-family:inherit;}
+.chip:hover{border-color:var(--teal);color:var(--teal-d);}
+.chip.on{background:var(--teal);border-color:var(--teal);color:#fff;}
+.form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;padding-top:20px;border-top:1px solid #EEF0F2;}
+.btn{background:var(--white);border:1px solid #EEF0F2;color:var(--text);padding:10px 20px;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .2s;}
+.btn:hover{border-color:var(--teal);color:var(--teal-d);}
+.btn.primary{background:var(--teal);border-color:var(--teal);color:#fff;font-weight:700;}
+.btn.primary:hover{background:var(--teal-d);border-color:var(--teal-d);color:#fff;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+
+.palettes{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:20px;}
+.palette{background:var(--white);border:1px solid #EEF0F2;border-radius:var(--radius);padding:22px;display:flex;flex-direction:column;gap:14px;}
+.palette:hover{border-color:var(--teal);box-shadow:0 8px 32px rgba(97,208,223,.1);}
+.p-name{font-size:17px;font-weight:900;color:var(--dark);}
+.p-mood{font-size:13px;color:var(--gray);line-height:1.6;}
+.color-row{display:flex;gap:2px;border-radius:var(--radius-s);overflow:hidden;height:90px;}
+.color-cell{flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:8px;cursor:pointer;transition:flex .2s ease;position:relative;}
+.color-cell:hover{flex:1.3;}
+.color-cell .hex{font-family:'Inter',monospace;font-size:11px;font-weight:700;letter-spacing:.5px;}
+.color-cell .role{font-size:10px;opacity:.8;margin-top:2px;}
+.preview-sample{background:var(--light-gray);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:8px;}
+.preview-sample .bar{height:8px;border-radius:4px;}
+.preview-sample .title-sample{font-size:14px;font-weight:700;}
+.preview-sample .text-sample{font-size:11px;opacity:.8;}
+.preview-sample .cta-sample{display:inline-block;padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;margin-top:4px;align-self:flex-start;}
+.p-usage{font-size:12px;color:var(--text);line-height:1.7;background:var(--light-gray);padding:10px 12px;border-radius:8px;}
+.p-usage strong{color:var(--teal-d);}
+.p-actions{display:flex;gap:8px;margin-top:auto;padding-top:12px;border-top:1px solid #EEF0F2;}
+.btn-small{font-size:12px;padding:6px 12px;border-radius:8px;background:var(--white);border:1px solid #EEF0F2;color:var(--text);cursor:pointer;font-family:inherit;transition:all .2s;}
+.btn-small:hover{border-color:var(--teal);color:var(--teal-d);}
+
+.state{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--gray);font-size:14px;}
+.state.loading{display:flex;flex-direction:column;align-items:center;gap:12px;}
+.state .dots{display:flex;gap:6px;}
+.state .dots span{width:8px;height:8px;border-radius:50%;background:var(--teal);animation:lBounce 1.2s infinite ease-in-out;}
+.state .dots span:nth-child(2){animation-delay:.15s;}
+.state .dots span:nth-child(3){animation-delay:.3s;}
+@keyframes lBounce{0%,60%,100%{transform:scale(.7);opacity:.4;}30%{transform:scale(1);opacity:1;}}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--dark);color:#fff;padding:10px 18px;border-radius:24px;font-size:13px;opacity:0;pointer-events:none;transition:all .25s;z-index:1000;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+@media(max-width:680px){.page-header{padding:24px 20px;}.main{padding:24px 20px 60px;}.form-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="page-header-inner">
+    <div class="page-title">
+      <div class="logo">淨</div>
+      <div>
+        <h1>配色方案產生器</h1>
+        <div class="subtitle">輸入主題與情緒，AI 給你 3 組 5 色配色（含角色與 WCAG 對比）</div>
+      </div>
+    </div>
+    <a href="index.html" class="back-link">← 返回工作室</a>
+  </div>
+</header>
+
+<main class="main">
+
+  <div class="form-card">
+    <div class="section-label">主題設定</div>
+    <div class="form-grid">
+      <div class="form-field full">
+        <label>配色主題 / 情境</label>
+        <input type="text" id="topic" placeholder="例：母親節溫暖感恩、夏日清爽乾淨、新品上市科技感、嬰兒柔和安心" value="母親節溫暖感恩">
+      </div>
+
+      <div class="form-field">
+        <label>情緒調性</label>
+        <div class="chip-row" id="tone-row">
+          <button type="button" class="chip on" data-tone="溫暖柔和">溫暖柔和</button>
+          <button type="button" class="chip" data-tone="清新明亮">清新明亮</button>
+          <button type="button" class="chip" data-tone="沉穩安心">沉穩安心</button>
+          <button type="button" class="chip" data-tone="活潑愉悅">活潑愉悅</button>
+          <button type="button" class="chip" data-tone="高質感極簡">高質感極簡</button>
+          <button type="button" class="chip" data-tone="節慶氛圍">節慶氛圍</button>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label>是否沿用淨淨主色</label>
+        <div class="chip-row" id="base-row">
+          <button type="button" class="chip on" data-v="keep">保留青綠 #61D0DF</button>
+          <button type="button" class="chip" data-v="free">不限制，AI 自由發揮</button>
+        </div>
+      </div>
+
+      <div class="form-field full">
+        <label>補充需求（選填）</label>
+        <textarea id="extra" placeholder="例：要能用於印刷、避開紅色、主打米白底色、限 4 色內"></textarea>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn" id="btn-reset" type="button">重設</button>
+      <button class="btn primary" id="btn-generate" type="button">產出 3 組配色 →</button>
+    </div>
+  </div>
+
+  <div class="section-label" id="results-label" style="display:none;">AI 建議配色</div>
+  <div class="palettes" id="palettes"></div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const state = { tone: '溫暖柔和', base: 'keep' };
+
+function bindChips(rowId, cb){
+  const row = $(rowId);
+  row.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
+    row.querySelectorAll('.chip').forEach(x => x.classList.remove('on'));
+    c.classList.add('on');
+    cb(c);
+  }));
+}
+bindChips('#tone-row', c => state.tone = c.dataset.tone);
+bindChips('#base-row', c => state.base = c.dataset.v);
+
+function showToast(msg){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function copyText(text, msg='已複製'){ navigator.clipboard.writeText(text).then(() => showToast(msg)); }
+
+function escapeHtml(s){ return String(s||'').replace(/[<>&"]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c])); }
+
+// WCAG 對比度計算
+function hexToRgb(hex){
+  const m = hex.replace('#','').match(/.{2}/g);
+  return m ? m.map(h => parseInt(h,16)) : [0,0,0];
+}
+function luminance([r,g,b]){
+  const a = [r,g,b].map(v => { v/=255; return v<=0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4); });
+  return 0.2126*a[0] + 0.7152*a[1] + 0.0722*a[2];
+}
+function contrast(hex1, hex2){
+  const l1 = luminance(hexToRgb(hex1));
+  const l2 = luminance(hexToRgb(hex2));
+  return ((Math.max(l1,l2) + 0.05) / (Math.min(l1,l2) + 0.05)).toFixed(2);
+}
+function textOn(hex){
+  return luminance(hexToRgb(hex)) > 0.5 ? '#1E2230' : '#FFFFFF';
+}
+
+window.__ccCurrentPalettes = null;
+
+function renderPalettes(palettes){
+  const grid = $('#palettes');
+  grid.innerHTML = '';
+  $('#results-label').style.display = 'block';
+
+  palettes.forEach((p, i) => {
+    const colors = p.colors || [];
+    const bg = colors.find(c => /background|底|白/i.test(c.role||'')) || colors[0] || {hex:'#FFF'};
+    const accent = colors.find(c => /accent|主|強調/i.test(c.role||'')) || colors[1] || colors[0];
+    const text = colors.find(c => /text|文字|深/i.test(c.role||'')) || colors[colors.length-1];
+    const wcag = contrast(bg.hex || '#FFF', text.hex || '#000');
+    const wcagPass = wcag >= 4.5 ? '✅ AA' : wcag >= 3 ? '⚠ AA Large' : '❌ 低';
+
+    const cells = colors.map(c => `
+      <div class="color-cell" style="background:${c.hex};color:${textOn(c.hex)};" data-hex="${c.hex}" title="點擊複製 ${c.hex}">
+        <div class="hex">${c.hex.toUpperCase()}</div>
+        <div class="role">${escapeHtml(c.role || '')}</div>
+      </div>
+    `).join('');
+
+    const card = document.createElement('div');
+    card.className = 'palette';
+    card.innerHTML = `
+      <div class="p-name">${escapeHtml(p.name || `配色 ${i+1}`)}</div>
+      <div class="p-mood">${escapeHtml(p.mood || '')}</div>
+      <div class="color-row">${cells}</div>
+
+      <div class="preview-sample" style="background:${bg.hex};color:${textOn(bg.hex)};">
+        <div class="title-sample" style="color:${text.hex};">淨淨美學工作室</div>
+        <div class="text-sample" style="color:${text.hex};">以家人標準開發，讓每個家庭安心清潔。</div>
+        <span class="cta-sample" style="background:${accent.hex};color:${textOn(accent.hex)};">立即選購 →</span>
+      </div>
+
+      <div class="p-usage">
+        <strong>對比度</strong>：${wcag}（${wcagPass}）<br>
+        <strong>建議用法</strong>：${escapeHtml(p.usage || '')}
+      </div>
+
+      <div class="p-actions">
+        <button class="btn-small" data-copy="hex">複製所有 hex</button>
+        <button class="btn-small" data-copy="full">複製完整方案</button>
+      </div>
+    `;
+
+    card.querySelectorAll('.color-cell').forEach(cell => {
+      cell.addEventListener('click', () => copyText(cell.dataset.hex, `已複製 ${cell.dataset.hex}`));
+    });
+    card.querySelectorAll('[data-copy]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if(btn.dataset.copy === 'hex'){
+          copyText(colors.map(c => c.hex).join(', '), `已複製 ${colors.length} 個色碼`);
+        } else {
+          const txt = [
+            `【${p.name}】 ${p.mood || ''}`,
+            ...colors.map(c => `${c.hex.toUpperCase()} ${c.role || ''}`),
+            `對比度：${wcag} ${wcagPass}`,
+            `用法：${p.usage || ''}`,
+          ].join('\n');
+          copyText(txt, `已複製配色 ${i+1}`);
+        }
+      });
+    });
+
+    grid.appendChild(card);
+  });
+}
+
+function showLoading(){
+  $('#results-label').style.display = 'block';
+  $('#palettes').innerHTML = `<div class="state loading"><div class="dots"><span></span><span></span><span></span></div><div>AI 正在調配 3 組配色…</div></div>`;
+}
+
+async function generate(){
+  const topic = $('#topic').value.trim();
+  if(!topic){ showToast('請先填寫配色主題'); return; }
+
+  showLoading();
+  $('#btn-generate').disabled = true;
+
+  const systemPrompt = `你是淨淨美學工作室的資深品牌視覺顧問。
+
+【淨淨品牌色系】
+- 主色：青綠 #61D0DF、深青 #329BAF、淺青底 #EBF9FC
+- 輔色：暖米 #F5EDE3、腮紅粉 #F0D9D9
+- 中性：深文字 #1E2230、一般文字 #2D3142、灰 #8C8C8C、淺灰 #F7F8FA
+- 調性：淺色淡雅、白底為主、不做深色 dashboard
+
+【輸出要求】產出 **3 組風格差異明顯** 的配色方案。每組 **5 個顏色**，角色明確分配。
+
+嚴格回傳 JSON，不要 markdown code fence。schema：
+{
+  "palettes": [
+    {
+      "name": "配色名稱（5-8 字，例：晨光米白）",
+      "mood": "情緒形容（15-25 字）",
+      "colors": [
+        { "hex": "#FFFFFF", "role": "背景底色" },
+        { "hex": "#61D0DF", "role": "主色 / 強調" },
+        { "hex": "#329BAF", "role": "輔色 / 按鈕" },
+        { "hex": "#F5EDE3", "role": "襯色 / 暖底" },
+        { "hex": "#2D3142", "role": "文字" }
+      ],
+      "usage": "建議用在哪種素材、避免用在哪（2-3 句）"
+    },
+    { ...第二組... },
+    { ...第三組... }
+  ]
+}
+
+【配色規範】
+- 每組必含：背景、主色、輔色、襯色、文字 共 5 色
+- 背景必須為淺色（亮度 > 85%）
+- 文字色與背景色的 WCAG 對比度必須 ≥ 4.5
+- 色碼用完整 6 位大寫 hex（例 #61D0DF）
+- 淨淨是清潔生活品牌，避免：暗黑系、螢光色、霓虹色、純黑純紅對比
+- ${state.base === 'keep' ? '其中至少一組要保留青綠 #61D0DF 作為主色或輔色，以維護品牌辨識' : 'AI 可自由發揮配色，不限制是否使用品牌色'}
+
+【語言】一律繁體中文台灣用語。`;
+
+  const userMsg = `配色主題：${topic}
+情緒調性：${state.tone}
+補充需求：${$('#extra').value.trim() || '（無）'}
+
+請產出 3 組配色方案。`;
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ systemPrompt, messages: [{ role:'user', content: userMsg }], stream: false, maxTokens: 2000 }),
+    });
+    const data = await res.json();
+    if(!res.ok || data.error){
+      $('#palettes').innerHTML = `<div class="state">⚠ ${data.error || '生成失敗'}${data.hint ? '｜'+data.hint : ''}</div>`;
+      return;
+    }
+    let reply = (data.reply || '').trim().replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim();
+    const fb = reply.indexOf('{'), lb = reply.lastIndexOf('}');
+    if(fb !== -1 && lb > fb) reply = reply.slice(fb, lb+1);
+    let parsed;
+    try{ parsed = JSON.parse(reply); }catch{
+      $('#palettes').innerHTML = `<div class="state">⚠ AI 回應格式無法解析，請再試一次</div>`; return;
+    }
+    const palettes = (parsed.palettes || []).slice(0,3);
+    if(palettes.length === 0){ $('#palettes').innerHTML = `<div class="state">⚠ 沒有產出配色</div>`; return; }
+    window.__ccCurrentPalettes = { topic, tone: state.tone, palettes };
+    renderPalettes(palettes);
+  } catch(e){
+    $('#palettes').innerHTML = `<div class="state">⚠ 連線失敗：${e.message}</div>`;
+  } finally {
+    $('#btn-generate').disabled = false;
+  }
+}
+
+$('#btn-generate').addEventListener('click', generate);
+$('#btn-reset').addEventListener('click', () => {
+  $('#topic').value = ''; $('#extra').value = '';
+  $('#palettes').innerHTML = ''; $('#results-label').style.display = 'none';
+  window.__ccCurrentPalettes = null;
+});
+</script>
+
+<script src="assets/chat-panel.js"></script>
+<script>
+CCChatPanel.init({
+  toolName: '配色方案產生器',
+  systemPrompt: '你是淨淨美學工作室的配色顧問，協助使用者微調已生成的配色。淨淨品牌色：青綠 #61D0DF 為主、淺色淡雅、白底。請用繁中回答精簡（最多 3 段），給具體 hex 調整建議。',
+  greeting: '嗨！對哪組配色想微調？告訴我「第 2 組太粉」「想加一個暖色」這類想法，我幫你想怎麼換色 ✨',
+  suggestions: ['第 1 組再清爽', '加個暖色輔色', '對比度不夠', '避開粉紅'],
+  dailyLimit: 30,
+  getContext: () => {
+    const s = window.__ccCurrentPalettes;
+    if(!s) return { note: '使用者尚未產出配色' };
+    return {
+      note: `主題：${s.topic}｜調性：${s.tone}\n\n當前 3 組配色：\n` +
+        s.palettes.map((p,i) => `${i+1}. ${p.name}（${p.mood || ''}）：${(p.colors||[]).map(c=>c.hex).join(' / ')}`).join('\n'),
+    };
+  },
+});
+</script>
+</body>
+</html>
