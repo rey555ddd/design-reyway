@@ -146,12 +146,89 @@
     <p>美學設計部的專屬工作空間。素材查詢、尺寸速查、色彩規範、周邊模擬——打開就進入工作狀態。</p>
     <div class="hero-stats">
       <div class="stat"><strong>6</strong><span>已上線工具</span></div>
-      <div class="stat"><strong>5</strong><span>測試中</span></div>
+      <div class="stat"><strong>8</strong><span>測試中</span></div>
       <div class="stat"><strong>33</strong><span>版位尺寸</span></div>
       <div class="stat"><strong>97</strong><span>產品素材</span></div>
     </div>
   </div>
 </section>
+
+<section class="grid-section" style="padding-bottom:32px;">
+  <div class="section-label">📅 節慶素材提醒</div>
+  <div class="holiday-row" id="holiday-row"></div>
+</section>
+
+<style>
+  .holiday-row{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;
+  }
+  .holiday-card{
+    background:linear-gradient(135deg,#FFF,var(--teal-xl));
+    border:1px solid #EEF0F2;border-radius:16px;padding:16px 18px;
+    display:flex;flex-direction:column;gap:6px;position:relative;overflow:hidden;
+  }
+  .holiday-card.urgent{border-color:#F3E6B8;background:linear-gradient(135deg,#FFF,#FFF8E6);}
+  .holiday-card.soon{border-color:var(--teal);}
+  .holiday-card .h-icon{font-size:28px;line-height:1;margin-bottom:4px;}
+  .holiday-card .h-name{font-size:15px;font-weight:700;color:var(--dark);}
+  .holiday-card .h-date{font-size:12px;color:var(--gray);font-family:'Inter',monospace;}
+  .holiday-card .h-days{
+    font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px;
+    background:var(--teal-l);color:var(--teal-d);align-self:flex-start;margin-top:4px;
+  }
+  .holiday-card.urgent .h-days{background:#FFF3C4;color:#8a6d1a;}
+  .holiday-card.soon .h-days{background:var(--teal);color:#fff;}
+  .holiday-card .h-hint{font-size:11px;color:var(--gray);margin-top:4px;line-height:1.5;}
+</style>
+
+<script>
+(function(){
+  // 淨淨年度行銷節點 + 一般節慶
+  const HOLIDAYS = [
+    { name:'母親節', icon:'🌷', date:'05-11', hint:'感恩溫馨、媽媽照顧家、送禮+自用' },
+    { name:'端午節', icon:'🎏', date:'06-19', hint:'節慶氛圍、艾草除穢、清潔連結' },
+    { name:'父親節', icon:'👔', date:'08-08', hint:'男性家庭主軸、個護系列' },
+    { name:'中元節', icon:'🏮', date:'09-05', hint:'居家整潔、拜拜前大掃' },
+    { name:'中秋節', icon:'🌕', date:'10-06', hint:'團圓、送禮、居家整潔' },
+    { name:'雙 11', icon:'🛒', date:'11-11', hint:'年度最低價、衝業績、全站 8 折' },
+    { name:'感恩節週末', icon:'🦃', date:'11-26', hint:'黑五氛圍、跨境包裹注意' },
+    { name:'聖誕節', icon:'🎄', date:'12-25', hint:'節慶氛圍、送禮季' },
+    { name:'大掃除季', icon:'🧹', date:'01-25', hint:'農曆年前、居家清潔剛需、85 折' },
+    { name:'情人節', icon:'💐', date:'02-14', hint:'個護系列、送禮、粉嫩調性' },
+    { name:'兒童節', icon:'🎈', date:'04-04', hint:'親子、寶寶安心、家庭場景' },
+  ];
+
+  function toDate(mmdd, year){
+    const [m,d] = mmdd.split('-').map(Number);
+    return new Date(year, m-1, d);
+  }
+
+  const now = new Date();
+  const todayMs = now.getTime();
+  const upcoming = HOLIDAYS.map(h => {
+    let date = toDate(h.date, now.getFullYear());
+    if(date.getTime() < todayMs - 2*86400000) date = toDate(h.date, now.getFullYear() + 1);
+    const days = Math.ceil((date.getTime() - todayMs) / 86400000);
+    return { ...h, date, days };
+  }).sort((a,b) => a.days - b.days).slice(0, 4);
+
+  const row = document.getElementById('holiday-row');
+  upcoming.forEach(h => {
+    const cls = h.days < 0 ? '' : h.days <= 14 ? 'urgent' : h.days <= 30 ? 'soon' : '';
+    const daysLabel = h.days < 0 ? '進行中' : h.days === 0 ? '今天' : `還有 ${h.days} 天`;
+    const card = document.createElement('div');
+    card.className = `holiday-card ${cls}`;
+    card.innerHTML = `
+      <div class="h-icon">${h.icon}</div>
+      <div class="h-name">${h.name}</div>
+      <div class="h-date">${h.date.toLocaleDateString('zh-TW', { month:'long', day:'numeric' })}</div>
+      <div class="h-days">${daysLabel}</div>
+      <div class="h-hint">${h.hint}</div>
+    `;
+    row.appendChild(card);
+  });
+})();
+</script>
 
 <section class="grid-section">
   <div class="section-label">已上線工具</div>
@@ -258,6 +335,36 @@
       <div class="card-icon mint">🎨</div>
       <h3>配色方案產生器</h3>
       <p>輸入主題與情緒，AI 給你 3 組 5 色配色，含角色分配、實際預覽與 WCAG 對比度自動檢查。</p>
+      <div class="card-footer">
+        <span class="badge dev">測試中</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="copywriter.html" class="card">
+      <div class="card-icon warm">📝</div>
+      <h3>文案改寫器</h3>
+      <p>貼一段粗胚文案，AI 幫你改寫成 5 種版本：主標、副標、短版、長版、CTA，每段可再 AI 編修。</p>
+      <div class="card-footer">
+        <span class="badge dev">測試中</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="designcheck.html" class="card">
+      <div class="card-icon purple">✅</div>
+      <h3>設計稿檢查員</h3>
+      <p>上傳完成的 banner，AI 照淨淨 Do/Don't 逐項檢查（色票、字體、留白、品牌感），給分數與改進點。</p>
+      <div class="card-footer">
+        <span class="badge dev">測試中</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="slogan.html" class="card">
+      <div class="card-icon teal">💬</div>
+      <h3>Slogan 發想器</h3>
+      <p>輸入產品+活動，AI 吐 10 個 slogan 分成功能型/情感型/急迫型/俏皮型四類，直接挑一個用。</p>
       <div class="card-footer">
         <span class="badge dev">測試中</span>
         <span class="card-arrow">→</span>

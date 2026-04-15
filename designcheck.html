@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>設計稿檢查員 — 淨淨美學工作室</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/brand.css">
+<style>
+.page-header{background:linear-gradient(135deg,var(--teal-xl) 0%,var(--white) 40%,var(--white) 60%,var(--teal-l) 100%);padding:40px 40px 32px;border-bottom:1px solid #EEF0F2;}
+.page-header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+.page-title{display:flex;align-items:center;gap:16px;}
+.page-title .logo{width:48px;height:48px;border-radius:14px;background:var(--teal);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:20px;box-shadow:0 4px 16px rgba(97,208,223,.3);}
+.page-title h1{font-size:24px;font-weight:900;color:var(--dark);}
+.page-title .subtitle{font-size:13px;color:var(--gray);margin-top:2px;}
+.back-link{font-size:13px;color:var(--gray);text-decoration:none;padding:8px 14px;border-radius:var(--radius-s);border:1px solid #EEF0F2;transition:all .2s;}
+.back-link:hover{color:var(--teal-d);border-color:var(--teal);}
+.main{max-width:1200px;margin:0 auto;padding:32px 40px 80px;}
+
+.uploader{background:var(--white);border:2px dashed #D8DEE3;border-radius:var(--radius);padding:40px 32px;text-align:center;cursor:pointer;margin-bottom:24px;transition:all .25s;}
+.uploader:hover,.uploader.drag{border-color:var(--teal);background:var(--teal-xl);}
+.uploader-icon{width:56px;height:56px;border-radius:50%;background:var(--teal-l);color:var(--teal-d);display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 16px;}
+.uploader h2{font-size:18px;font-weight:700;color:var(--dark);margin-bottom:6px;}
+.uploader p{font-size:13px;color:var(--gray);}
+.uploader input{display:none;}
+.uploader.has-img{padding:0;border:none;background:transparent;cursor:default;display:block;margin-bottom:20px;}
+.preview-wrap{background:var(--white);border:1px solid #EEF0F2;border-radius:var(--radius);padding:20px;display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;}
+.preview-wrap img{max-width:280px;max-height:280px;border-radius:var(--radius-s);}
+.preview-meta{flex:1;min-width:200px;display:flex;flex-direction:column;gap:10px;}
+.preview-meta .name{font-size:14px;font-weight:700;color:var(--dark);}
+.preview-meta .size{font-size:12px;color:var(--gray);}
+.preview-actions{display:flex;gap:8px;flex-wrap:wrap;}
+
+.form-card{background:var(--white);border:1px solid #EEF0F2;border-radius:var(--radius);padding:20px;margin-bottom:24px;}
+.form-field{display:flex;flex-direction:column;gap:6px;}
+.form-field label{font-size:13px;font-weight:700;color:var(--dark);}
+.form-field input[type=text]{font-family:inherit;font-size:14px;padding:10px 12px;border:1px solid #E1E5E8;border-radius:10px;background:var(--white);outline:none;transition:border-color .2s;}
+.form-field input[type=text]:focus{border-color:var(--teal);}
+
+.btn{background:var(--white);border:1px solid #EEF0F2;color:var(--text);padding:10px 20px;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .2s;}
+.btn:hover{border-color:var(--teal);color:var(--teal-d);}
+.btn.primary{background:var(--teal);border-color:var(--teal);color:#fff;font-weight:700;}
+.btn.primary:hover{background:var(--teal-d);border-color:var(--teal-d);color:#fff;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+
+.section-label{font-size:13px;font-weight:700;color:var(--teal-d);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;padding-left:4px;}
+
+.score-card{background:var(--white);border:1px solid #EEF0F2;border-radius:var(--radius);padding:24px;margin-bottom:24px;display:grid;grid-template-columns:140px 1fr;gap:24px;align-items:center;}
+.score-circle{width:140px;height:140px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#fff;font-family:'Inter',sans-serif;}
+.score-circle .num{font-size:42px;font-weight:900;line-height:1;}
+.score-circle .max{font-size:12px;opacity:.8;margin-top:2px;}
+.score-verdict{display:flex;flex-direction:column;gap:8px;}
+.score-verdict .grade{font-size:22px;font-weight:900;color:var(--dark);}
+.score-verdict .summary{font-size:14px;color:var(--text);line-height:1.7;}
+
+.check-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;}
+.check-item{background:var(--white);border:1px solid #EEF0F2;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:8px;}
+.check-item.pass{border-left:4px solid #22C55E;}
+.check-item.warn{border-left:4px solid #F59E0B;}
+.check-item.fail{border-left:4px solid #EF4444;}
+.check-head{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.check-name{font-size:14px;font-weight:700;color:var(--dark);}
+.check-status{font-size:11px;font-weight:700;padding:3px 8px;border-radius:10px;}
+.check-status.pass{background:#E6F9F0;color:#15803D;}
+.check-status.warn{background:#FEF3C7;color:#92400E;}
+.check-status.fail{background:#FEE2E2;color:#B91C1C;}
+.check-comment{font-size:13px;color:var(--text);line-height:1.65;}
+.check-fix{font-size:12px;color:var(--teal-d);background:var(--teal-xl);padding:8px 10px;border-radius:8px;line-height:1.5;}
+.check-fix strong{color:var(--teal-d);}
+
+.state{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--gray);font-size:14px;}
+.state.loading{display:flex;flex-direction:column;align-items:center;gap:12px;}
+.state .dots{display:flex;gap:6px;}
+.state .dots span{width:8px;height:8px;border-radius:50%;background:var(--teal);animation:lBounce 1.2s infinite ease-in-out;}
+.state .dots span:nth-child(2){animation-delay:.15s;}
+.state .dots span:nth-child(3){animation-delay:.3s;}
+@keyframes lBounce{0%,60%,100%{transform:scale(.7);opacity:.4;}30%{transform:scale(1);opacity:1;}}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--dark);color:#fff;padding:10px 18px;border-radius:24px;font-size:13px;opacity:0;pointer-events:none;transition:all .25s;z-index:1000;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+@media(max-width:680px){.page-header{padding:24px 20px;}.main{padding:24px 20px 60px;}.score-card{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="page-header-inner">
+    <div class="page-title">
+      <div class="logo">淨</div>
+      <div>
+        <h1>設計稿檢查員</h1>
+        <div class="subtitle">上傳 banner，AI 照淨淨規範逐項檢查、打分、給改進方向</div>
+      </div>
+    </div>
+    <a href="index.html" class="back-link">← 返回工作室</a>
+  </div>
+</header>
+
+<main class="main">
+
+  <label class="uploader" id="uploader" for="file-input">
+    <input type="file" id="file-input" accept="image/*">
+    <div class="uploader-icon" id="u-icon">⬆</div>
+    <h2 id="u-title">點擊或拖拉設計稿到這裡</h2>
+    <p id="u-desc">支援 JPG / PNG / WebP</p>
+  </label>
+
+  <div id="preview-area" style="display:none;">
+    <div class="preview-wrap">
+      <img id="preview-img" alt="設計稿預覽">
+      <div class="preview-meta">
+        <div class="name" id="preview-name"></div>
+        <div class="size" id="preview-size"></div>
+
+        <div class="form-field" style="margin-top:8px;">
+          <label>這張是做什麼用的？（讓檢查更準）</label>
+          <input type="text" id="purpose" placeholder="例：母親節 IG 限動、蝦皮商品主圖、官網首頁 banner" value="">
+        </div>
+
+        <div class="preview-actions">
+          <button class="btn primary" id="btn-check" type="button">開始檢查 →</button>
+          <button class="btn" id="btn-replace" type="button">換一張</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="result-area" style="display:none;margin-top:28px;">
+    <div class="section-label">檢查結果</div>
+    <div id="score-wrap"></div>
+    <div class="check-list" id="check-list"></div>
+  </div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const input = $('#file-input');
+const uploader = $('#uploader');
+let currentImage = null;
+let currentFile = null;
+
+function showToast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2000); }
+function esc(s){ return String(s||'').replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c])); }
+
+function handleFile(f){
+  if(!f || !f.type.startsWith('image/')){ showToast('請上傳圖片檔'); return; }
+  currentFile = f;
+  const reader = new FileReader();
+  reader.onload = e => {
+    currentImage = e.target.result;
+    $('#preview-img').src = currentImage;
+    $('#preview-name').textContent = f.name;
+    $('#preview-size').textContent = `${(f.size/1024).toFixed(0)} KB · ${f.type}`;
+    uploader.style.display = 'none';
+    $('#preview-area').style.display = 'block';
+    $('#result-area').style.display = 'none';
+  };
+  reader.readAsDataURL(f);
+}
+input.addEventListener('change', e => handleFile(e.target.files[0]));
+['dragenter','dragover'].forEach(ev => uploader.addEventListener(ev, e=>{e.preventDefault();uploader.classList.add('drag');}));
+['dragleave','drop'].forEach(ev => uploader.addEventListener(ev, e=>{e.preventDefault();uploader.classList.remove('drag');}));
+uploader.addEventListener('drop', e => handleFile(e.dataTransfer.files[0]));
+
+$('#btn-replace').addEventListener('click', () => {
+  currentImage = null; currentFile = null;
+  input.value = '';
+  uploader.style.display = 'block';
+  $('#preview-area').style.display = 'none';
+  $('#result-area').style.display = 'none';
+});
+
+window.__ccCurrentCheck = null;
+
+const CHECK_CATEGORIES = [
+  { key:'brand_color', name:'品牌色使用', desc:'青綠 #61D0DF 是否有出現；整體色調是否符合淺色淡雅調性' },
+  { key:'typography', name:'字體系統', desc:'中文 Noto Sans TC、英文 Inter；大小階層是否清楚' },
+  { key:'white_space', name:'留白與呼吸', desc:'元素是否擠、主體周圍留白是否足夠' },
+  { key:'hierarchy', name:'主體層次', desc:'一眼看出主標、產品、CTA 的優先順序' },
+  { key:'brand_feel', name:'淨淨品牌感', desc:'安心、乾淨、溫暖；不過度煽情、不重口味、不深色' },
+  { key:'readability', name:'可讀性與對比', desc:'文字背景對比是否足夠、最小字是否能讀' },
+  { key:'composition', name:'構圖與比例', desc:'主體位置、三分法、重心平衡' },
+  { key:'taboo', name:'禁忌檢查', desc:'是否誤用簡體字、暗黑背景、誇張保證用語、競品元素' },
+];
+
+function renderResult(data){
+  const area = $('#result-area');
+  area.style.display = 'block';
+
+  const score = Math.round(data.score ?? 0);
+  const color = score >= 85 ? '#22C55E' : score >= 70 ? '#61D0DF' : score >= 55 ? '#F59E0B' : '#EF4444';
+  const grade = score >= 85 ? '很棒！' : score >= 70 ? '不錯，有些可以再調' : score >= 55 ? '有明顯要改的地方' : '建議大改';
+
+  $('#score-wrap').innerHTML = `
+    <div class="score-card">
+      <div class="score-circle" style="background:${color};">
+        <div class="num">${score}</div><div class="max">/ 100</div>
+      </div>
+      <div class="score-verdict">
+        <div class="grade">${grade}</div>
+        <div class="summary">${esc(data.summary || '')}</div>
+      </div>
+    </div>`;
+
+  const list = $('#check-list');
+  list.innerHTML = '';
+  (data.checks || []).forEach(c => {
+    const status = c.status || 'warn';
+    const statusLabel = status === 'pass' ? '✓ 通過' : status === 'warn' ? '⚠ 可改進' : '✗ 要改';
+    const item = document.createElement('div');
+    item.className = `check-item ${status}`;
+    item.innerHTML = `
+      <div class="check-head">
+        <div class="check-name">${esc(c.name || '')}</div>
+        <span class="check-status ${status}">${statusLabel}</span>
+      </div>
+      <div class="check-comment">${esc(c.comment || '')}</div>
+      ${c.fix ? `<div class="check-fix"><strong>建議：</strong>${esc(c.fix)}</div>` : ''}
+    `;
+    list.appendChild(item);
+  });
+
+  area.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+async function check(){
+  if(!currentImage){ showToast('請先上傳設計稿'); return; }
+  $('#btn-check').disabled = true;
+  $('#result-area').style.display = 'block';
+  $('#score-wrap').innerHTML = '';
+  $('#check-list').innerHTML = `<div class="state loading"><div class="dots"><span></span><span></span><span></span></div><div>AI 正在逐項檢查（約 10-20 秒）…</div></div>`;
+
+  const systemPrompt = `你是淨淨美學工作室的資深視覺總監，用淨淨品牌規範為設計稿打分。
+
+【淨淨品牌規範】
+- 品牌色：青綠 #61D0DF 為主色、#329BAF 深青、#F5EDE3 暖米、#F0D9D9 腮紅粉
+- 調性：淺色淡雅、白底為主，**絕不用深色 dashboard 風**
+- 字體：中文 Noto Sans TC、英文 Inter
+- 精神：以家人標準開發、安心清潔、真誠溫暖
+- 絕對禁忌：簡體字、暗黑深色背景、誇張保證用語、重口味、卡通化、競品元素
+
+【檢查項目】${CHECK_CATEGORIES.map(c => `${c.name}（${c.desc}）`).join('；')}
+
+【輸出格式】嚴格回傳 JSON，不要 markdown code fence：
+{
+  "score": 0-100 的整數（綜合分數）,
+  "summary": "一段話總結整體評估（40-60 字）",
+  "checks": [
+    {
+      "name": "檢查項目名稱",
+      "status": "pass / warn / fail",
+      "comment": "你看到了什麼、為什麼這樣評（1-2 句）",
+      "fix": "具體改進建議（15-30 字，可省略）"
+    },
+    ... 每個檢查項目各一筆
+  ]
+}
+
+【評分原則】
+- pass：符合淨淨規範且執行到位
+- warn：能用但有改進空間
+- fail：明顯違反規範或嚴重問題
+- score 不要都打 70-80，根據實際狀況決定；差就給低分，好就給高分
+- fix 要具體可執行，不要空話（例：「把主標往上移 40px」比「主標位置調整」好）
+- summary 用設計師能聽懂的話，不要太空泛
+
+【語言】一律繁體中文台灣用語，不可用簡體字。`;
+
+  const userMsg = `請檢查這張設計稿。
+用途：${$('#purpose').value.trim() || '（未指定）'}
+
+請逐項檢查並給分。`;
+
+  try {
+    const res = await fetch('/api/chat', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        systemPrompt,
+        messages: [{ role:'user', content: userMsg }],
+        imageUrl: currentImage,
+        stream: false,
+        maxTokens: 2000,
+      }),
+    });
+    const data = await res.json();
+    if(!res.ok || data.error){
+      $('#check-list').innerHTML = `<div class="state">⚠ ${data.error || '檢查失敗'}${data.hint ? '｜'+data.hint : ''}</div>`;
+      return;
+    }
+    let reply = (data.reply || '').trim().replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim();
+    const fb = reply.indexOf('{'), lb = reply.lastIndexOf('}');
+    if(fb !== -1 && lb > fb) reply = reply.slice(fb, lb+1);
+    let parsed;
+    try { parsed = JSON.parse(reply); } catch { $('#check-list').innerHTML = `<div class="state">⚠ AI 回應格式錯誤</div>`; return; }
+
+    window.__ccCurrentCheck = { purpose: $('#purpose').value.trim(), result: parsed };
+    renderResult(parsed);
+  } catch(e){
+    $('#check-list').innerHTML = `<div class="state">⚠ 連線失敗：${e.message}</div>`;
+  } finally {
+    $('#btn-check').disabled = false;
+  }
+}
+
+$('#btn-check').addEventListener('click', check);
+</script>
+
+<script src="assets/chat-panel.js"></script>
+<script>
+CCChatPanel.init({
+  toolName: '設計稿檢查員',
+  systemPrompt: '你是淨淨美學工作室的視覺總監，協助使用者追問設計稿檢查結果、討論如何改進。淨淨品牌淺色淡雅、青綠 #61D0DF、不做深色。請用繁中、精簡（最多 3 段），給具體可執行建議。',
+  greeting: '嗨！對哪項檢查結果想深入討論？告訴我「為什麼字體給 warn」「留白怎麼改會更好」等具體問題 ✨',
+  suggestions: ['為什麼分數不高', '怎麼強化品牌感', '哪裡最該先改', '幫我算個改進優先順序'],
+  dailyLimit: 30,
+  getContext: () => {
+    const s = window.__ccCurrentCheck;
+    if(!s) return { note: '使用者尚未送出檢查' };
+    const r = s.result || {};
+    return {
+      imageUrl: currentImage || null,
+      note: `用途：${s.purpose || '（未指定）'}\n分數：${r.score}/100\n總結：${r.summary}\n\n各項結果：\n${(r.checks||[]).map(c => `・${c.name}（${c.status}）：${c.comment}`).join('\n')}`,
+    };
+  },
+});
+</script>
+</body>
+</html>

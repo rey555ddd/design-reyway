@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Slogan 發想器 — 淨淨美學工作室</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/brand.css">
+<style>
+.page-header{background:linear-gradient(135deg,var(--teal-xl) 0%,var(--white) 40%,var(--white) 60%,var(--teal-l) 100%);padding:40px 40px 32px;border-bottom:1px solid #EEF0F2;}
+.page-header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+.page-title{display:flex;align-items:center;gap:16px;}
+.page-title .logo{width:48px;height:48px;border-radius:14px;background:var(--teal);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:20px;}
+.page-title h1{font-size:24px;font-weight:900;color:var(--dark);}
+.page-title .subtitle{font-size:13px;color:var(--gray);margin-top:2px;}
+.back-link{font-size:13px;color:var(--gray);text-decoration:none;padding:8px 14px;border-radius:var(--radius-s);border:1px solid #EEF0F2;transition:all .2s;}
+.back-link:hover{color:var(--teal-d);border-color:var(--teal);}
+.main{max-width:1200px;margin:0 auto;padding:32px 40px 80px;}
+
+.form-card{background:var(--white);border:1px solid #EEF0F2;border-radius:var(--radius);padding:28px;margin-bottom:28px;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.form-field{display:flex;flex-direction:column;gap:6px;}
+.form-field.full{grid-column:1/-1;}
+.form-field label{font-size:13px;font-weight:700;color:var(--dark);}
+.form-field input,.form-field textarea{font-family:inherit;font-size:14px;padding:10px 12px;border:1px solid #E1E5E8;border-radius:10px;background:var(--white);outline:none;}
+.form-field input:focus,.form-field textarea:focus{border-color:var(--teal);}
+.section-label{font-size:13px;font-weight:700;color:var(--teal-d);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;padding-left:4px;}
+.form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;padding-top:20px;border-top:1px solid #EEF0F2;}
+.btn{background:var(--white);border:1px solid #EEF0F2;color:var(--text);padding:10px 20px;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .2s;}
+.btn:hover{border-color:var(--teal);color:var(--teal-d);}
+.btn.primary{background:var(--teal);border-color:var(--teal);color:#fff;font-weight:700;}
+.btn.primary:hover{background:var(--teal-d);color:#fff;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+
+.category{margin-bottom:24px;}
+.cat-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;padding-left:4px;}
+.cat-icon{font-size:20px;}
+.cat-name{font-size:15px;font-weight:900;color:var(--dark);}
+.cat-desc{font-size:12px;color:var(--gray);}
+.slogan-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;}
+.slogan-item{background:var(--white);border:1px solid #EEF0F2;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;transition:all .2s;}
+.slogan-item:hover{border-color:var(--teal);}
+.slogan-text{font-size:15px;line-height:1.6;color:var(--text);font-weight:500;}
+.slogan-actions{display:flex;gap:6px;}
+.btn-small{font-size:11px;padding:5px 10px;border-radius:8px;background:var(--white);border:1px solid #EEF0F2;color:var(--text);cursor:pointer;font-family:inherit;transition:all .2s;}
+.btn-small:hover{border-color:var(--teal);color:var(--teal-d);}
+
+.state{text-align:center;padding:60px 20px;color:var(--gray);font-size:14px;}
+.state.loading{display:flex;flex-direction:column;align-items:center;gap:12px;}
+.state .dots{display:flex;gap:6px;}
+.state .dots span{width:8px;height:8px;border-radius:50%;background:var(--teal);animation:lBounce 1.2s infinite ease-in-out;}
+.state .dots span:nth-child(2){animation-delay:.15s;}
+.state .dots span:nth-child(3){animation-delay:.3s;}
+@keyframes lBounce{0%,60%,100%{transform:scale(.7);opacity:.4;}30%{transform:scale(1);opacity:1;}}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--dark);color:#fff;padding:10px 18px;border-radius:24px;font-size:13px;opacity:0;pointer-events:none;transition:all .25s;z-index:1000;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+@media(max-width:680px){.page-header{padding:24px 20px;}.main{padding:24px 20px 60px;}.form-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="page-header-inner">
+    <div class="page-title">
+      <div class="logo">淨</div>
+      <div>
+        <h1>Slogan 發想器</h1>
+        <div class="subtitle">輸入產品 + 活動，AI 給你 10 個 slogan 分 4 類角度</div>
+      </div>
+    </div>
+    <a href="index.html" class="back-link">← 返回工作室</a>
+  </div>
+</header>
+
+<main class="main">
+
+  <div class="form-card">
+    <div class="section-label">Slogan 設定</div>
+    <div class="form-grid">
+      <div class="form-field">
+        <label>產品 / 品項</label>
+        <input type="text" id="product" placeholder="例：淨淨椰油洗衣精、食器清潔皂、個人護理組合" value="淨淨椰油洗衣精">
+      </div>
+      <div class="form-field">
+        <label>活動 / 情境</label>
+        <input type="text" id="occasion" placeholder="例：母親節、新品上市、大掃除季" value="母親節檔期">
+      </div>
+      <div class="form-field full">
+        <label>想強調的賣點 / 關鍵訊息（選填）</label>
+        <textarea id="message" placeholder="例：全產品 SGS 認證、不咬手、寶寶可用、以家人標準開發"></textarea>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn" id="btn-reset" type="button">重設</button>
+      <button class="btn primary" id="btn-generate" type="button">產出 10 個 slogan →</button>
+    </div>
+  </div>
+
+  <div id="results"></div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+function showToast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('show'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2000); }
+function copyText(t, m='已複製'){ navigator.clipboard.writeText(t).then(()=>showToast(m)); }
+function esc(s){ return String(s||'').replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c])); }
+
+const CATEGORIES = [
+  { key:'functional', icon:'🛡', name:'功能型', desc:'強調產品實際效果、規格、認證' },
+  { key:'emotional', icon:'💛', name:'情感型', desc:'訴求家人、安心、愛、信任' },
+  { key:'urgent', icon:'⏰', name:'急迫型', desc:'限時、限量、優惠、促銷感' },
+  { key:'playful', icon:'✨', name:'俏皮型', desc:'輕鬆、有哏、口語、可分享' },
+];
+
+window.__ccCurrentSlogans = null;
+
+function render(data){
+  const wrap = $('#results');
+  wrap.innerHTML = '';
+  CATEGORIES.forEach(cat => {
+    const list = (data[cat.key] || []);
+    if(list.length === 0) return;
+    const section = document.createElement('div');
+    section.className = 'category';
+    section.innerHTML = `
+      <div class="cat-head">
+        <div class="cat-icon">${cat.icon}</div>
+        <div class="cat-name">${cat.name}</div>
+        <div class="cat-desc">· ${cat.desc}</div>
+      </div>
+      <div class="slogan-list">
+        ${list.map(s => `
+          <div class="slogan-item">
+            <div class="slogan-text">${esc(s)}</div>
+            <div class="slogan-actions">
+              <button class="btn-small" data-slogan="${esc(s).replace(/"/g,'&quot;')}">複製</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    section.querySelectorAll('[data-slogan]').forEach(btn => {
+      btn.addEventListener('click', () => copyText(btn.dataset.slogan, '已複製 slogan'));
+    });
+    wrap.appendChild(section);
+  });
+}
+
+async function generate(){
+  const product = $('#product').value.trim();
+  if(!product){ showToast('請先填寫產品'); return; }
+
+  $('#results').innerHTML = `<div class="state loading"><div class="dots"><span></span><span></span><span></span></div><div>AI 正在發想 10 個 slogan…</div></div>`;
+  $('#btn-generate').disabled = true;
+
+  const systemPrompt = `你是淨淨美學工作室的資深文案。為使用者產出 10 個 slogan，分 4 類角度：
+
+1. functional（功能型）3 句 - 強調產品實際效果、規格、認證
+2. emotional（情感型）3 句 - 訴求家人、安心、愛、信任
+3. urgent（急迫型）2 句 - 限時、限量、促銷感（不要過度誇張）
+4. playful（俏皮型）2 句 - 輕鬆有哏、口語、可分享
+
+【淨淨品牌精神】
+- 以家人標準開發、安心清潔、真誠溫暖
+- 避免：誇張保證、恐懼行銷、太推銷感、煽情
+- slogan 不可超過 20 字，短越有力越好（12-15 字最佳）
+
+【輸出格式】嚴格 JSON：
+{
+  "functional": ["...", "...", "..."],
+  "emotional": ["...", "...", "..."],
+  "urgent": ["...", "..."],
+  "playful": ["...", "..."]
+}
+
+【語言】一律繁體中文台灣用語。`;
+
+  const userMsg = `產品：${product}
+活動/情境：${$('#occasion').value.trim() || '（未指定）'}
+想強調的訊息：${$('#message').value.trim() || '（無特別指定）'}
+
+請產出 10 個 slogan 分 4 類。`;
+
+  try {
+    const res = await fetch('/api/chat', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ systemPrompt, messages:[{role:'user',content:userMsg}], stream:false, maxTokens:1200 }),
+    });
+    const data = await res.json();
+    if(!res.ok || data.error){ $('#results').innerHTML = `<div class="state">⚠ ${data.error || '生成失敗'}</div>`; return; }
+    let reply = (data.reply || '').trim().replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim();
+    const fb = reply.indexOf('{'), lb = reply.lastIndexOf('}');
+    if(fb !== -1 && lb > fb) reply = reply.slice(fb, lb+1);
+    let parsed;
+    try { parsed = JSON.parse(reply); } catch { $('#results').innerHTML = `<div class="state">⚠ AI 回應格式錯誤</div>`; return; }
+    window.__ccCurrentSlogans = { product, occasion: $('#occasion').value.trim(), result: parsed };
+    render(parsed);
+  } catch(e){ $('#results').innerHTML = `<div class="state">⚠ 連線失敗：${e.message}</div>`; }
+  finally { $('#btn-generate').disabled = false; }
+}
+
+$('#btn-generate').addEventListener('click', generate);
+$('#btn-reset').addEventListener('click', () => {
+  $('#product').value=''; $('#occasion').value=''; $('#message').value='';
+  $('#results').innerHTML=''; window.__ccCurrentSlogans = null;
+});
+</script>
+
+<script src="assets/chat-panel.js"></script>
+<script>
+CCChatPanel.init({
+  toolName: 'Slogan 發想器',
+  systemPrompt: '你是淨淨美學工作室的文案顧問。協助使用者追問 slogan、微調方向。淨淨精神：以家人標準、真誠溫暖、不煽情。繁中，精簡 3 段內。',
+  greeting: '嗨！想微調哪類 slogan？告訴我「功能型再具體」「加一組日系風」等方向 ✨',
+  suggestions: ['再給我 3 個俏皮型', '功能型太技術', '情感型太軟', '加一組雙關哏'],
+  dailyLimit: 30,
+  getContext: () => {
+    const s = window.__ccCurrentSlogans;
+    if(!s) return { note: '尚未產出 slogan' };
+    const r = s.result || {};
+    return { note:
+      `產品：${s.product}｜情境：${s.occasion}\n\n目前 slogan：\n功能：${(r.functional||[]).join('、')}\n情感：${(r.emotional||[]).join('、')}\n急迫：${(r.urgent||[]).join('、')}\n俏皮：${(r.playful||[]).join('、')}`,
+    };
+  },
+});
+</script>
+</body>
+</html>

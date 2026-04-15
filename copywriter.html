@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文案改寫器 — 淨淨美學工作室</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/brand.css">
+<style>
+.page-header{background:linear-gradient(135deg,var(--teal-xl) 0%,var(--white) 40%,var(--white) 60%,var(--teal-l) 100%);padding:40px 40px 32px;border-bottom:1px solid #EEF0F2;}
+.page-header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+.page-title{display:flex;align-items:center;gap:16px;}
+.page-title .logo{width:48px;height:48px;border-radius:14px;background:var(--teal);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:20px;box-shadow:0 4px 16px rgba(97,208,223,.3);}
+.page-title h1{font-size:24px;font-weight:900;color:var(--dark);}
+.page-title .subtitle{font-size:13px;color:var(--gray);margin-top:2px;}
+.back-link{font-size:13px;color:var(--gray);text-decoration:none;padding:8px 14px;border-radius:var(--radius-s);border:1px solid #EEF0F2;transition:all .2s;}
+.back-link:hover{color:var(--teal-d);border-color:var(--teal);}
+.main{max-width:1200px;margin:0 auto;padding:32px 40px 80px;}
+
+.form-card{background:var(--white);border:1px solid #EEF0F2;border-radius:var(--radius);padding:28px;margin-bottom:28px;}
+.section-label{font-size:13px;font-weight:700;color:var(--teal-d);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;padding-left:4px;}
+.form-field{display:flex;flex-direction:column;gap:6px;margin-bottom:20px;}
+.form-field label{font-size:13px;font-weight:700;color:var(--dark);}
+.form-field .hint{font-size:11px;color:var(--gray);}
+.form-field textarea,.form-field input[type=text]{font-family:inherit;font-size:14px;color:var(--text);padding:10px 12px;border:1px solid #E1E5E8;border-radius:10px;background:var(--white);outline:none;transition:border-color .2s;}
+.form-field textarea:focus,.form-field input[type=text]:focus{border-color:var(--teal);}
+.form-field textarea{min-height:100px;resize:vertical;}
+.chip-row{display:flex;flex-wrap:wrap;gap:8px;}
+.chip{font-size:13px;padding:7px 14px;border-radius:20px;background:var(--light-gray);border:1px solid #EEF0F2;color:var(--text);cursor:pointer;transition:all .2s;font-family:inherit;}
+.chip:hover{border-color:var(--teal);color:var(--teal-d);}
+.chip.on{background:var(--teal);border-color:var(--teal);color:#fff;}
+.form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;padding-top:20px;border-top:1px solid #EEF0F2;}
+.btn{background:var(--white);border:1px solid #EEF0F2;color:var(--text);padding:10px 20px;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .2s;}
+.btn:hover{border-color:var(--teal);color:var(--teal-d);}
+.btn.primary{background:var(--teal);border-color:var(--teal);color:#fff;font-weight:700;}
+.btn.primary:hover{background:var(--teal-d);border-color:var(--teal-d);color:#fff;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;}
+.result-card{background:var(--white);border:1px solid #EEF0F2;border-radius:var(--radius);padding:20px;display:flex;flex-direction:column;gap:12px;}
+.result-card:hover{border-color:var(--teal);}
+.r-head{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.r-tag{font-size:11px;font-weight:700;color:var(--teal-d);background:var(--teal-l);padding:4px 10px;border-radius:12px;letter-spacing:1px;text-transform:uppercase;}
+.r-len{font-size:11px;color:var(--gray);font-family:'Inter',monospace;}
+.r-content{font-size:14px;line-height:1.75;color:var(--text);white-space:pre-wrap;padding:12px 14px;background:var(--light-gray);border-radius:10px;min-height:72px;}
+.r-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;}
+.btn-small{font-size:12px;padding:6px 12px;border-radius:8px;background:var(--white);border:1px solid #EEF0F2;color:var(--text);cursor:pointer;font-family:inherit;transition:all .2s;}
+.btn-small:hover{border-color:var(--teal);color:var(--teal-d);}
+.btn-small.primary{background:var(--teal);border-color:var(--teal);color:#fff;}
+.btn-small.primary:hover{background:var(--teal-d);color:#fff;}
+.btn-small.accent{background:#FFF8E6;border-color:#F3E6B8;color:#8a6d1a;}
+.btn-small.accent:hover{background:#F3E6B8;}
+
+.edit-block{background:var(--teal-xl);border:1px solid var(--teal-l);border-radius:var(--radius-s);padding:12px;display:none;flex-direction:column;gap:8px;}
+.edit-block.on{display:flex;}
+.edit-block textarea{font-family:inherit;font-size:13px;color:var(--text);border:1px solid #E1E5E8;border-radius:8px;padding:8px 10px;background:#fff;outline:none;min-height:50px;resize:vertical;}
+.edit-suggestions{display:flex;flex-wrap:wrap;gap:6px;}
+.edit-suggestions button{font-size:11px;padding:4px 10px;border-radius:12px;background:#fff;border:1px solid var(--teal-l);color:var(--teal-d);cursor:pointer;font-family:inherit;}
+.edit-actions{display:flex;gap:6px;justify-content:flex-end;}
+
+.state{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--gray);font-size:14px;}
+.state.loading{display:flex;flex-direction:column;align-items:center;gap:12px;}
+.state .dots{display:flex;gap:6px;}
+.state .dots span{width:8px;height:8px;border-radius:50%;background:var(--teal);animation:lBounce 1.2s infinite ease-in-out;}
+.state .dots span:nth-child(2){animation-delay:.15s;}
+.state .dots span:nth-child(3){animation-delay:.3s;}
+@keyframes lBounce{0%,60%,100%{transform:scale(.7);opacity:.4;}30%{transform:scale(1);opacity:1;}}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--dark);color:#fff;padding:10px 18px;border-radius:24px;font-size:13px;opacity:0;pointer-events:none;transition:all .25s;z-index:1000;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+@media(max-width:680px){.page-header{padding:24px 20px;}.main{padding:24px 20px 60px;}}
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="page-header-inner">
+    <div class="page-title">
+      <div class="logo">淨</div>
+      <div>
+        <h1>文案改寫器</h1>
+        <div class="subtitle">貼一段文字，AI 給你 5 種不同長度與角度的版本</div>
+      </div>
+    </div>
+    <a href="index.html" class="back-link">← 返回工作室</a>
+  </div>
+</header>
+
+<main class="main">
+
+  <div class="form-card">
+    <div class="section-label">原始文字</div>
+
+    <div class="form-field">
+      <label>要改寫的文案</label>
+      <textarea id="source" placeholder="貼上老闆丟過來的文案、產品說明、活動文案…" >我們推出母親節特別優惠，所有商品皆享有 85 折優惠，另外還有滿額禮贈送給每一位媽媽，讓媽媽在這個特別的日子感受到我們最真誠的祝福與感謝。</textarea>
+      <span class="hint">原文越具體越好，AI 才抓得到你想講的點</span>
+    </div>
+
+    <div class="form-field">
+      <label>產品 / 活動主角（選填）</label>
+      <input type="text" id="subject" placeholder="例：淨淨椰油洗衣精、母親節檔期、新品上市">
+    </div>
+
+    <div class="form-field">
+      <label>語氣調性</label>
+      <div class="chip-row" id="tone-row">
+        <button type="button" class="chip on" data-v="溫暖真誠">溫暖真誠</button>
+        <button type="button" class="chip" data-v="輕快俏皮">輕快俏皮</button>
+        <button type="button" class="chip" data-v="專業說服">專業說服</button>
+        <button type="button" class="chip" data-v="急迫促銷">急迫促銷</button>
+        <button type="button" class="chip" data-v="知識教育">知識教育</button>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn" id="btn-reset" type="button">重設</button>
+      <button class="btn primary" id="btn-generate" type="button">改寫 5 種版本 →</button>
+    </div>
+  </div>
+
+  <div class="section-label" id="results-label" style="display:none;">改寫結果</div>
+  <div class="results" id="results"></div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+let tone = '溫暖真誠';
+$('#tone-row').querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
+  $('#tone-row').querySelectorAll('.chip').forEach(x => x.classList.remove('on'));
+  c.classList.add('on'); tone = c.dataset.v;
+}));
+function showToast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2000); }
+function copyText(t, m='已複製'){ navigator.clipboard.writeText(t).then(()=>showToast(m)); }
+function esc(s){ return String(s||'').replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c])); }
+
+window.__ccCurrentRewrites = null;
+
+const KINDS = [
+  { key: 'headline', name: '主標題', desc: '15 字內，banner / 主視覺用' },
+  { key: 'subtitle', name: '副標題', desc: '30 字內，補充主標' },
+  { key: 'short', name: '短版文案', desc: '50-80 字，IG 貼文 / 社群' },
+  { key: 'long', name: '長版文案', desc: '120-180 字，EDM / 官網詳述' },
+  { key: 'cta', name: 'CTA 按鈕', desc: '8 字內，行動呼籲' },
+];
+
+function render(rewrites){
+  const grid = $('#results');
+  grid.innerHTML = '';
+  $('#results-label').style.display = 'block';
+
+  KINDS.forEach((k, i) => {
+    const text = rewrites[k.key] || '';
+    const card = document.createElement('div');
+    card.className = 'result-card';
+    card.innerHTML = `
+      <div class="r-head">
+        <span class="r-tag">${k.name}</span>
+        <span class="r-len">${text.length} 字 · ${esc(k.desc)}</span>
+      </div>
+      <div class="r-content">${esc(text)}</div>
+      <div class="r-actions">
+        <button class="btn-small primary" data-act="copy">複製</button>
+        <button class="btn-small accent" data-act="edit">🪄 AI 編修</button>
+      </div>
+      <div class="edit-block" data-edit>
+        <div style="font-size:11px;color:var(--teal-d);font-weight:700;letter-spacing:1px;">🪄 想怎麼改這段？</div>
+        <textarea placeholder="例：再短一點、加個數字、少一點形容詞、更口語"></textarea>
+        <div class="edit-suggestions">
+          <button type="button" data-sug="再短一點">再短一點</button>
+          <button type="button" data-sug="加個具體數字">加數字</button>
+          <button type="button" data-sug="少一點形容詞，更直白">更直白</button>
+          <button type="button" data-sug="改得更口語、像朋友講話">更口語</button>
+          <button type="button" data-sug="強調時效急迫感">加急迫感</button>
+          <button type="button" data-sug="把產品效果寫得更具體">更具體</button>
+        </div>
+        <div class="edit-actions">
+          <button type="button" class="btn-small" data-act="cancel">取消</button>
+          <button type="button" class="btn-small primary" data-act="submit">送出編修</button>
+        </div>
+      </div>
+    `;
+    const editBlock = card.querySelector('[data-edit]');
+    const editArea = editBlock.querySelector('textarea');
+    card.querySelector('[data-act=copy]').addEventListener('click', () => copyText(text, `已複製${k.name}`));
+    card.querySelector('[data-act=edit]').addEventListener('click', () => {
+      editBlock.classList.toggle('on');
+      if(editBlock.classList.contains('on')) setTimeout(()=>editArea.focus(), 50);
+    });
+    card.querySelector('[data-act=cancel]').addEventListener('click', () => editBlock.classList.remove('on'));
+    editBlock.querySelectorAll('[data-sug]').forEach(b => b.addEventListener('click', () => { editArea.value = b.dataset.sug; editArea.focus(); }));
+    card.querySelector('[data-act=submit]').addEventListener('click', async () => {
+      const ins = editArea.value.trim();
+      if(!ins){ showToast('請先描述想怎麼改'); return; }
+      await editOne(card, k, text, ins);
+    });
+    grid.appendChild(card);
+  });
+}
+
+async function editOne(card, kind, originalText, editInstruction){
+  const btn = card.querySelector('[data-act=submit]');
+  btn.disabled = true; const orig = btn.textContent; btn.textContent = '改寫中…';
+  const systemPrompt = `你是淨淨美學工作室的資深文案。使用者要你微調一段「${kind.name}」。
+淨淨品牌精神：以家人標準開發、安心清潔、真誠溫暖、不過度承諾、不煽情。
+只回傳「修改後的文案文字」，不要加引號、不要加解釋、不要標記。
+${kind.name} 字數規範：${kind.desc}。
+一律繁體中文台灣用語。`;
+  const userMsg = `原文：${originalText}\n\n修改要求：${editInstruction}`;
+  try {
+    const res = await fetch('/api/chat', { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ systemPrompt, messages:[{role:'user',content:userMsg}], stream:false, maxTokens:400 })});
+    const data = await res.json();
+    if(!res.ok || data.error){ showToast(`⚠ ${data.error || '編修失敗'}`); return; }
+    const newText = (data.reply || '').trim().replace(/^["「『]|["」』]$/g,'');
+    if(window.__ccCurrentRewrites) window.__ccCurrentRewrites.rewrites[kind.key] = newText;
+    render(window.__ccCurrentRewrites.rewrites);
+    showToast(`${kind.name} 已編修 ✓`);
+  } catch(e){ showToast('連線失敗：' + e.message); }
+  finally { if(document.body.contains(btn)){ btn.disabled = false; btn.textContent = orig; } }
+}
+
+async function generate(){
+  const source = $('#source').value.trim();
+  if(!source){ showToast('請先貼入文案'); return; }
+
+  $('#results-label').style.display = 'block';
+  $('#results').innerHTML = `<div class="state loading"><div class="dots"><span></span><span></span><span></span></div><div>AI 正在改寫 5 種版本…</div></div>`;
+  $('#btn-generate').disabled = true;
+
+  const systemPrompt = `你是淨淨美學工作室的資深文案，專門把粗胚文案改寫成可用於不同版位的精練版本。
+
+【淨淨品牌精神】
+- 以家人標準開發，安心清潔
+- 真誠溫暖、不過度承諾、不煽情
+- 避免：恐懼行銷、誇張保證、太推銷感
+
+【任務】根據原文與語氣要求，一次產出 5 種改寫版本：
+1. headline - 主標題（15 字內，banner / 主視覺）
+2. subtitle - 副標題（30 字內，補充主標）
+3. short - 短版文案（50-80 字，IG 貼文 / 社群）
+4. long - 長版文案（120-180 字，EDM / 官網詳述）
+5. cta - CTA 按鈕文字（8 字內，行動呼籲）
+
+【輸出格式】嚴格回傳 JSON，不要 markdown code fence：
+{
+  "headline": "...",
+  "subtitle": "...",
+  "short": "...",
+  "long": "...",
+  "cta": "..."
+}
+
+【語言】一律繁體中文台灣用語，不可用簡體字。字數規範要嚴格遵守。`;
+
+  const userMsg = `原文：
+${source}
+
+主角：${$('#subject').value.trim() || '（未指定）'}
+語氣：${tone}
+
+請產出 5 種改寫版本。`;
+
+  try {
+    const res = await fetch('/api/chat', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ systemPrompt, messages:[{role:'user',content:userMsg}], stream:false, maxTokens:1200 }),
+    });
+    const data = await res.json();
+    if(!res.ok || data.error){ $('#results').innerHTML = `<div class="state">⚠ ${data.error || '生成失敗'}</div>`; return; }
+    let reply = (data.reply || '').trim().replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim();
+    const fb = reply.indexOf('{'), lb = reply.lastIndexOf('}');
+    if(fb !== -1 && lb > fb) reply = reply.slice(fb, lb+1);
+    let rewrites;
+    try { rewrites = JSON.parse(reply); } catch { $('#results').innerHTML = `<div class="state">⚠ AI 回應格式錯誤</div>`; return; }
+    window.__ccCurrentRewrites = { source, subject: $('#subject').value.trim(), tone, rewrites };
+    render(rewrites);
+  } catch(e){ $('#results').innerHTML = `<div class="state">⚠ 連線失敗：${e.message}</div>`; }
+  finally { $('#btn-generate').disabled = false; }
+}
+
+$('#btn-generate').addEventListener('click', generate);
+$('#btn-reset').addEventListener('click', () => {
+  $('#source').value=''; $('#subject').value='';
+  $('#results').innerHTML=''; $('#results-label').style.display='none';
+  window.__ccCurrentRewrites = null;
+});
+</script>
+
+<script src="assets/chat-panel.js"></script>
+<script>
+CCChatPanel.init({
+  toolName: '文案改寫器',
+  systemPrompt: '你是淨淨美學工作室的文案顧問。協助使用者針對改寫結果做追問與建議。淨淨精神：以家人標準、真誠、不煽情。繁中，精簡（最多 3 段），給具體改寫建議。',
+  greeting: '嗨！改寫好的 5 個版本中哪個想再調？告訴我「主標太長」「長版想加個場景」等具體方向 ✨',
+  suggestions: ['主標太長', '長版再短一點', 'CTA 太軟，加點急迫感', '整體太推銷感'],
+  dailyLimit: 30,
+  getContext: () => {
+    const s = window.__ccCurrentRewrites;
+    if(!s) return { note: '使用者尚未產出改寫' };
+    return {
+      note: `原文：${s.source}\n語氣：${s.tone}\n\n目前 5 版：\n主標：${s.rewrites.headline}\n副標：${s.rewrites.subtitle}\n短版：${s.rewrites.short}\n長版：${s.rewrites.long}\nCTA：${s.rewrites.cta}`,
+    };
+  },
+});
+</script>
+</body>
+</html>
