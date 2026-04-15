@@ -4,7 +4,6 @@
  *
  * 使用：每個 HTML <body> 加上：
  *   <script src="assets/feedback-bubble.js"></script>
- * 即可自動注入（不需呼叫任何 init）。
  */
 (function(){
   if (window.__ccFeedbackBubbleLoaded) return;
@@ -20,83 +19,194 @@
   }
 
   const state = {
-    kind: 'bug', // 'bug' | 'wish'
+    kind: 'bug',
     severity: 'medium',
     screenshotDataUrl: null,
     aiHistory: [],
   };
 
-  function h(tag, props={}, children=[]){
-    const el = document.createElement(tag);
-    Object.entries(props).forEach(([k,v])=>{
-      if(k==='class') el.className = v;
-      else if(k==='html') el.innerHTML = v;
-      else if(k.startsWith('on')) el.addEventListener(k.slice(2), v);
-      else if(k==='style') el.style.cssText = v;
-      else el.setAttribute(k, v);
-    });
-    (Array.isArray(children)?children:[children]).forEach(c=>{
-      if(c==null) return;
-      el.appendChild(typeof c==='string' ? document.createTextNode(c) : c);
-    });
-    return el;
+  // ---- 單一 form，用 innerHTML 建構，避免 element 共用跨 form 搬移問題 ----
+  const launcher = document.createElement('button');
+  launcher.className = 'cc-fb-launcher';
+  launcher.title = 'Bug 回報 / 許願池';
+  launcher.innerHTML = `💡<span class="pulse"></span>`;
+
+  const panel = document.createElement('div');
+  panel.className = 'cc-fb-panel';
+  panel.innerHTML = `
+    <div class="cc-fb-head">
+      <div class="ico">💡</div>
+      <div class="meta">
+        <strong>Bug 回報 / 許願池</strong>
+        <span>設計部內部測試通道</span>
+      </div>
+      <button class="cc-fb-close" title="關閉">×</button>
+    </div>
+
+    <div class="cc-fb-tabs">
+      <button class="cc-fb-tab on" data-kind="bug">🐛 Bug 回報</button>
+      <button class="cc-fb-tab" data-kind="wish">💡 許願池</button>
+    </div>
+
+    <div class="cc-fb-body">
+
+      <div class="cc-fb-ai-assist" data-hint-bug>
+        描述越具體越好：在哪個頁面、點了什麼、期望什麼、實際發生什麼。
+      </div>
+      <div class="cc-fb-ai-assist" data-hint-wish style="display:none;">
+        告訴我們你希望這個工具站多什麼、或哪裡用起來不順—不論大小想法都歡迎。
+      </div>
+
+      <div class="cc-fb-field">
+        <label data-label-title>問題標題（必填）</label>
+        <input type="text" id="cc-fb-title" maxlength="100" placeholder="一句話標題（例：copywriter 複製按鈕沒反應）">
+      </div>
+
+      <div class="cc-fb-field">
+        <label>詳細描述（必填）</label>
+        <textarea id="cc-fb-detail" placeholder="詳細描述⋯"></textarea>
+      </div>
+
+      <div class="cc-fb-field" data-bug-only>
+        <label>重現步驟</label>
+        <textarea id="cc-fb-steps" placeholder="1. ...\n2. ...\n3. ..." style="min-height:56px;"></textarea>
+      </div>
+
+      <div class="cc-fb-field" data-bug-only>
+        <label>預期行為</label>
+        <input type="text" id="cc-fb-expected" placeholder="應該怎樣（例：應該跳 toast 顯示「已複製」）">
+      </div>
+
+      <div class="cc-fb-field" data-bug-only>
+        <label>實際行為</label>
+        <input type="text" id="cc-fb-actual" placeholder="實際發生什麼（例：按了沒反應）">
+      </div>
+
+      <div class="cc-fb-field">
+        <label data-label-sev>嚴重程度</label>
+        <div class="cc-fb-sev">
+          <button type="button" data-sev="low">小問題 / Nice to have</button>
+          <button type="button" data-sev="medium" class="on">一般</button>
+          <button type="button" data-sev="high">緊急 / 擋路</button>
+        </div>
+      </div>
+
+      <label class="cc-fb-screenshot" id="cc-fb-screenshot-box" data-bug-only>
+        <span id="cc-fb-screenshot-label">📸 點擊附上截圖（選填）</span>
+        <input type="file" id="cc-fb-screenshot-input" accept="image/*">
+      </label>
+
+      <button type="button" class="cc-fb-ai-btn" id="cc-fb-ai-toggle">
+        🤖 跟 AI 討論一下再送出（幫你把描述寫清楚）
+      </button>
+
+      <div class="cc-fb-ai-chat" id="cc-fb-ai-chat">
+        <div style="display:flex;gap:6px;">
+          <input type="text" id="cc-fb-ai-input" placeholder="跟 AI 說⋯" style="flex:1;padding:8px 10px;border:1px solid #E1E5E8;border-radius:8px;font-size:12px;font-family:inherit;outline:none;">
+          <button type="button" id="cc-fb-ai-send" class="cc-fb-btn primary" style="flex:0 0 auto;padding:8px 12px;">送</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="cc-fb-foot">
+      <div class="cc-fb-meta-info" id="cc-fb-meta"></div>
+      <div class="cc-fb-success" id="cc-fb-success"></div>
+      <div class="cc-fb-actions">
+        <button type="button" class="cc-fb-btn primary" id="cc-fb-submit" disabled>送出</button>
+        <button type="button" class="cc-fb-btn secondary" id="cc-fb-copy">📋 給 Claude</button>
+        <button type="button" class="cc-fb-btn secondary" id="cc-fb-download">💾 .md</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(launcher);
+  document.body.appendChild(panel);
+
+  // ---- Refs ----
+  const $ = sel => panel.querySelector(sel);
+  const $$ = sel => panel.querySelectorAll(sel);
+
+  const fTitle = $('#cc-fb-title');
+  const fDetail = $('#cc-fb-detail');
+  const fSteps = $('#cc-fb-steps');
+  const fExpected = $('#cc-fb-expected');
+  const fActual = $('#cc-fb-actual');
+  const screenshotBox = $('#cc-fb-screenshot-box');
+  const screenshotInput = $('#cc-fb-screenshot-input');
+  const screenshotLabel = $('#cc-fb-screenshot-label');
+  const aiToggle = $('#cc-fb-ai-toggle');
+  const aiChat = $('#cc-fb-ai-chat');
+  const aiInput = $('#cc-fb-ai-input');
+  const aiSend = $('#cc-fb-ai-send');
+  const metaEl = $('#cc-fb-meta');
+  const successEl = $('#cc-fb-success');
+  const submitBtn = $('#cc-fb-submit');
+  const copyBtn = $('#cc-fb-copy');
+  const downloadBtn = $('#cc-fb-download');
+  const closeBtn = $('.cc-fb-close');
+  const bugOnlySections = $$('[data-bug-only]');
+  const hintBug = $('[data-hint-bug]');
+  const hintWish = $('[data-hint-wish]');
+  const labelTitle = $('[data-label-title]');
+  const labelSev = $('[data-label-sev]');
+
+  function refreshMeta(){
+    metaEl.innerHTML = `頁面：${location.pathname}<br>時間：${new Date().toLocaleString('zh-TW')}`;
   }
+  refreshMeta();
 
-  // ---- UI ----
-  const launcher = h('button', { class:'cc-fb-launcher', title:'Bug 回報 / 許願池' }, [
-    document.createTextNode('💡'),
-    h('span',{class:'pulse'})
-  ]);
+  // ---- Tab switching ----
+  $$('.cc-fb-tab').forEach(t => {
+    t.addEventListener('click', () => {
+      $$('.cc-fb-tab').forEach(x => x.classList.remove('on'));
+      t.classList.add('on');
+      state.kind = t.dataset.kind;
 
-  const tabBug = h('button', { class:'cc-fb-tab on', 'data-kind':'bug' }, '🐛 Bug 回報');
-  const tabWish = h('button', { class:'cc-fb-tab', 'data-kind':'wish' }, '💡 許願池');
+      const isBug = state.kind === 'bug';
+      bugOnlySections.forEach(el => el.style.display = isBug ? '' : 'none');
+      hintBug.style.display = isBug ? '' : 'none';
+      hintWish.style.display = isBug ? 'none' : '';
+      labelTitle.textContent = isBug ? '問題標題（必填）' : '許願標題（必填）';
+      labelSev.textContent = isBug ? '嚴重程度' : '重要程度';
 
-  // 表單欄位
-  const fTitle = h('input', { type:'text', id:'cc-fb-title', placeholder:'一句話標題（例：copywriter 複製按鈕沒反應）', maxlength:100 });
-  const fDetail = h('textarea', { id:'cc-fb-detail', placeholder:'詳細描述⋯' });
-  const fSteps = h('textarea', { id:'cc-fb-steps', placeholder:'1. ...\n2. ...\n3. ...', style:'min-height:56px;' });
-  const fExpected = h('input', { type:'text', id:'cc-fb-expected', placeholder:'預期應該怎樣（例：應該跳 toast 顯示「已複製」）' });
-  const fActual = h('input', { type:'text', id:'cc-fb-actual', placeholder:'實際發生什麼（例：按了沒反應）' });
-
-  const sevBtns = ['low','medium','high'].map(v => {
-    const labels = { low:'小問題 / Nice to have', medium:'一般', high:'緊急 / 擋路' };
-    const btn = h('button', { type:'button', 'data-sev':v }, labels[v]);
-    btn.addEventListener('click', () => {
-      state.severity = v;
-      sevBtns.forEach(b => b.classList.toggle('on', b.dataset.sev === v));
+      // 重置 AI 對話（換 tab 等於換 context）
+      state.aiHistory = [];
+      aiChat.classList.remove('on');
+      aiChat.querySelectorAll('.cc-fb-ai-msg').forEach(m => m.remove());
     });
-    return btn;
   });
-  sevBtns[1].classList.add('on');
 
-  // 截圖上傳
-  const screenshotBox = h('label', { class:'cc-fb-screenshot' }, '📸 點擊附上截圖（選填）');
-  const screenshotInput = h('input', { type:'file', accept:'image/*' });
-  screenshotBox.appendChild(screenshotInput);
+  // ---- Severity ----
+  $$('[data-sev]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.severity = btn.dataset.sev;
+      $$('[data-sev]').forEach(b => b.classList.toggle('on', b.dataset.sev === state.severity));
+    });
+  });
+
+  // ---- Screenshot ----
   screenshotInput.addEventListener('change', e => {
     const f = e.target.files[0];
     if (!f) return;
     const reader = new FileReader();
     reader.onload = ev => {
       state.screenshotDataUrl = ev.target.result;
-      screenshotBox.innerHTML = '';
-      screenshotBox.appendChild(h('img', { src: ev.target.result }));
-      screenshotBox.appendChild(screenshotInput);
+      screenshotLabel.innerHTML = `<img src="${ev.target.result}" alt="截圖" style="max-height:100px;border-radius:6px;">`;
       screenshotBox.classList.add('has-img');
     };
     reader.readAsDataURL(f);
   });
 
-  // AI 輔助：展開小 chat 幫使用者釐清
-  const aiBtn = h('button', { type:'button', class:'cc-fb-ai-btn' }, '🤖 跟 AI 討論一下再送出（幫你把描述寫清楚）');
-  const aiChat = h('div', { class:'cc-fb-ai-chat' });
-  const aiInputRow = h('div', { style:'display:flex;gap:6px;' }, [
-    h('input', { type:'text', id:'cc-fb-ai-input', placeholder:'跟 AI 說⋯', style:'flex:1;padding:8px 10px;border:1px solid #E1E5E8;border-radius:8px;font-size:12px;font-family:inherit;outline:none;' }),
-    h('button', { type:'button', id:'cc-fb-ai-send', class:'cc-fb-btn primary', style:'flex:0 0 auto;padding:8px 12px;' }, '送')
-  ]);
-  aiChat.appendChild(aiInputRow);
+  // ---- Validation ----
+  function validate(){
+    submitBtn.disabled = !(fTitle.value.trim() && fDetail.value.trim());
+  }
+  fTitle.addEventListener('input', validate);
+  fDetail.addEventListener('input', validate);
 
-  aiBtn.addEventListener('click', () => {
+  // ---- AI Chat ----
+  aiToggle.addEventListener('click', () => {
     aiChat.classList.toggle('on');
     if (aiChat.classList.contains('on') && state.aiHistory.length === 0) {
       const greeting = state.kind === 'bug'
@@ -107,46 +217,41 @@
   });
 
   function addAiMsg(role, text){
-    const msg = h('div', { class:`cc-fb-ai-msg ${role}` }, text);
-    aiChat.insertBefore(msg, aiInputRow);
+    const msg = document.createElement('div');
+    msg.className = `cc-fb-ai-msg ${role}`;
+    msg.textContent = text;
+    aiChat.insertBefore(msg, aiChat.firstChild.nextSibling ? aiChat.firstChild : null);
+    // 確保插在 input row 之前
+    const inputRow = aiChat.querySelector('#cc-fb-ai-input').parentElement;
+    aiChat.insertBefore(msg, inputRow);
     aiChat.scrollTop = aiChat.scrollHeight;
   }
 
   async function sendAiMsg(){
-    const input = document.getElementById('cc-fb-ai-input');
-    const text = input.value.trim();
+    const text = aiInput.value.trim();
     if (!text) return;
-    input.value = '';
+    aiInput.value = '';
     addAiMsg('user', text);
     state.aiHistory.push({ role:'user', content: text });
 
-    const sendBtn = document.getElementById('cc-fb-ai-send');
-    sendBtn.disabled = true;
-    const loading = h('div', { class:'cc-fb-ai-msg assistant' }, '⋯');
-    aiChat.insertBefore(loading, aiInputRow);
+    aiSend.disabled = true;
+    const loading = document.createElement('div');
+    loading.className = 'cc-fb-ai-msg assistant';
+    loading.textContent = '⋯';
+    const inputRow = aiInput.parentElement;
+    aiChat.insertBefore(loading, inputRow);
 
     const systemPrompt = `你是淨淨美學工作室內部測試工具的 bug 分類與需求釐清助手。
 使用者正在${state.kind === 'bug' ? '回報 bug' : '提出許願 / 改善建議'}。
 請用繁體中文（台灣），友善、精簡（最多 3 段）、問關鍵問題釐清細節。
-目標：幫使用者把描述寫得「工程師看了就能動工」，包含：
-- 發生在哪個頁面/按鈕/功能
-- 重現步驟（1/2/3...）
-- 預期行為 vs 實際行為
-- 影響範圍（擋工作 or 只是不便）
-- 螢幕環境（手機/桌機，選填）
-
+目標：幫使用者把描述寫得「工程師看了就能動工」。
 如果使用者描述已足夠完整，回覆：「資訊夠了，你可以直接填到下面表單然後送出 ✓」
 不要自己編造細節，只根據使用者說的內容釐清。`;
 
     try {
       const res = await fetch('/api/chat', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({
-          systemPrompt,
-          messages: state.aiHistory.slice(-8),
-          stream: false,
-          maxTokens: 400,
-        }),
+        body: JSON.stringify({ systemPrompt, messages: state.aiHistory.slice(-8), stream: false, maxTokens: 400 }),
       });
       const data = await res.json();
       loading.remove();
@@ -161,115 +266,17 @@
       loading.remove();
       addAiMsg('assistant', '⚠ 連線失敗：' + e.message);
     } finally {
-      sendBtn.disabled = false;
-      input.focus();
+      aiSend.disabled = false;
+      aiInput.focus();
     }
   }
 
-  // 表單內容
-  const bugForm = h('div', {}, [
-    h('div', { class:'cc-fb-ai-assist' }, [
-      document.createTextNode('描述越具體越好：在哪個頁面、點了什麼、期望什麼、發生什麼。'),
-    ]),
-    h('div', { class:'cc-fb-field' }, [h('label', {}, '問題標題（必填）'), fTitle]),
-    h('div', { class:'cc-fb-field' }, [h('label', {}, '詳細描述（必填）'), fDetail]),
-    h('div', { class:'cc-fb-field' }, [h('label', {}, '重現步驟'), fSteps]),
-    h('div', { class:'cc-fb-field' }, [h('label', {}, '預期行為'), fExpected]),
-    h('div', { class:'cc-fb-field' }, [h('label', {}, '實際行為'), fActual]),
-    h('div', { class:'cc-fb-field' }, [
-      h('label', {}, '嚴重程度'),
-      h('div', { class:'cc-fb-sev' }, sevBtns),
-    ]),
-    screenshotBox,
-    aiBtn,
-    aiChat,
-  ]);
-
-  const wishForm = h('div', {}, [
-    h('div', { class:'cc-fb-ai-assist' }, [
-      document.createTextNode('告訴我們你希望這個工具站多什麼、或哪裡用起來不順—不論大小想法都歡迎。'),
-    ]),
-    h('div', { class:'cc-fb-field' }, [h('label', {}, '許願標題'), fTitle]),
-    h('div', { class:'cc-fb-field' }, [h('label', {}, '詳細描述'), fDetail]),
-    h('div', { class:'cc-fb-field' }, [
-      h('label', {}, '重要程度'),
-      h('div', { class:'cc-fb-sev' }, sevBtns),
-    ]),
-    aiBtn,
-    aiChat,
-  ]);
-
-  const body = h('div', { class:'cc-fb-body' });
-  body.appendChild(bugForm);
-
-  // Meta info
-  const metaInfo = h('div', { class:'cc-fb-meta-info' });
-  function refreshMeta(){
-    metaInfo.innerHTML = `頁面：${location.pathname}<br>時間：${new Date().toLocaleString('zh-TW')}`;
-  }
-  refreshMeta();
-
-  // Success state
-  const success = h('div', { class:'cc-fb-success' }, '');
-
-  const btnSubmit = h('button', { type:'button', class:'cc-fb-btn primary', disabled:true }, '送出');
-  const btnCopyForClaude = h('button', { type:'button', class:'cc-fb-btn secondary' }, '📋 複製給 Claude Code');
-  const btnDownload = h('button', { type:'button', class:'cc-fb-btn secondary' }, '💾 .md');
-
-  const foot = h('div', { class:'cc-fb-foot' }, [
-    metaInfo,
-    success,
-    h('div', { class:'cc-fb-actions' }, [btnSubmit, btnCopyForClaude, btnDownload]),
-  ]);
-
-  const panel = h('div', { class:'cc-fb-panel' }, [
-    h('div', { class:'cc-fb-head' }, [
-      h('div', { class:'ico' }, '💡'),
-      h('div', { class:'meta' }, [
-        h('strong', {}, 'Bug 回報 / 許願池'),
-        h('span', {}, '設計部內部測試通道'),
-      ]),
-      h('button', { class:'cc-fb-close', title:'關閉', onclick:()=>toggle(false) }, '×'),
-    ]),
-    h('div', { class:'cc-fb-tabs' }, [tabBug, tabWish]),
-    body,
-    foot,
-  ]);
-
-  document.body.appendChild(launcher);
-  document.body.appendChild(panel);
-
-  // Tab switching
-  [tabBug, tabWish].forEach(t => {
-    t.addEventListener('click', () => {
-      [tabBug, tabWish].forEach(x => x.classList.remove('on'));
-      t.classList.add('on');
-      state.kind = t.dataset.kind;
-      body.innerHTML = '';
-      body.appendChild(state.kind === 'bug' ? bugForm : wishForm);
-      validate();
-    });
+  aiSend.addEventListener('click', sendAiMsg);
+  aiInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendAiMsg(); }
   });
 
-  // AI send button
-  panel.addEventListener('click', (e) => {
-    if (e.target && e.target.id === 'cc-fb-ai-send') sendAiMsg();
-  });
-  panel.addEventListener('keydown', (e) => {
-    if (e.target && e.target.id === 'cc-fb-ai-input' && e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendAiMsg();
-    }
-  });
-
-  // Validate
-  function validate(){
-    const ok = fTitle.value.trim() && fDetail.value.trim();
-    btnSubmit.disabled = !ok;
-  }
-  [fTitle, fDetail].forEach(el => el.addEventListener('input', validate));
-
-  // Build payload
+  // ---- Payload builders ----
   function buildPayload(){
     return {
       kind: state.kind,
@@ -313,18 +320,40 @@
   function buildClaudeCodePrompt(){
     const md = buildMarkdown();
     const p = buildPayload();
-    const repoHint = `\n\n---\n**提示給 Claude Code**：這是 design.reyway.com 內部設計部測試時的${p.kind === 'bug' ? 'Bug 回報' : '許願'}。`
+    return md + `\n\n---\n**提示給 Claude Code**：這是 design.reyway.com 內部設計部測試時的${p.kind === 'bug' ? 'Bug 回報' : '許願'}。`
       + (p.kind === 'bug' ? '請依上述重現步驟定位問題、修復、commit、push。' : '請評估可行性與實作方式，列出 1-2 個具體做法後再動工。')
       + `\n\nRepo：rey555ddd/design-reyway，本機應 clone 在 ~/design-reyway。`;
-    return md + repoHint;
   }
 
-  // Submit
-  btnSubmit.addEventListener('click', async () => {
+  function showFlash(text, isError){
+    successEl.textContent = text;
+    successEl.style.background = isError ? '#FEE2E2' : '';
+    successEl.style.borderColor = isError ? '#FECACA' : '';
+    successEl.style.color = isError ? '#B91C1C' : '';
+    successEl.classList.add('on');
+    clearTimeout(successEl._t);
+    successEl._t = setTimeout(() => successEl.classList.remove('on'), 3000);
+  }
+
+  function resetForm(){
+    fTitle.value = ''; fDetail.value = '';
+    fSteps.value = ''; fExpected.value = ''; fActual.value = '';
+    state.screenshotDataUrl = null;
+    state.aiHistory = [];
+    screenshotLabel.textContent = '📸 點擊附上截圖（選填）';
+    screenshotBox.classList.remove('has-img');
+    screenshotInput.value = '';
+    aiChat.classList.remove('on');
+    aiChat.querySelectorAll('.cc-fb-ai-msg').forEach(m => m.remove());
+    validate();
+  }
+
+  // ---- Submit ----
+  submitBtn.addEventListener('click', async () => {
     const payload = buildPayload();
-    btnSubmit.disabled = true;
-    const origText = btnSubmit.textContent;
-    btnSubmit.textContent = '送出中…';
+    submitBtn.disabled = true;
+    const orig = submitBtn.textContent;
+    submitBtn.textContent = '送出中…';
     try {
       const res = await fetch('/api/feedback', {
         method:'POST', headers:{'Content-Type':'application/json'},
@@ -332,84 +361,57 @@
       });
       const data = await res.json();
       if (!res.ok || data.error) {
-        success.textContent = `⚠ 送出失敗：${data.error || '未知錯誤'}`;
-        success.style.background = '#FEE2E2';
-        success.style.borderColor = '#FECACA';
-        success.style.color = '#B91C1C';
-        success.classList.add('on');
+        showFlash(`⚠ 送出失敗：${data.error || '未知錯誤'}`, true);
       } else {
-        success.textContent = `✓ 已送出（ID: ${data.id?.slice(0,8)}）${data.persisted ? '並保存' : '（寫 log）'}`;
-        success.style.background = '';
-        success.style.borderColor = '';
-        success.style.color = '';
-        success.classList.add('on');
-        setTimeout(() => {
-          // 重置表單
-          fTitle.value = ''; fDetail.value = '';
-          fSteps.value = ''; fExpected.value = ''; fActual.value = '';
-          state.screenshotDataUrl = null; state.aiHistory = [];
-          screenshotBox.innerHTML = '📸 點擊附上截圖（選填）';
-          screenshotBox.appendChild(screenshotInput);
-          screenshotBox.classList.remove('has-img');
-          aiChat.innerHTML = ''; aiChat.appendChild(aiInputRow);
-          aiChat.classList.remove('on');
-          success.classList.remove('on');
-          validate();
-        }, 3000);
+        const persisted = data.persisted ? '，已保存 90 天' : '';
+        showFlash(`✓ 已送出（ID: ${(data.id || '').slice(0,8)}${persisted}）`);
+        setTimeout(resetForm, 1500);
       }
     } catch (e) {
-      success.textContent = `⚠ 連線失敗：${e.message}`;
-      success.style.background = '#FEE2E2';
-      success.style.borderColor = '#FECACA';
-      success.style.color = '#B91C1C';
-      success.classList.add('on');
+      showFlash(`⚠ 連線失敗：${e.message}`, true);
     } finally {
-      btnSubmit.textContent = origText;
+      submitBtn.textContent = orig;
       validate();
     }
   });
 
-  // Copy for Claude Code
-  btnCopyForClaude.addEventListener('click', async () => {
+  // ---- Copy for Claude Code ----
+  copyBtn.addEventListener('click', async () => {
     if (!fTitle.value.trim() || !fDetail.value.trim()) {
-      alert('請先填寫標題和詳細描述');
+      showFlash('⚠ 請先填寫標題和詳細描述', true);
       return;
     }
     const prompt = buildClaudeCodePrompt();
     try {
       await navigator.clipboard.writeText(prompt);
-      success.textContent = '✓ 已複製為可貼給 Claude Code 的提示詞';
-      success.style.background = ''; success.style.borderColor = ''; success.style.color = '';
-      success.classList.add('on');
-      setTimeout(() => success.classList.remove('on'), 2500);
+      showFlash('✓ 已複製為可貼給 Claude Code 的提示詞');
     } catch {
-      alert('複製失敗，請手動選取');
+      showFlash('⚠ 複製失敗，請手動選取', true);
     }
   });
 
-  // Download as markdown
-  btnDownload.addEventListener('click', () => {
-    if (!fTitle.value.trim()) { alert('請先填寫標題'); return; }
+  // ---- Download .md ----
+  downloadBtn.addEventListener('click', () => {
+    if (!fTitle.value.trim()) { showFlash('⚠ 請先填寫標題', true); return; }
     const md = buildMarkdown();
     const blob = new Blob([md], { type:'text/markdown;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     const safe = fTitle.value.trim().replace(/[^\w\u4e00-\u9fa5-]+/g,'_').slice(0,30);
-    a.href = url; a.download = `feedback-${state.kind}-${safe}-${Date.now()}.md`;
+    a.href = url;
+    a.download = `feedback-${state.kind}-${safe}-${Date.now()}.md`;
     a.click();
     URL.revokeObjectURL(url);
   });
 
-  // Toggle
+  // ---- Toggle ----
   let isOpen = false;
   function toggle(force){
     isOpen = typeof force === 'boolean' ? force : !isOpen;
     panel.classList.toggle('open', isOpen);
     launcher.style.display = isOpen ? 'none' : 'flex';
-    if (isOpen) {
-      refreshMeta();
-      setTimeout(() => fTitle.focus(), 200);
-    }
+    if (isOpen) { refreshMeta(); setTimeout(() => fTitle.focus(), 200); }
   }
   launcher.addEventListener('click', () => toggle(true));
+  closeBtn.addEventListener('click', () => toggle(false));
 })();
