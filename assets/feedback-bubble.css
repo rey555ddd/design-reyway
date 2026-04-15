@@ -1,22 +1,39 @@
-/* 許願池 / Bug 回報 浮動對話泡 */
+/* 許願池 / Bug 回報 浮動對話泡（藥丸形 + 文字標示） */
 .cc-fb-launcher{
   position:fixed;left:24px;bottom:24px;z-index:997;
-  width:52px;height:52px;border-radius:50%;
-  background:linear-gradient(135deg,#F59E0B,#F97316);color:#fff;
-  display:flex;align-items:center;justify-content:center;
-  font-size:22px;cursor:pointer;border:none;
-  box-shadow:0 6px 20px rgba(245,158,11,.45);
+  padding:0 18px;height:48px;border-radius:24px;
+  background:linear-gradient(135deg,#FFF,#F8FAFC);
+  color:#2D3142;
+  display:flex;align-items:center;gap:8px;
+  font-size:13.5px;font-weight:700;cursor:pointer;
+  border:1.5px solid var(--teal,#61D0DF);
+  box-shadow:0 6px 20px rgba(97,208,223,.22);
   transition:all .2s ease;font-family:inherit;
+  white-space:nowrap;
 }
-.cc-fb-launcher:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(245,158,11,.55);}
+.cc-fb-launcher .icon{
+  font-size:18px;line-height:1;
+}
+.cc-fb-launcher .text{
+  letter-spacing:.3px;
+}
+.cc-fb-launcher:hover{
+  transform:translateY(-2px);
+  background:linear-gradient(135deg,var(--teal-xl,#F4FBFC),#FFF);
+  border-color:var(--teal-d,#329BAF);
+  box-shadow:0 10px 28px rgba(97,208,223,.35);
+  color:var(--teal-d,#329BAF);
+}
 .cc-fb-launcher .pulse{
-  position:absolute;inset:0;border-radius:50%;
-  background:rgba(245,158,11,.4);
-  animation:cc-fb-pulse 2s infinite;
+  position:absolute;inset:-2px;border-radius:26px;
+  border:2px solid var(--teal,#61D0DF);
+  opacity:.5;
+  animation:cc-fb-pulse 2.2s infinite;
+  pointer-events:none;
 }
 @keyframes cc-fb-pulse{
-  0%{transform:scale(1);opacity:.6;}
-  100%{transform:scale(1.6);opacity:0;}
+  0%{transform:scale(1);opacity:.5;}
+  100%{transform:scale(1.1);opacity:0;}
 }
 
 .cc-fb-panel{
@@ -180,5 +197,5 @@
     height:85vh;max-height:85vh;
     border-radius:20px 20px 0 0;
   }
-  .cc-fb-launcher{left:16px;bottom:80px;}
+  .cc-fb-launcher{left:12px;bottom:80px;padding:0 14px;height:44px;font-size:13px;}
 }

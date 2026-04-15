@@ -28,8 +28,8 @@
   // ---- 單一 form，用 innerHTML 建構，避免 element 共用跨 form 搬移問題 ----
   const launcher = document.createElement('button');
   launcher.className = 'cc-fb-launcher';
-  launcher.title = 'Bug 回報 / 許願池';
-  launcher.innerHTML = `💡<span class="pulse"></span>`;
+  launcher.title = '有問題或想許願？按這裡跟我們說';
+  launcher.innerHTML = `<span class="icon">💡</span><span class="text">有問題按我</span><span class="pulse"></span>`;
 
   const panel = document.createElement('div');
   panel.className = 'cc-fb-panel';
@@ -414,4 +414,13 @@
   }
   launcher.addEventListener('click', () => toggle(true));
   closeBtn.addEventListener('click', () => toggle(false));
+
+  // 供全站其他按鈕觸發使用
+  window.ccOpenFeedback = function(kind){
+    if (kind === 'bug' || kind === 'wish') {
+      const tab = panel.querySelector(`[data-kind="${kind}"]`);
+      if (tab) tab.click();
+    }
+    toggle(true);
+  };
 })();
