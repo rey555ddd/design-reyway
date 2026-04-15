@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>管理後台 — 淨淨美學工作室</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/brand.css">
+<style>
+.page-header{background:linear-gradient(135deg,#1E2230,#2D3142);padding:40px 40px 32px;border-bottom:1px solid #EEF0F2;color:#fff;}
+.page-header-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+.page-title{display:flex;align-items:center;gap:16px;}
+.page-title .logo{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#F59E0B,#F97316);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:20px;}
+.page-title h1{font-size:24px;font-weight:900;}
+.page-title .subtitle{font-size:13px;color:rgba(255,255,255,.7);margin-top:2px;}
+.back-link{font-size:13px;color:rgba(255,255,255,.8);text-decoration:none;padding:8px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.15);transition:all .2s;}
+.back-link:hover{background:rgba(255,255,255,.1);}
+
+.main{max-width:1400px;margin:0 auto;padding:32px 40px 80px;}
+
+.auth-card{background:#fff;border:1px solid #EEF0F2;border-radius:var(--radius);padding:40px;max-width:480px;margin:60px auto;text-align:center;}
+.auth-card h2{font-size:20px;font-weight:900;color:var(--dark);margin-bottom:8px;}
+.auth-card p{font-size:13px;color:var(--gray);margin-bottom:20px;}
+.auth-card input{width:100%;padding:12px 14px;font-size:14px;border:1px solid #E1E5E8;border-radius:10px;outline:none;font-family:inherit;margin-bottom:12px;}
+.auth-card input:focus{border-color:var(--teal);}
+.auth-card button{width:100%;padding:12px;background:var(--teal);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
+.auth-card button:hover{background:var(--teal-d);}
+.auth-card .err{font-size:12px;color:#B91C1C;margin-top:8px;min-height:16px;}
+
+.toolbar{background:#fff;border:1px solid #EEF0F2;border-radius:var(--radius);padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.toolbar .stat{font-size:13px;color:var(--gray);}
+.toolbar .stat strong{color:var(--teal-d);font-size:16px;font-family:'Inter',monospace;}
+.toolbar .filters{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap;}
+.filter-chip{font-size:12px;padding:6px 12px;border-radius:20px;background:var(--light-gray);border:1px solid #EEF0F2;color:var(--text);cursor:pointer;font-family:inherit;}
+.filter-chip.on{background:var(--teal);border-color:var(--teal);color:#fff;}
+
+.empty-state{text-align:center;padding:80px 20px;color:var(--gray);}
+.empty-state .icon{font-size:48px;margin-bottom:12px;}
+
+.feedback-list{display:flex;flex-direction:column;gap:12px;}
+.fb-item{background:#fff;border:1px solid #EEF0F2;border-radius:14px;padding:18px;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:flex-start;transition:all .2s;}
+.fb-item:hover{border-color:var(--teal);box-shadow:0 8px 24px rgba(97,208,223,.08);}
+.fb-kind{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.fb-kind.bug{background:#FEE2E2;color:#B91C1C;}
+.fb-kind.wish{background:#FEF3C7;color:#92400E;}
+.fb-body{min-width:0;}
+.fb-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;}
+.fb-title{font-size:15px;font-weight:700;color:var(--dark);}
+.fb-sev{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+.fb-sev.low{background:#E6F9F0;color:#15803D;}
+.fb-sev.medium{background:#FEF3C7;color:#92400E;}
+.fb-sev.high{background:#FEE2E2;color:#B91C1C;}
+.fb-meta{font-size:11px;color:var(--gray);display:flex;gap:10px;flex-wrap:wrap;font-family:'Inter',monospace;}
+.fb-detail{font-size:13px;color:var(--text);line-height:1.65;margin-top:8px;white-space:pre-wrap;max-height:80px;overflow:hidden;position:relative;}
+.fb-detail.expanded{max-height:none;}
+.fb-detail:not(.expanded)::after{content:'';position:absolute;bottom:0;left:0;right:0;height:20px;background:linear-gradient(transparent,#fff);}
+.fb-actions{display:flex;flex-direction:column;gap:6px;flex-shrink:0;}
+.fb-btn{font-size:11px;padding:6px 10px;border-radius:6px;border:1px solid #EEF0F2;background:#fff;color:var(--text);cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .15s;}
+.fb-btn:hover{border-color:var(--teal);color:var(--teal-d);}
+.fb-btn.danger:hover{border-color:#EF4444;color:#B91C1C;}
+.fb-btn.primary{background:var(--teal);border-color:var(--teal);color:#fff;}
+.fb-btn.primary:hover{background:var(--teal-d);color:#fff;}
+
+.fb-extra{grid-column:2/3;margin-top:8px;font-size:12px;display:flex;flex-direction:column;gap:6px;}
+.fb-extra .row{display:flex;gap:6px;}
+.fb-extra .row strong{color:var(--teal-d);font-weight:700;flex-shrink:0;min-width:60px;}
+.fb-extra .row span{color:var(--text);white-space:pre-wrap;}
+.fb-shot{margin-top:8px;}
+.fb-shot img{max-width:280px;max-height:200px;border-radius:8px;border:1px solid #EEF0F2;}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--dark);color:#fff;padding:10px 18px;border-radius:24px;font-size:13px;opacity:0;pointer-events:none;transition:all .25s;z-index:1000;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+.loading{text-align:center;padding:60px 20px;color:var(--gray);}
+.loading .dots{display:inline-flex;gap:6px;}
+.loading .dots span{width:8px;height:8px;border-radius:50%;background:var(--teal);animation:lBounce 1.2s infinite ease-in-out;}
+.loading .dots span:nth-child(2){animation-delay:.15s;}
+.loading .dots span:nth-child(3){animation-delay:.3s;}
+@keyframes lBounce{0%,60%,100%{transform:scale(.7);opacity:.4;}30%{transform:scale(1);opacity:1;}}
+
+@media(max-width:680px){
+  .page-header{padding:24px 20px;}
+  .main{padding:20px;}
+  .fb-item{grid-template-columns:auto 1fr;}
+  .fb-actions{grid-column:1/-1;flex-direction:row;}
+}
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="page-header-inner">
+    <div class="page-title">
+      <div class="logo">管</div>
+      <div>
+        <h1>管理後台</h1>
+        <div class="subtitle">Bug 回報 / 許願池 檢視</div>
+      </div>
+    </div>
+    <a href="index.html" class="back-link">← 返回工作室</a>
+  </div>
+</header>
+
+<main class="main" id="main">
+
+  <div class="auth-card" id="auth-card">
+    <h2>🔐 請輸入管理金鑰</h2>
+    <p>這個頁面只有笙闆能看（對應 Cloudflare 的 ADMIN_KEY 環境變數）</p>
+    <input type="password" id="auth-key" placeholder="ADMIN_KEY" autocomplete="off">
+    <button id="btn-auth" type="button">登入</button>
+    <div class="err" id="auth-err"></div>
+  </div>
+
+  <div id="content" style="display:none;">
+    <div class="toolbar">
+      <div class="stat">共 <strong id="count-total">0</strong> 筆</div>
+      <div class="stat">🐛 Bug <strong id="count-bug">0</strong></div>
+      <div class="stat">💡 Wish <strong id="count-wish">0</strong></div>
+      <div class="filters">
+        <button class="filter-chip on" data-f="all">全部</button>
+        <button class="filter-chip" data-f="bug">🐛 Bug</button>
+        <button class="filter-chip" data-f="wish">💡 Wish</button>
+        <button class="filter-chip" data-f="high">緊急</button>
+        <button class="fb-btn" id="btn-refresh" type="button" style="margin-left:8px;">↻ 重新載入</button>
+      </div>
+    </div>
+
+    <div id="list-wrap"></div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+let adminKey = localStorage.getItem('cc_admin_key') || '';
+let items = [];
+let filter = 'all';
+
+function showToast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('show'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2000); }
+function esc(s){ return String(s||'').replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c])); }
+
+async function tryLoad(){
+  if (!adminKey) { $('#auth-card').style.display='block'; $('#content').style.display='none'; return; }
+  $('#auth-card').style.display='none'; $('#content').style.display='block';
+  $('#list-wrap').innerHTML = `<div class="loading"><div class="dots"><span></span><span></span><span></span></div><div style="margin-top:10px;">載入中…</div></div>`;
+  try {
+    const res = await fetch(`/api/feedback-list?key=${encodeURIComponent(adminKey)}`);
+    const data = await res.json();
+    if (!res.ok || data.error) {
+      if (res.status === 401) {
+        adminKey = '';
+        localStorage.removeItem('cc_admin_key');
+        $('#auth-card').style.display='block';
+        $('#content').style.display='none';
+        $('#auth-err').textContent = '金鑰錯誤';
+      } else {
+        $('#list-wrap').innerHTML = `<div class="empty-state"><div class="icon">⚠</div><div>${esc(data.error)}</div><div style="margin-top:8px;font-size:12px;">${esc(data.hint || '')}</div></div>`;
+      }
+      return;
+    }
+    items = data.items || [];
+    render();
+  } catch (e) {
+    $('#list-wrap').innerHTML = `<div class="empty-state"><div class="icon">⚠</div><div>連線失敗：${esc(e.message)}</div></div>`;
+  }
+}
+
+function render(){
+  const filtered = items.filter(i => {
+    if (filter === 'all') return true;
+    if (filter === 'high') return i.severity === 'high';
+    return i.kind === filter;
+  });
+
+  $('#count-total').textContent = items.length;
+  $('#count-bug').textContent = items.filter(i => i.kind === 'bug').length;
+  $('#count-wish').textContent = items.filter(i => i.kind === 'wish').length;
+
+  const wrap = $('#list-wrap');
+  if (filtered.length === 0) {
+    wrap.innerHTML = `<div class="empty-state"><div class="icon">📭</div><div>${items.length === 0 ? '還沒有任何回報' : '這個篩選條件下沒有結果'}</div></div>`;
+    return;
+  }
+
+  wrap.innerHTML = `<div class="feedback-list">${filtered.map((it, idx) => renderItem(it, idx)).join('')}</div>`;
+
+  // bind actions
+  wrap.querySelectorAll('[data-act=expand]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      const detail = wrap.querySelector(`[data-detail="${id}"]`);
+      const extra = wrap.querySelector(`[data-extra="${id}"]`);
+      const isOn = detail.classList.toggle('expanded');
+      if (extra) extra.style.display = isOn ? 'flex' : 'none';
+      btn.textContent = isOn ? '收合' : '展開';
+    });
+  });
+  wrap.querySelectorAll('[data-act=copy]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.idx, 10);
+      const it = filtered[idx];
+      copyForClaude(it);
+    });
+  });
+  wrap.querySelectorAll('[data-act=delete]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      if (!confirm('確定刪除這筆回報？')) return;
+      const id = btn.dataset.id;
+      const res = await fetch(`/api/feedback-list?key=${encodeURIComponent(adminKey)}&id=${encodeURIComponent(id)}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (res.ok && data.ok) { showToast('已刪除'); tryLoad(); }
+      else showToast('⚠ ' + (data.error || '刪除失敗'));
+    });
+  });
+}
+
+function renderItem(it, idx){
+  const kindIcon = it.kind === 'bug' ? '🐛' : '💡';
+  const ts = new Date(it.ts).toLocaleString('zh-TW', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
+  const extraRows = [];
+  if (it.steps) extraRows.push(`<div class="row"><strong>重現步驟</strong><span>${esc(it.steps)}</span></div>`);
+  if (it.expected) extraRows.push(`<div class="row"><strong>預期</strong><span>${esc(it.expected)}</span></div>`);
+  if (it.actual) extraRows.push(`<div class="row"><strong>實際</strong><span>${esc(it.actual)}</span></div>`);
+  if (it.ua) extraRows.push(`<div class="row"><strong>裝置</strong><span style="font-size:11px;">${esc(it.ua)}</span></div>`);
+  if (it.screenshot) extraRows.push(`<div class="fb-shot"><img src="${it.screenshot}" alt="截圖"></div>`);
+
+  return `
+    <div class="fb-item">
+      <div class="fb-kind ${it.kind}">${kindIcon}</div>
+      <div class="fb-body">
+        <div class="fb-head">
+          <div class="fb-title">${esc(it.title)}</div>
+          <span class="fb-sev ${it.severity}">${it.severity}</span>
+        </div>
+        <div class="fb-meta">
+          <span>📄 ${esc(it.page)}</span>
+          <span>🕐 ${ts}</span>
+        </div>
+        <div class="fb-detail" data-detail="${it.id}">${esc(it.detail)}</div>
+        ${extraRows.length ? `<div class="fb-extra" data-extra="${it.id}" style="display:none;">${extraRows.join('')}</div>` : ''}
+      </div>
+      <div class="fb-actions">
+        <button class="fb-btn" data-act="expand" data-id="${it.id}">展開</button>
+        <button class="fb-btn primary" data-act="copy" data-idx="${idx}">📋 給 Claude</button>
+        <button class="fb-btn danger" data-act="delete" data-id="${it.id}">🗑 刪</button>
+      </div>
+    </div>`;
+}
+
+function copyForClaude(it){
+  const head = it.kind === 'bug' ? '🐛 Bug 回報' : '💡 許願 / 改善建議';
+  const lines = [
+    `# ${head}：${it.title}`, '',
+    `- 類型：${it.kind === 'bug' ? 'Bug' : 'Wish'}`,
+    `- 嚴重程度：${it.severity}`,
+    `- 頁面：${it.page}`,
+    `- 時間：${new Date(it.ts).toLocaleString('zh-TW')}`,
+    `- User Agent：${it.ua || '未記錄'}`,
+    '',
+    '## 詳細描述',
+    it.detail,
+  ];
+  if (it.steps) lines.push('', '## 重現步驟', it.steps);
+  if (it.expected) lines.push('', '## 預期行為', it.expected);
+  if (it.actual) lines.push('', '## 實際行為', it.actual);
+  lines.push('',
+    '---',
+    `**提示給 Claude Code**：這是 design.reyway.com 內部設計部測試時的${it.kind === 'bug' ? 'Bug 回報' : '許願'}。`
+    + (it.kind === 'bug' ? '請依上述重現步驟定位問題、修復、commit、push。' : '請評估可行性與實作方式，列出 1-2 個具體做法後再動工。'),
+    '',
+    'Repo：rey555ddd/design-reyway，本機應 clone 在 ~/design-reyway。'
+  );
+  navigator.clipboard.writeText(lines.join('\n')).then(() => showToast('✓ 已複製給 Claude Code 的提示詞'));
+}
+
+$('#btn-auth').addEventListener('click', () => {
+  adminKey = $('#auth-key').value.trim();
+  if (!adminKey) return;
+  localStorage.setItem('cc_admin_key', adminKey);
+  tryLoad();
+});
+$('#auth-key').addEventListener('keydown', e => { if (e.key === 'Enter') $('#btn-auth').click(); });
+$('#btn-refresh').addEventListener('click', tryLoad);
+document.querySelectorAll('.filter-chip').forEach(c => c.addEventListener('click', () => {
+  document.querySelectorAll('.filter-chip').forEach(x => x.classList.remove('on'));
+  c.classList.add('on');
+  filter = c.dataset.f;
+  render();
+}));
+
+tryLoad();
+</script>
+</body>
+</html>

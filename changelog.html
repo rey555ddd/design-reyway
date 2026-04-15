@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>更新日誌 — 淨淨美學工作室</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/brand.css">
+<style>
+.page-header{background:linear-gradient(135deg,var(--teal-xl) 0%,var(--white) 40%,var(--white) 60%,var(--teal-l) 100%);padding:40px 40px 32px;border-bottom:1px solid #EEF0F2;}
+.page-header-inner{max-width:1000px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+.page-title{display:flex;align-items:center;gap:16px;}
+.page-title .logo{width:48px;height:48px;border-radius:14px;background:var(--teal);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:20px;box-shadow:0 4px 16px rgba(97,208,223,.3);}
+.page-title h1{font-size:24px;font-weight:900;color:var(--dark);}
+.page-title .subtitle{font-size:13px;color:var(--gray);margin-top:2px;}
+.back-link{font-size:13px;color:var(--gray);text-decoration:none;padding:8px 14px;border-radius:var(--radius-s);border:1px solid #EEF0F2;transition:all .2s;}
+.back-link:hover{color:var(--teal-d);border-color:var(--teal);}
+
+.main{max-width:1000px;margin:0 auto;padding:32px 40px 80px;}
+
+.changelog{position:relative;padding-left:28px;}
+.changelog::before{
+  content:'';position:absolute;left:11px;top:10px;bottom:10px;
+  width:2px;background:linear-gradient(to bottom,var(--teal-l),#EEF0F2);
+}
+
+.cl-entry{position:relative;margin-bottom:32px;}
+.cl-entry::before{
+  content:'';position:absolute;left:-22px;top:14px;width:14px;height:14px;
+  border-radius:50%;background:var(--teal);
+  box-shadow:0 0 0 4px #fff, 0 0 0 6px var(--teal-l);
+}
+.cl-entry.major::before{background:#F59E0B;box-shadow:0 0 0 4px #fff, 0 0 0 6px #FEF3C7;}
+
+.cl-date{font-size:12px;font-weight:700;color:var(--teal-d);letter-spacing:1px;font-family:'Inter',monospace;text-transform:uppercase;margin-bottom:6px;}
+.cl-title{font-size:20px;font-weight:900;color:var(--dark);margin-bottom:4px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.cl-tag{font-size:10px;padding:3px 8px;border-radius:10px;background:var(--teal-l);color:var(--teal-d);font-weight:700;letter-spacing:.5px;text-transform:uppercase;}
+.cl-tag.major{background:#FEF3C7;color:#92400E;}
+.cl-summary{font-size:14px;color:var(--gray);line-height:1.65;margin-bottom:12px;}
+
+.cl-card{background:var(--white);border:1px solid #EEF0F2;border-radius:14px;padding:18px 20px;}
+.cl-section{margin-bottom:14px;}
+.cl-section:last-child{margin-bottom:0;}
+.cl-section-label{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.cl-section-label.new{color:#15803D;}
+.cl-section-label.fix{color:#B91C1C;}
+.cl-section-label.improve{color:var(--teal-d);}
+.cl-list{list-style:none;padding:0;margin:0;font-size:13.5px;line-height:1.75;color:var(--text);}
+.cl-list li{padding-left:20px;position:relative;margin-bottom:4px;}
+.cl-list li::before{content:'';position:absolute;left:4px;top:10px;width:5px;height:5px;border-radius:50%;background:var(--teal);}
+.cl-list.new li::before{background:#22C55E;}
+.cl-list.fix li::before{background:#EF4444;}
+.cl-list.improve li::before{background:var(--teal);}
+
+.cl-hero{
+  background:linear-gradient(135deg,var(--teal-xl),#FFF8E6);
+  border:1px solid var(--teal-l);border-radius:var(--radius);
+  padding:24px 28px;margin-bottom:32px;
+}
+.cl-hero h2{font-size:18px;font-weight:900;color:var(--dark);margin-bottom:6px;}
+.cl-hero p{font-size:13px;color:var(--text);line-height:1.7;}
+
+@media(max-width:680px){
+  .page-header{padding:24px 20px;}
+  .main{padding:24px 20px 60px;}
+  .changelog{padding-left:20px;}
+  .cl-entry::before{left:-16px;}
+}
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="page-header-inner">
+    <div class="page-title">
+      <div class="logo">淨</div>
+      <div>
+        <h1>📣 更新日誌</h1>
+        <div class="subtitle">淨淨美學工作室 · 最近做了什麼</div>
+      </div>
+    </div>
+    <a href="index.html" class="back-link">← 返回工作室</a>
+  </div>
+</header>
+
+<main class="main">
+
+  <div class="cl-hero">
+    <h2>👋 歡迎來到淨淨美學工作室</h2>
+    <p>這個頁面記錄了我們每次的更新。遇到 bug 或想提議新功能，直接點網頁左下角的 <strong>💡 橙色泡泡</strong>，AI 會幫你把想法整理清楚。</p>
+  </div>
+
+  <div class="changelog" id="changelog"></div>
+
+</main>
+
+<script>
+// 更新日誌資料（新到舊）
+const ENTRIES = [
+  {
+    date: '2026-04-16',
+    title: '設計部內部測試版上線',
+    tag: 'major',
+    summary: '一口氣新增 8 個 AI 設計工具、AI 編修功能、Bug 回報通道、管理後台。',
+    major: true,
+    sections: {
+      new: [
+        '排版建議小幫手：輸入活動主題，AI 給 3 個風格不同的版面方案（含 wireframe + 配色 + 文案）',
+        '配色方案產生器：3 組明顯不同策略（經典延伸 / 大膽對比 / 中性極簡）+ WCAG 對比度自動計算',
+        '情境照生成器：OpenAI gpt-image-1 合成產品情境照（$0.01~$0.17/張，成本即時顯示）',
+        '文案改寫器：一段文字 → 5 種版本（主標/副標/短版/長版/CTA）',
+        'Slogan 發想器：一次 10 個 slogan 分 4 類（功能/情感/急迫/俏皮）',
+        '設計稿檢查員：上傳 banner → AI 照 8 項淨淨規範打分 0-100，可開啟「嚴格模式」',
+        '素材即時預覽：一張素材同時預覽 7 個平台（Shopline 網站/APP、IG 貼文/限動、FB、蝦皮、Momo）',
+        '右下 💬 AI 助理（全站工具頁）+ 左下 💡 Bug 回報許願池（全站）',
+        '首頁節慶素材提醒：自動倒數最近 4 個行銷節點',
+        '管理後台 /admin.html：笙闆可看所有設計部回報（需設 ADMIN_KEY 環境變數）',
+      ],
+      improve: [
+        'AI 對話改為 SSE streaming：token 逐字浮現，首字時間 < 2 秒',
+        '所有生成型工具加上「🪄 AI 編修」按鈕：自然語言微調、就地替換',
+        '全站繁中 lock：強制 AI 回應用繁體中文台灣用語',
+        '觸控目標升至 44×44（iOS HIG）：送出鈕與關閉鈕手機上更好按',
+      ],
+      fix: [
+        '修 SSE 分支判斷 bug（content-type 判斷不可靠 → 改看 res.ok + body）',
+        '修 OpenAI max_tokens 1500 → 2500，避免 3 方案 JSON 被截斷',
+        '修 AI 回應前後夾話時 JSON.parse 失敗（擷取第一個 { 到最後 } 內容）',
+        'Wireframe 座標超過 100 時 clamp 到畫布內',
+      ],
+    },
+  },
+];
+
+function esc(s){ return String(s||'').replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c])); }
+
+function renderEntry(e){
+  const sections = [];
+  if (e.sections.new && e.sections.new.length) {
+    sections.push(`<div class="cl-section">
+      <div class="cl-section-label new">✨ 新功能</div>
+      <ul class="cl-list new">${e.sections.new.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+    </div>`);
+  }
+  if (e.sections.improve && e.sections.improve.length) {
+    sections.push(`<div class="cl-section">
+      <div class="cl-section-label improve">🔧 體驗優化</div>
+      <ul class="cl-list improve">${e.sections.improve.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+    </div>`);
+  }
+  if (e.sections.fix && e.sections.fix.length) {
+    sections.push(`<div class="cl-section">
+      <div class="cl-section-label fix">🩹 Bug 修復</div>
+      <ul class="cl-list fix">${e.sections.fix.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+    </div>`);
+  }
+  return `
+    <div class="cl-entry ${e.major ? 'major' : ''}">
+      <div class="cl-date">${e.date}</div>
+      <div class="cl-title">
+        ${esc(e.title)}
+        ${e.tag === 'major' ? '<span class="cl-tag major">Major</span>' : ''}
+      </div>
+      ${e.summary ? `<div class="cl-summary">${esc(e.summary)}</div>` : ''}
+      <div class="cl-card">${sections.join('')}</div>
+    </div>`;
+}
+
+document.getElementById('changelog').innerHTML = ENTRIES.map(renderEntry).join('');
+</script>
+
+<script src="assets/feedback-bubble.js"></script>
+</body>
+</html>
