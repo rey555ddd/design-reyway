@@ -26,7 +26,7 @@ interface Env {
 }
 
 const DEFAULT_MODEL = 'gpt-4o-mini';
-const MAX_TOKENS_CAP = 1500;
+const MAX_TOKENS_CAP = 2500;
 
 function json(obj: unknown, status = 200) {
   return new Response(JSON.stringify(obj), {
