@@ -118,6 +118,13 @@
           <input type="text" id="purpose" placeholder="例：母親節 IG 限動、蝦皮商品主圖、官網首頁 banner" value="">
         </div>
 
+        <div class="form-field" style="margin-top:4px;">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:500;">
+            <input type="checkbox" id="strict-mode" style="width:16px;height:16px;accent-color:var(--teal);cursor:pointer;">
+            <span>嚴格評分模式（用生產級標準，分數會更低但更真實）</span>
+          </label>
+        </div>
+
         <div class="preview-actions">
           <button class="btn primary" id="btn-check" type="button">開始檢查 →</button>
           <button class="btn" id="btn-replace" type="button">換一張</button>
@@ -267,6 +274,16 @@ async function check(){
 - score 不要都打 70-80，根據實際狀況決定；差就給低分，好就給高分
 - fix 要具體可執行，不要空話（例：「把主標往上移 40px」比「主標位置調整」好）
 - summary 用設計師能聽懂的話，不要太空泛
+
+${$('#strict-mode').checked ? `
+【⚠️ 嚴格模式已啟用】
+以「淨淨品牌上線生產級」的標準評分，不要給情面：
+- 任何粗糙、臨時感、未完成感 → 直接 fail
+- 只要有可優化的空間就不給 pass，pass 只給「完全可以直接用在官網/電商」的成品級別
+- 分數標準：90+=上線完美、80+=小修即可上線、70+=需中等修改、60+=需大改、<60=建議重做
+- 單一 fail 項目就讓總分降 15 分以上
+- 目標是幫設計師找出專業層面的問題，不是安慰他
+` : ''}
 
 【語言】一律繁體中文台灣用語，不可用簡體字。`;
 

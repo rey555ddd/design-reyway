@@ -143,12 +143,33 @@ function render(data){
           </div>
         `).join('')}
       </div>
+      <div style="margin-top:8px;padding-left:4px;">
+        <button class="btn-small" data-cat-all="${cat.key}" style="font-size:11px;">📋 複製此類全部</button>
+      </div>
     `;
     section.querySelectorAll('[data-slogan]').forEach(btn => {
       btn.addEventListener('click', () => copyText(btn.dataset.slogan, '已複製 slogan'));
     });
+    section.querySelector('[data-cat-all]').addEventListener('click', () => {
+      copyText(list.join('\n'), `已複製 ${cat.name} ${list.length} 條`);
+    });
     wrap.appendChild(section);
   });
+
+  // 全部複製按鈕
+  const allBtn = document.createElement('div');
+  allBtn.style.cssText = 'text-align:center;padding-top:20px;border-top:1px solid #EEF0F2;margin-top:10px;';
+  allBtn.innerHTML = `<button class="btn" id="btn-copy-all" type="button">📋 複製全部 10 條為 Markdown</button>`;
+  allBtn.querySelector('#btn-copy-all').addEventListener('click', () => {
+    const s = window.__ccCurrentSlogans;
+    if(!s) return;
+    const r = s.result;
+    const md = `# Slogan 發想結果\n\n**產品**：${s.product}｜**情境**：${s.occasion}\n\n` +
+      CATEGORIES.map(c => `## ${c.icon} ${c.name}（${c.desc}）\n\n` +
+        (r[c.key] || []).map(x => `- ${x}`).join('\n')).join('\n\n');
+    copyText(md, '已複製全部為 Markdown');
+  });
+  wrap.appendChild(allBtn);
 }
 
 async function generate(){

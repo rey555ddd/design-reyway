@@ -120,7 +120,10 @@
     </div>
   </div>
 
-  <div class="section-label" id="results-label" style="display:none;">改寫結果</div>
+  <div id="results-header" style="display:none;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+    <div class="section-label" style="margin-bottom:0;">改寫結果</div>
+    <button class="btn" id="btn-copy-all" type="button" style="padding:8px 16px;font-size:13px;">📋 複製全部為 Markdown</button>
+  </div>
   <div class="results" id="results"></div>
 </main>
 
@@ -150,7 +153,7 @@ const KINDS = [
 function render(rewrites){
   const grid = $('#results');
   grid.innerHTML = '';
-  $('#results-label').style.display = 'block';
+  $('#results-header').style.display = 'flex';
 
   KINDS.forEach((k, i) => {
     const text = rewrites[k.key] || '';
@@ -227,7 +230,7 @@ async function generate(){
   const source = $('#source').value.trim();
   if(!source){ showToast('請先貼入文案'); return; }
 
-  $('#results-label').style.display = 'block';
+  $('#results-header').style.display = 'flex';
   $('#results').innerHTML = `<div class="state loading"><div class="dots"><span></span><span></span><span></span></div><div>AI 正在改寫 5 種版本…</div></div>`;
   $('#btn-generate').disabled = true;
 
@@ -285,8 +288,15 @@ ${source}
 $('#btn-generate').addEventListener('click', generate);
 $('#btn-reset').addEventListener('click', () => {
   $('#source').value=''; $('#subject').value='';
-  $('#results').innerHTML=''; $('#results-label').style.display='none';
+  $('#results').innerHTML=''; $('#results-header').style.display='none';
   window.__ccCurrentRewrites = null;
+});
+$('#btn-copy-all').addEventListener('click', () => {
+  const s = window.__ccCurrentRewrites;
+  if(!s){ showToast('還沒有改寫結果'); return; }
+  const md = `# 文案改寫結果\n\n**原文**：${s.source}\n**主角**：${s.subject || '（未指定）'}\n**語氣**：${s.tone}\n\n` +
+    KINDS.map(k => `## ${k.name}（${k.desc}）\n\n${s.rewrites[k.key] || ''}\n`).join('\n');
+  copyText(md, '已複製全部改寫為 Markdown');
 });
 </script>
 
