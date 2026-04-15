@@ -50,8 +50,9 @@
 .cc-chat-head .meta span{font-size:11px;color:var(--gray);}
 .cc-chat-close{
   background:transparent;border:none;color:var(--gray);
-  width:28px;height:28px;border-radius:8px;cursor:pointer;
-  font-size:18px;transition:all .2s;font-family:inherit;
+  width:44px;height:44px;border-radius:10px;cursor:pointer;
+  font-size:22px;transition:all .2s;font-family:inherit;
+  display:flex;align-items:center;justify-content:center;
 }
 .cc-chat-close:hover{background:rgba(0,0,0,.05);color:var(--dark);}
 
@@ -116,8 +117,8 @@
   line-height:1.5;max-height:120px;min-height:22px;padding:2px 0;
 }
 .cc-chat-send{
-  width:32px;height:32px;border-radius:50%;border:none;
-  background:var(--teal);color:#fff;cursor:pointer;font-size:15px;
+  width:44px;height:44px;border-radius:50%;border:none;
+  background:var(--teal);color:#fff;cursor:pointer;font-size:18px;
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
   transition:all .2s;font-family:inherit;
 }
